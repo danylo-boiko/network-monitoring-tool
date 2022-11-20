@@ -4,10 +4,14 @@
 make
 ./scripts/load_injector.sh
 
-while getopts "s" opt; do
+while getopts "st" opt; do
   case $opt in
     s)
       sudo xdp-loader status
+      ;;
+    t)
+      echo "Tracing:";
+      sudo cat /sys/kernel/debug/tracing/trace_pipe
       ;;
   esac
 done
