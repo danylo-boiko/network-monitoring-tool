@@ -1,6 +1,7 @@
 #!/bin/sh
 
 ./scripts/unload_injector.sh
+sudo mount -t debugfs none /sys/kernel/debug
 make
 ./scripts/load_injector.sh
 
