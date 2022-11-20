@@ -1,0 +1,1 @@
+sudo xdp-loader load -m skb -s xdp_tx eth0 bpf_injector.o
