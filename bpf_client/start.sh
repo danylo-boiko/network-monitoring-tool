@@ -1,9 +1,9 @@
 #!/bin/sh
 
-./scripts/unload_injector.sh
 sudo mount -t debugfs none /sys/kernel/debug
-make
-./scripts/load_injector.sh
+make clean
+make build
+sudo ./bin/bpf_client eth0
 
 while getopts "st" opt; do
   case $opt in

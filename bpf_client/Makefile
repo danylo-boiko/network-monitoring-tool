@@ -1,13 +1,23 @@
-CLANG = clang
+.PHONY: build generate clean
+.DEFAULT_GOAL = build
 
-INJECTOR = bpf_injector
+# main
+BIN_DIR=bin
+BIN_NAME=bpf_client
 
-.PHONY: clean build
+# compiler and flags
+CLANG := clang
+CFLAGS := -g -O2 -Wall -Wextra $(CFLAGS)
+
+generate: export BPF_CLANG := $(CLANG)
+generate: export BPF_CFLAGS := $(CFLAGS)
+generate:
+	cd pkg/bpf && go generate -v ./...
+
+build: generate
+	mkdir -p $(BIN_DIR)
+	go build -o ${BIN_DIR}/${BIN_NAME} ./cmd/main.go
 
 clean:
-	rm -f *.o
-
-build: clean
-	$(CLANG) -O2 -g -Wall -target bpf -c $(INJECTOR:=.c) -o ${INJECTOR:=.o}
-
-.DEFAULT_GOAL = build
+	find . -name "*.o" -type f -delete
+	rm -r ${BIN_DIR}
