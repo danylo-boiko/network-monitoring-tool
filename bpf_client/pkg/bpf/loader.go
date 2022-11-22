@@ -1,25 +1,26 @@
 package bpf
 
 import (
-	"fmt"
+	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/rlimit"
 	"log"
 	"net"
-	"strings"
-	"time"
-
-	"github.com/cilium/ebpf"
-	"github.com/cilium/ebpf/link"
 )
 
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc $BPF_CLANG -cflags $BPF_CFLAGS bpf ./bpf_injector.c
 
 type Loader struct {
-	Interface *net.Interface
+	Interface  *net.Interface
+	BpfObjects *bpfObjects
+	XdpLink    link.Link
 }
 
 func NewBpfLoader(iface *net.Interface) *Loader {
-	return &Loader{Interface: iface}
+	return &Loader{
+		Interface:  iface,
+		BpfObjects: &bpfObjects{},
+		XdpLink:    nil,
+	}
 }
 
 func (loader *Loader) Load() {
@@ -28,50 +29,26 @@ func (loader *Loader) Load() {
 	}
 
 	// Load pre-compiled programs into the kernel.
-	objs := bpfObjects{}
-	if err := loadBpfObjects(&objs, nil); err != nil {
+	if err := loadBpfObjects(loader.BpfObjects, nil); err != nil {
 		log.Fatalf("loading objects: %s", err)
 	}
-	defer objs.Close()
 
 	// Attach the program.
 	xdp, err := link.AttachXDP(link.XDPOptions{
-		Program:   objs.BpfXdpHandler,
+		Program:   loader.BpfObjects.BpfXdpHandler,
 		Interface: loader.Interface.Index,
 		Flags:     link.XDPGenericMode,
 	})
 	if err != nil {
 		log.Fatalf("could not attach XDP program: %s", err)
 	}
-	defer xdp.Close()
+	loader.XdpLink = xdp
 
 	log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 	log.Printf("Press Ctrl-C to exit and remove the program")
-
-	// Print the contents of the BPF hash map (source IP address -> packet count).
-	ticker := time.NewTicker(1 * time.Second)
-	defer ticker.Stop()
-	for range ticker.C {
-		s, err := formatMapContents(objs.AddressPacketsMap)
-		if err != nil {
-			log.Printf("Error reading map: %s", err)
-			continue
-		}
-		log.Printf("Map contents:\n%s", s)
-	}
 }
 
-func formatMapContents(m *ebpf.Map) (string, error) {
-	var (
-		sb  strings.Builder
-		key []byte
-		val uint32
-	)
-	iter := m.Iterate()
-	for iter.Next(&key, &val) {
-		sourceIP := net.IP(key)
-		packetCount := val
-		sb.WriteString(fmt.Sprintf("\t%s => %d\n", sourceIP, packetCount))
-	}
-	return sb.String(), iter.Err()
+func (loader *Loader) Close() {
+	loader.BpfObjects.Close()
+	loader.XdpLink.Close()
 }

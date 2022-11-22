@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bpf_client/pkg/bpf"
+	"bpf_client/pkg/cli"
 	"log"
 	"net"
 	"os"
-
-	"bpf_client/pkg/bpf"
 )
 
 func main() {
@@ -22,4 +22,7 @@ func main() {
 
 	loader := bpf.NewBpfLoader(iface)
 	loader.Load()
+
+	tracer := cli.NewBpfTracer(loader)
+	tracer.TraceContent()
 }
