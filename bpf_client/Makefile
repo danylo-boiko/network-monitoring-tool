@@ -16,7 +16,7 @@ generate:
 
 build: generate
 	mkdir -p $(BIN_DIR)
-	go build -o ${BIN_DIR}/${BIN_NAME} ./cmd/main.go
+	go build -o ${BIN_DIR}/${BIN_NAME} ./main.go
 
 clean:
 	find . -name "*.o" -type f -delete
