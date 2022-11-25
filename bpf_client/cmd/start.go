@@ -28,7 +28,10 @@ var startCmd = &cobra.Command{
 
 		log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 
-		loader.PrintStats()
+		statsFlag, _ := cmd.Flags().GetBool("stats")
+		if statsFlag {
+			loader.PrintStats()
+		}
 
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
@@ -37,5 +40,6 @@ var startCmd = &cobra.Command{
 }
 
 func init() {
+	startCmd.Flags().Bool("stats", false, "Print stats of the network")
 	rootCmd.AddCommand(startCmd)
 }
