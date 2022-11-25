@@ -30,6 +30,7 @@ struct bpf_map_def SEC("maps") blocked_ips_map = {
         .key_size    = sizeof(uint),
         .value_size  = sizeof(bool),
         .max_entries = 32,
+        .map_flags   = 0
 };
 
 // 0 - Number of passed packets
