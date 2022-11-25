@@ -7,10 +7,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var version = "0.0.1"
 var rootCmd = &cobra.Command{
 	Use:     "bpf_client",
-	Version: version,
+	Version: "0.0.1",
 	Short:   "bpf_client - a simple CLI to inspect activity in your network",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {

@@ -1,11 +1,8 @@
 package bpf
 
 import (
-	"fmt"
-	"github.com/cilium/ebpf"
 	"log"
 	"net"
-	"strings"
 	"time"
 
 	"github.com/cilium/ebpf/link"
@@ -22,8 +19,8 @@ type Loader struct {
 
 func NewBpfLoader(iface *net.Interface) *Loader {
 	return &Loader{
-		BpfObjects: &bpfObjects{},
 		Interface:  iface,
+		BpfObjects: &bpfObjects{},
 		XdpLink:    nil,
 	}
 }
@@ -56,26 +53,18 @@ func (loader *Loader) PrintStats() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
-	for range ticker.C {
-		statsMap := formatMap(loader.BpfObjects.StatsMap)
-		log.Printf("Stats map:\n%s", statsMap)
-		addressPacketsMap := formatMap(loader.BpfObjects.AddressPacketsMap)
-		log.Printf("Address packets map:\n%s", addressPacketsMap)
-		blockedIPsMap := formatMap(loader.BpfObjects.BlockedIpsMap)
-		log.Printf("Blocked IPs map:\n%s", blockedIPsMap)
-	}
-}
+	printFormatter := NewPrintFormatter()
 
-func formatMap(m *ebpf.Map) string {
-	var (
-		sb  strings.Builder
-		key []byte
-		val uint32
-	)
-	iter := m.Iterate()
-	for iter.Next(&key, &val) {
-		keyStr := net.IP(key)
-		sb.WriteString(fmt.Sprintf("\t%s => %d\n", keyStr, val))
+	for range ticker.C {
+		statsMap := printFormatter.formatStatsMap(loader.BpfObjects.StatsMap)
+		log.Printf("Stats:\n%s", statsMap)
+		addressPacketsMap := printFormatter.formatIPsMap(loader.BpfObjects.AddressPacketsMap)
+		if addressPacketsMap != "" {
+			log.Printf("Address packets:\n%s", addressPacketsMap)
+		}
+		blockedIPsMap := printFormatter.formatIPsMap(loader.BpfObjects.BlockedIpsMap)
+		if blockedIPsMap != "" {
+			log.Printf("Blocked IPs:\n%s", blockedIPsMap)
+		}
 	}
-	return sb.String()
 }
