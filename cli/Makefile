@@ -3,7 +3,7 @@
 
 # main
 BIN_DIR=bin
-BIN_NAME=bpf_client
+BIN_NAME=nmt_cli
 
 # compiler and flags
 CLANG := clang
