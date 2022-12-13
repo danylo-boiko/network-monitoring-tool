@@ -58,10 +58,12 @@ func (loader *Loader) PrintStats() {
 	for range ticker.C {
 		statsMap := printFormatter.formatStatsMap(loader.BpfObjects.StatsMap)
 		log.Printf("Stats:\n%s", statsMap)
+
 		addressPacketsMap := printFormatter.formatIPsMap(loader.BpfObjects.AddressPacketsMap)
 		if addressPacketsMap != "" {
 			log.Printf("Address packets:\n%s", addressPacketsMap)
 		}
+
 		blockedIPsMap := printFormatter.formatIPsMap(loader.BpfObjects.BlockedIpsMap)
 		if blockedIPsMap != "" {
 			log.Printf("Blocked IPs:\n%s", blockedIPsMap)

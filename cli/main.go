@@ -1,6 +1,6 @@
 package main
 
-import "bpf_client/cmd"
+import "nmt_cli/cmd"
 
 func main() {
 	cmd.Execute()

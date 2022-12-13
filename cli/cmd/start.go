@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"bpf_client/pkg/bpf"
 	"github.com/spf13/cobra"
+	"nmt_cli/pkg/bpf"
 )
 
 var startCmd = &cobra.Command{

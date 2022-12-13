@@ -8,9 +8,9 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "bpf_client",
+	Use:     "nmt_cli",
 	Version: "0.0.1",
-	Short:   "bpf_client - a simple CLI to inspect activity in your network",
+	Short:   "nmt_cli - a simple CLI to inspect activity in your network",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 	},

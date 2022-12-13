@@ -2,5 +2,5 @@
 
 sudo mount -t debugfs none /sys/kernel/debug
 sudo xdp-loader status
-echo "Tracing:";
+echo "Debug tracing:";
 sudo cat /sys/kernel/debug/tracing/trace_pipe
