@@ -38,10 +38,13 @@ func (pf *PrintFormatter) formatStatsMap(m *ebpf.Map) string {
 		key byte
 		val uint32
 	)
+
 	iter := m.Iterate()
+
 	for iter.Next(&key, &val) {
 		sb.WriteString(fmt.Sprintf("\t%s\t => %d\n", pf.StatsLabels[key], val))
 	}
+
 	return sb.String()
 }
 
@@ -51,10 +54,13 @@ func (pf *PrintFormatter) formatIPsMap(m *ebpf.Map) string {
 		key []byte
 		val uint32
 	)
+
 	iter := m.Iterate()
+
 	for iter.Next(&key, &val) {
 		ip := net.IP(key)
 		sb.WriteString(fmt.Sprintf("\t%s => %d\n", ip, val))
 	}
+
 	return sb.String()
 }
