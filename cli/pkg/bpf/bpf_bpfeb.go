@@ -13,6 +13,14 @@ import (
 	"github.com/cilium/ebpf"
 )
 
+type bpfPacket struct {
+	Ip       uint32
+	Size     uint32
+	Protocol uint8
+	Status   uint8
+	_        [2]byte
+}
+
 // loadBpf returns the embedded CollectionSpec for bpf.
 func loadBpf() (*ebpf.CollectionSpec, error) {
 	reader := bytes.NewReader(_BpfBytes)
@@ -61,9 +69,8 @@ type bpfProgramSpecs struct {
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfMapSpecs struct {
-	AddressPacketsMap *ebpf.MapSpec `ebpf:"address_packets_map"`
-	BlockedIpsMap     *ebpf.MapSpec `ebpf:"blocked_ips_map"`
-	StatsMap          *ebpf.MapSpec `ebpf:"stats_map"`
+	BlockedIpsMap *ebpf.MapSpec `ebpf:"blocked_ips_map"`
+	PacketsQueue  *ebpf.MapSpec `ebpf:"packets_queue"`
 }
 
 // bpfObjects contains all objects after they have been loaded into the kernel.
@@ -85,16 +92,14 @@ func (o *bpfObjects) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfMaps struct {
-	AddressPacketsMap *ebpf.Map `ebpf:"address_packets_map"`
-	BlockedIpsMap     *ebpf.Map `ebpf:"blocked_ips_map"`
-	StatsMap          *ebpf.Map `ebpf:"stats_map"`
+	BlockedIpsMap *ebpf.Map `ebpf:"blocked_ips_map"`
+	PacketsQueue  *ebpf.Map `ebpf:"packets_queue"`
 }
 
 func (m *bpfMaps) Close() error {
 	return _BpfClose(
-		m.AddressPacketsMap,
 		m.BlockedIpsMap,
-		m.StatsMap,
+		m.PacketsQueue,
 	)
 }
 

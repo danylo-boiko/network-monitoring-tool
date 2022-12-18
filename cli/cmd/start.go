@@ -14,7 +14,6 @@ import (
 var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start the processing",
-	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ifaceName := args[0]
 		iface, err := net.InterfaceByName(ifaceName)
@@ -28,13 +27,11 @@ var startCmd = &cobra.Command{
 
 		log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 
-		statsFlag, _ := cmd.Flags().GetBool("stats")
-		if statsFlag {
-			loader.PrintStats()
-		}
-
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
+		go loader.CollectStats()
+
 		<-quit
 	},
 }

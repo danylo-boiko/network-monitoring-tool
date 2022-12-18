@@ -1,15 +1,15 @@
 package bpf
 
 import (
-	"log"
-	"net"
-	"time"
-
+	"errors"
+	"github.com/cilium/ebpf"
 	"github.com/cilium/ebpf/link"
 	"github.com/cilium/ebpf/rlimit"
+	"log"
+	"net"
 )
 
-//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc $BPF_CLANG -cflags $BPF_CFLAGS bpf ./bpf_injector.c
+//go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc $BPF_CLANG -cflags $BPF_CFLAGS -type Packet bpf ./kernel/bpf_injector.c
 
 type Loader struct {
 	Interface  *net.Interface
@@ -49,24 +49,23 @@ func (loader *Loader) Close() {
 	loader.XdpLink.Close()
 }
 
-func (loader *Loader) PrintStats() {
-	ticker := time.NewTicker(1 * time.Second)
-	defer ticker.Stop()
-
-	printFormatter := NewPrintFormatter()
-
-	for range ticker.C {
-		statsMap := printFormatter.formatStatsMap(loader.BpfObjects.StatsMap)
-		log.Printf("Stats:\n%s", statsMap)
-
-		addressPacketsMap := printFormatter.formatIPsMap(loader.BpfObjects.AddressPacketsMap)
-		if addressPacketsMap != "" {
-			log.Printf("Address packets:\n%s", addressPacketsMap)
+func (loader *Loader) CollectStats() {
+	var packet bpfPacket
+	for {
+		if err := loader.BpfObjects.PacketsQueue.LookupAndDelete(nil, &packet); err != nil {
+			if !errors.Is(err, ebpf.ErrKeyNotExist) {
+				log.Fatalf("Lookup should have failed with error, %v, instead error is %v",
+					ebpf.ErrKeyNotExist,
+					err)
+			} else {
+				continue
+			}
 		}
 
-		blockedIPsMap := printFormatter.formatIPsMap(loader.BpfObjects.BlockedIpsMap)
-		if blockedIPsMap != "" {
-			log.Printf("Blocked IPs:\n%s", blockedIPsMap)
-		}
+		log.Printf("IP: %d, Size: %d, status: %d, protocol: %d",
+			packet.Ip,
+			packet.Size,
+			packet.Status,
+			packet.Protocol)
 	}
 }
