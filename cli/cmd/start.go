@@ -3,12 +3,13 @@ package cmd
 import (
 	"log"
 	"net"
+	"nmt_cli/pkg/bpf"
+	"nmt_cli/pkg/grpc"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/spf13/cobra"
-	"nmt_cli/pkg/bpf"
 )
 
 var startCmd = &cobra.Command{
@@ -28,8 +29,14 @@ var startCmd = &cobra.Command{
 
 		log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 
-		statsFlag, _ := cmd.Flags().GetBool("stats")
-		go loader.CollectStats(statsFlag)
+		printStatsFlag, _ := cmd.Flags().GetBool("stats")
+
+		client := grpc.NewGrpcClient()
+		client.Connect("localhost:5144")
+		defer client.CloseConnection()
+
+		packetsHandler := bpf.NewPacketsHandler(client, loader.BpfObjects)
+		go packetsHandler.Handle(printStatsFlag)
 
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)

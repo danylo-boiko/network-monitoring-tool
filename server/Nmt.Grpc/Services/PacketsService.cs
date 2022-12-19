@@ -31,6 +31,6 @@ public class PacketsService : Packets.PacketsBase
             _logger.LogInformation($"Ip: {packet.Ip}, size: {packet.Size}, status: {packet.Status}, protocol: {packet.Protocol}");
         }
 
-        return await base.AddPackets(request, context);
+        return new Empty();
     }
 }
