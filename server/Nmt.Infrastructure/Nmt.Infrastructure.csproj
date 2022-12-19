@@ -7,8 +7,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Migrations" />
+      <Folder Include="Data\Postgres\Migrations" />
       <Folder Include="Redis" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.1" />
+      <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
+      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Nmt.Core\Nmt.Core.csproj" />
     </ItemGroup>
 
 </Project>
