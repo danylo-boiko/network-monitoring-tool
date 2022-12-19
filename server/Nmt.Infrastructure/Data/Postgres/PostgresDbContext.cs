@@ -7,6 +7,9 @@ namespace Nmt.Infrastructure.Data.Postgres;
 
 public class PostgresDbContext : IdentityDbContext<User, Role, Guid>
 {
+    public virtual DbSet<Device> Devices { get; set; }
+    public virtual DbSet<BlockedIp> BlockedIps { get; set; }
+
     public PostgresDbContext(DbContextOptions<PostgresDbContext> options) : base(options)
     {
     }
