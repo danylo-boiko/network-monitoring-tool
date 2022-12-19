@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "Nmt.Grpc.Protos";
+
+import "google/protobuf/empty.proto";
+
+package packets;
+
+service Packets {
+  rpc AddPackets(AddPacketsRequest) returns (google.protobuf.Empty);
+}
+
+message PacketModel {
+  uint32 ip = 1;
+  uint32 size = 2;
+  uint32 protocol = 3;
+  uint32 status = 4;
+}
+
+message AddPacketsRequest {
+  repeated PacketModel packets = 1;
+}

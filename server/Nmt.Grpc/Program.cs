@@ -6,7 +6,7 @@ builder.Services.AddGrpc();
 
 var app = builder.Build();
 
-app.MapGrpcService<GreeterService>();
+app.MapGrpcService<PacketsService>();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client.");
 
 app.Run();
