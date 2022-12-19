@@ -30,7 +30,7 @@ var startCmd = &cobra.Command{
 
 		statsFlag, _ := cmd.Flags().GetBool("stats")
 		if statsFlag {
-			loader.PrintStats()
+			loader.CollectStats()
 		}
 
 		quit := make(chan os.Signal, 1)
