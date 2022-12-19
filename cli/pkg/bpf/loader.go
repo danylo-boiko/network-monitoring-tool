@@ -1,12 +1,11 @@
 package bpf
 
 import (
-	"errors"
-	"github.com/cilium/ebpf"
-	"github.com/cilium/ebpf/link"
-	"github.com/cilium/ebpf/rlimit"
 	"log"
 	"net"
+
+	"github.com/cilium/ebpf/link"
+	"github.com/cilium/ebpf/rlimit"
 )
 
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go -cc $BPF_CLANG -cflags $BPF_CFLAGS -type Packet bpf ./kernel/bpf_injector.c
@@ -47,25 +46,4 @@ func (loader *Loader) Load() {
 func (loader *Loader) Close() {
 	loader.BpfObjects.Close()
 	loader.XdpLink.Close()
-}
-
-func (loader *Loader) CollectStats() {
-	var packet bpfPacket
-	for {
-		if err := loader.BpfObjects.PacketsQueue.LookupAndDelete(nil, &packet); err != nil {
-			if !errors.Is(err, ebpf.ErrKeyNotExist) {
-				log.Fatalf("Lookup should have failed with error, %v, instead error is %v",
-					ebpf.ErrKeyNotExist,
-					err)
-			} else {
-				continue
-			}
-		}
-
-		log.Printf("IP: %d, Size: %d, status: %d, protocol: %d",
-			packet.Ip,
-			packet.Size,
-			packet.Status,
-			packet.Protocol)
-	}
 }

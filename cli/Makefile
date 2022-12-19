@@ -12,6 +12,7 @@ CFLAGS := -g -O2 -Wall -Wextra $(CFLAGS)
 generate: export BPF_CLANG := $(CLANG)
 generate: export BPF_CFLAGS := $(CFLAGS)
 generate:
+	protoc packets.proto --proto_path=./../server/Nmt.Grpc/Protos/ --go_out=. --go-grpc_out=.
 	cd pkg/bpf && go generate -v ./...
 
 build: generate
