@@ -29,9 +29,7 @@ var startCmd = &cobra.Command{
 		log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 
 		statsFlag, _ := cmd.Flags().GetBool("stats")
-		if statsFlag {
-			loader.CollectStats()
-		}
+		go loader.CollectStats(statsFlag)
 
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
