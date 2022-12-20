@@ -24,28 +24,28 @@ func NewBpfLoader(iface *net.Interface) *Loader {
 	}
 }
 
-func (loader *Loader) Load() {
+func (ldr *Loader) Load() {
 	if err := rlimit.RemoveMemlock(); err != nil {
 		log.Fatalf("Could not remove momory lock: %s", err)
 	}
 
-	if err := loadBpfObjects(loader.BpfObjects, nil); err != nil {
+	if err := loadBpfObjects(ldr.BpfObjects, nil); err != nil {
 		log.Fatalf("Could not load bpf objects: %s", err)
 	}
 
 	var err error
-	if loader.XdpLink, err = link.AttachXDP(link.XDPOptions{
-		Program:   loader.BpfObjects.BpfXdpHandler,
-		Interface: loader.Interface.Index,
+	if ldr.XdpLink, err = link.AttachXDP(link.XDPOptions{
+		Program:   ldr.BpfObjects.BpfXdpHandler,
+		Interface: ldr.Interface.Index,
 		Flags:     link.XDPGenericMode,
 	}); err != nil {
 		log.Fatalf("Could not attach XDP program: %s", err)
 	}
 }
 
-func (loader *Loader) Close() {
-	loader.BpfObjects.Close()
-	loader.XdpLink.Close()
+func (ldr *Loader) Close() {
+	ldr.BpfObjects.Close()
+	ldr.XdpLink.Close()
 }
 
 func NewBpfPacket() *bpfPacket {

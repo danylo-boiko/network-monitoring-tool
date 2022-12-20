@@ -1,4 +1,4 @@
-namespace Nmt.Core.Models;
+namespace Nmt.Domain.Models;
 
 public class Device
 {

@@ -12,14 +12,4 @@
       </Reference>
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="MediatR" Version="11.1.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Nmt.Infrastructure\Nmt.Infrastructure.csproj" />
-    </ItemGroup>
-
 </Project>

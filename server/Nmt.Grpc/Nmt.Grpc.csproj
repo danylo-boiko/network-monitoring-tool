@@ -13,6 +13,7 @@
 
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.50.0" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,6 +23,12 @@
     <ItemGroup>
       <ProjectReference Include="..\Nmt.Core\Nmt.Core.csproj" />
       <ProjectReference Include="..\Nmt.Infrastructure\Nmt.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="MediatR">
+        <HintPath>..\..\..\..\.nuget\packages\mediatr\11.1.0\lib\netstandard2.1\MediatR.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

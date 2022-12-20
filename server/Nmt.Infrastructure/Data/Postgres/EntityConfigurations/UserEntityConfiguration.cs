@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Nmt.Core.Models;
+using Nmt.Domain.Models;
 
 namespace Nmt.Infrastructure.Data.Postgres.EntityConfigurations;
 
-public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
+public class UserEntityConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {

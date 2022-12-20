@@ -1,7 +1,7 @@
 using System.Net.Sockets;
-using Nmt.Core.Enums;
+using Nmt.Domain.Enums;
 
-namespace Nmt.Core.Models;
+namespace Nmt.Domain.Models;
 
 public class Packet
 {
