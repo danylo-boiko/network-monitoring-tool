@@ -1,32 +1,57 @@
 package internal
 
 import (
+	"log"
 	"nmt_cli/pkg/grpc"
 	"nmt_cli/util"
+
+	"github.com/denisbrodbeck/machineid"
 )
 
 type Factory struct {
-	GrpcClient *grpc.GrpcClient
+	GrpcClient  *grpc.GrpcClient
+	Credentials *util.Credentials
 
-	Config func() (util.Config, error)
+	Config    func() (util.Config, error)
+	MachineId func() (string, error)
 }
 
 func NewFactory() *Factory {
-	factory := &Factory{
+	f := &Factory{
+		GrpcClient:  grpc.NewGrpcClient(),
+		Credentials: newCredentials(),
+
 		Config: configFunc(),
 	}
 
-	factory.GrpcClient = grpc.NewGrpcClient()
+	f.MachineId = machineIdFunc(f)
 
-	return factory
+	return f
 }
 
 func configFunc() func() (util.Config, error) {
-	var config util.Config
-	var configError error
-
 	return func() (util.Config, error) {
-		config, configError = util.LoadConfig()
-		return config, configError
+		return util.LoadConfig()
 	}
+}
+
+func machineIdFunc(f *Factory) func() (string, error) {
+	cfg, err := f.Config()
+	if err != nil {
+		log.Fatalf("Failed to read configuration:  %v", err)
+	}
+
+	return func() (string, error) {
+		return machineid.ProtectedID(cfg.AppId)
+	}
+}
+
+func newCredentials() *util.Credentials {
+	creds, err := util.ReadCredentials()
+	if err != nil {
+		log.Fatalf("Failed to reed credentials: %v", err)
+		return nil
+	}
+
+	return creds
 }

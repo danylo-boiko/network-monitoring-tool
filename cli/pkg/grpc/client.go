@@ -17,17 +17,17 @@ func NewGrpcClient() *GrpcClient {
 	return &GrpcClient{}
 }
 
-func (grpcClient *GrpcClient) Connect(target string) {
+func (gc *GrpcClient) Connect(target string) {
 	var err error
-	grpcClient.connection, err = grpc.Dial(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	gc.connection, err = grpc.Dial(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
 
-	grpcClient.Packets = NewPacketsClient(grpcClient.connection)
-	grpcClient.Auth = NewAuthClient(grpcClient.connection)
+	gc.Packets = NewPacketsClient(gc.connection)
+	gc.Auth = NewAuthClient(gc.connection)
 }
 
-func (grpcClient *GrpcClient) CloseConnection() {
-	grpcClient.connection.Close()
+func (gc *GrpcClient) CloseConnection() {
+	gc.connection.Close()
 }
