@@ -1,7 +1,16 @@
 package main
 
-import "nmt_cli/cmd"
+import (
+	"fmt"
+	"nmt_cli/cmd"
+	"os"
+)
 
 func main() {
-	cmd.Execute()
+	rootCmd := cmd.NewCmdRoot()
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "Ooops. Error: %s\n", err)
+		os.Exit(1)
+	}
 }

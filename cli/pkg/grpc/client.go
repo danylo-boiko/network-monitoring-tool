@@ -9,6 +9,7 @@ import (
 
 type GrpcClient struct {
 	connection *grpc.ClientConn
+	Auth       AuthClient
 	Packets    PacketsClient
 }
 
@@ -24,6 +25,7 @@ func (grpcClient *GrpcClient) Connect(target string) {
 	}
 
 	grpcClient.Packets = NewPacketsClient(grpcClient.connection)
+	grpcClient.Auth = NewAuthClient(grpcClient.connection)
 }
 
 func (grpcClient *GrpcClient) CloseConnection() {

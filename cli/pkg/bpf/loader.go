@@ -47,3 +47,7 @@ func (loader *Loader) Close() {
 	loader.BpfObjects.Close()
 	loader.XdpLink.Close()
 }
+
+func NewBpfPacket() *bpfPacket {
+	return &bpfPacket{}
+}
