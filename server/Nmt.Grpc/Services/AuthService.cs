@@ -8,17 +8,15 @@ namespace Nmt.Grpc.Services;
 public class AuthService : Auth.AuthBase
 {
     private readonly IMediator _mediator;
-    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IMediator mediator, ILogger<AuthService> logger)
+    public AuthService(IMediator mediator)
     {
         _mediator = mediator;
-        _logger = logger;
     }
 
     public override async Task<AuthResponse> Login(LoginRequest request, ServerCallContext context)
     {
-        var authResponse = await _mediator.Send(new LoginCommand
+        var jwtToken = await _mediator.Send(new LoginCommand
         {
             Username = request.Username,
             Password = request.Password,
@@ -28,7 +26,7 @@ public class AuthService : Auth.AuthBase
 
         return new AuthResponse
         {
-            Token = authResponse
+            Token = jwtToken
         };
     }
 }

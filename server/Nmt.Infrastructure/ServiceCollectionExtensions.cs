@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -31,7 +32,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection ConfigureIdentity(this IServiceCollection services)
     {
-        services.AddIdentityCore<User>(o => 
+        services.AddIdentity<User, Role>(o => 
         {
             o.Password.RequireDigit = true;
             o.Password.RequireLowercase = true;
@@ -40,7 +41,8 @@ public static class ServiceCollectionExtensions
 
             o.User.RequireUniqueEmail = true;
         })
-        .AddEntityFrameworkStores<PostgresDbContext>();
+        .AddEntityFrameworkStores<PostgresDbContext>()
+        .AddDefaultTokenProviders();
 
         return services;
     }

@@ -1,5 +1,6 @@
 using MediatR;
 using Nmt.Core;
+using Nmt.Core.Extensions;
 using Nmt.Grpc.Services;
 using Nmt.Infrastructure;
 
@@ -8,11 +9,16 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 
 services.AddInfrastructure(configuration);
-services.ConfigureIdentity();
 services.AddMediatR(typeof(MediatREntryPoint).Assembly);
+services.ConfigureIdentity();
+services.ConfigureJwt(configuration);
 services.AddGrpc();
 
 var app = builder.Build();
+
+app.UseRouting();
+
+app.UseAuthentication();
 
 app.MapGrpcService<AuthService>();
 app.MapGrpcService<PacketsService>();
