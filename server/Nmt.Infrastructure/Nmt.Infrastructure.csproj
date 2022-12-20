@@ -19,7 +19,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nmt.Core\Nmt.Core.csproj" />
+      <ProjectReference Include="..\Nmt.Domain\Nmt.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.Identity.Stores">
+        <HintPath>..\..\..\..\.nuget\packages\microsoft.extensions.identity.stores\7.0.1\lib\net7.0\Microsoft.Extensions.Identity.Stores.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

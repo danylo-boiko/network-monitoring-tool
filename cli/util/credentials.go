@@ -28,7 +28,7 @@ func ReadCredentials() (*Credentials, error) {
 	return &creds, nil
 }
 
-func (creds *Credentials) UpdateFile() error {
+func (creds *Credentials) Write() error {
 	if err := createIfNotExists(); err != nil {
 		return err
 	}
@@ -43,6 +43,10 @@ func (creds *Credentials) UpdateFile() error {
 	}
 
 	return nil
+}
+
+func (creds *Credentials) Reset() {
+	creds.JwtToken = ""
 }
 
 func createIfNotExists() error {

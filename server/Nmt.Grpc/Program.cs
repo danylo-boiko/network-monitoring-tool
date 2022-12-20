@@ -1,3 +1,5 @@
+using MediatR;
+using Nmt.Core;
 using Nmt.Grpc.Services;
 using Nmt.Infrastructure;
 
@@ -6,6 +8,8 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 
 services.AddInfrastructure(configuration);
+services.ConfigureIdentity();
+services.AddMediatR(typeof(MediatREntryPoint).Assembly);
 services.AddGrpc();
 
 var app = builder.Build();

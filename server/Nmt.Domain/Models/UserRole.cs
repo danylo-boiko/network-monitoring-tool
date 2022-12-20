@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Nmt.Core.Models;
+namespace Nmt.Domain.Models;
 
 public class UserRole : IdentityUserRole<Guid>
 {

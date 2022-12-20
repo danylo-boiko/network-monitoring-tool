@@ -10,8 +10,10 @@ service Auth {
 }
 
 message LoginRequest {
-  string login = 1;
+  string username = 1;
   string password = 2;
+  string hostname = 3;
+  string machineSpecificStamp = 4;
 }
 
 message AuthResponse {

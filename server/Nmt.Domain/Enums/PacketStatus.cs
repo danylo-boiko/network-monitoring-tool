@@ -1,4 +1,4 @@
-namespace Nmt.Core.Enums;
+namespace Nmt.Domain.Enums;
 
 public enum PacketStatus : byte
 {

@@ -1,8 +1,8 @@
 using System.Net.Sockets;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Nmt.Core.Enums;
-using Nmt.Core.Models;
+using Nmt.Domain.Enums;
+using Nmt.Domain.Models;
 using Nmt.Grpc.Protos;
 
 namespace Nmt.Grpc.Services;
