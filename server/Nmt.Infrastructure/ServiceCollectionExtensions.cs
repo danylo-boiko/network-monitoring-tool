@@ -37,6 +37,7 @@ public static class ServiceCollectionExtensions
             o.Password.RequireDigit = true;
             o.Password.RequireLowercase = true;
             o.Password.RequireUppercase = true;
+            o.Password.RequireNonAlphanumeric = false;
             o.Password.RequiredLength = 8;
 
             o.User.RequireUniqueEmail = true;

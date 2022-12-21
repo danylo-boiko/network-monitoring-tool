@@ -9,9 +9,6 @@ import (
 	"nmt_cli/pkg/bpf"
 	"nmt_cli/pkg/grpc"
 	"nmt_cli/util"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/cilium/ebpf"
@@ -36,21 +33,20 @@ func newCmdStart(f *internal.Factory) *cobra.Command {
 		Use:   "start <protocol>",
 		Short: "Start the processing of xpd packets",
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			ifaceName := args[0]
-			iface, err := net.InterfaceByName(ifaceName)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+
+			opts.Iface, err = net.InterfaceByName(args[0])
 			if err != nil {
-				log.Fatalf("Lookup network iface %q: %s", ifaceName, err)
+				return err
 			}
 
-			opts.Iface = iface
-			opts.PrintStats, _ = cmd.Flags().GetBool("stats")
+			opts.PrintStats, err = cmd.Flags().GetBool("stats")
+			if err != nil {
+				return err
+			}
 
-			go runStart(opts)
-
-			quit := make(chan os.Signal, 1)
-			signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-			<-quit
+			return startRun(opts)
 		},
 	}
 
@@ -59,10 +55,10 @@ func newCmdStart(f *internal.Factory) *cobra.Command {
 	return cmd
 }
 
-func runStart(opts *StartOptions) {
+func startRun(opts *StartOptions) error {
 	cfg, err := opts.Config()
 	if err != nil {
-		log.Fatalf("Failed to read configuration:  %v", err)
+		return err
 	}
 
 	loader := bpf.NewBpfLoader(opts.Iface)
@@ -71,7 +67,11 @@ func runStart(opts *StartOptions) {
 
 	log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 
-	opts.GrpcClient.Connect(cfg.GrpcServerAddress)
+	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress)
+	if err != nil {
+		return err
+	}
+
 	defer opts.GrpcClient.CloseConnection()
 
 	grpcTicker := time.NewTicker(time.Duration(cfg.BpfInterval) * time.Second)
@@ -105,7 +105,9 @@ func runStart(opts *StartOptions) {
 
 		_, err := opts.GrpcClient.Packets.AddPackets(context.Background(), &grpc.AddPacketsRequest{Packets: packets})
 		if err != nil {
-			log.Fatalf("Failed to add packets: %v", err)
+			return err
 		}
 	}
+
+	return nil
 }
