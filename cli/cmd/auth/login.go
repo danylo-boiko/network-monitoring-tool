@@ -19,7 +19,7 @@ type LoginOptions struct {
 	GrpcClient  *grpc.GrpcClient
 	Credentials *util.Credentials
 
-	Config    func() (util.Config, error)
+	Config    func() (*util.Config, error)
 	MachineId func() (string, error)
 }
 
@@ -49,7 +49,10 @@ func loginRun(opts *LoginOptions) error {
 		return err
 	}
 
-	opts.GrpcClient.Connect(cfg.GrpcServerAddress)
+	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress)
+	if err != nil {
+		return err
+	}
 	defer opts.GrpcClient.CloseConnection()
 
 	username, err := readLine("Input username: ")

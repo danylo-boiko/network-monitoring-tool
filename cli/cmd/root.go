@@ -8,9 +8,11 @@ import (
 
 func NewCmdRoot() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "nmt_cli <command> <subcommand> [flags]",
-		Short: "Network monitoring tool CLI",
-		Long:  "nmt_cli - a simple CLI to inspect activity in your network",
+		Use:           "nmt_cli <command> <subcommand> [flags]",
+		Short:         "Network monitoring tool CLI",
+		Long:          "nmt_cli - a simple CLI to inspect activity in your network",
+		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 
 	factory := internal.NewFactory()

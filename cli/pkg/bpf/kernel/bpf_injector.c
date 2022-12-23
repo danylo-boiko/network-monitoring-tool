@@ -69,7 +69,7 @@ int bpf_xdp_handler(struct xdp_md *ctx) {
         return XDP_ACTION;
     }
 
-    // Check is ip blocked
+    // Check is ip blocked.
     uint ip = (uint)(iph->saddr);
     bool is_ip_blocked = bpf_map_lookup_elem(&blocked_ips_map, &ip);
     if (is_ip_blocked) {
@@ -84,7 +84,7 @@ int bpf_xdp_handler(struct xdp_md *ctx) {
     packet.protocol = iph->protocol;
     packet.status = is_ip_blocked ? Dropped : Passed;
 
-    // Add information about packet to queue
+    // Add information about packet to queue.
     int error = bpf_map_push_elem(&packets_queue, &packet, BPF_ANY);
     if (error != 0) {
         bpf_printk("An error was occurred while adding to queue (code: %i)", error);

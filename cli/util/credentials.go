@@ -55,9 +55,9 @@ func createIfNotExists() error {
 	}
 
 	filePath := getCredsFilePath()
-	var _, err = os.Stat(filePath)
+	_, err := os.Stat(filePath)
 	if os.IsNotExist(err) {
-		var file, err = os.Create(filePath)
+		file, err := os.Create(filePath)
 		if err != nil {
 			return err
 		}

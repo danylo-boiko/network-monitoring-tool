@@ -1,7 +1,7 @@
 package bpf
 
 import (
-	"log"
+	"fmt"
 	"net"
 
 	"github.com/cilium/ebpf/link"
@@ -24,23 +24,24 @@ func NewBpfLoader(iface *net.Interface) *Loader {
 	}
 }
 
-func (ldr *Loader) Load() {
+func (ldr *Loader) Load() (err error) {
 	if err := rlimit.RemoveMemlock(); err != nil {
-		log.Fatalf("Could not remove momory lock: %s", err)
+		return fmt.Errorf("could not remove momory lock: %w", err)
 	}
 
 	if err := loadBpfObjects(ldr.BpfObjects, nil); err != nil {
-		log.Fatalf("Could not load bpf objects: %s", err)
+		return fmt.Errorf("could not load bpf objects: %w", err)
 	}
 
-	var err error
 	if ldr.XdpLink, err = link.AttachXDP(link.XDPOptions{
 		Program:   ldr.BpfObjects.BpfXdpHandler,
 		Interface: ldr.Interface.Index,
 		Flags:     link.XDPGenericMode,
 	}); err != nil {
-		log.Fatalf("Could not attach XDP program: %s", err)
+		return fmt.Errorf("could not attach XDP program: %w", err)
 	}
+
+	return nil
 }
 
 func (ldr *Loader) Close() {

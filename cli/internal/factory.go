@@ -12,7 +12,7 @@ type Factory struct {
 	GrpcClient  *grpc.GrpcClient
 	Credentials *util.Credentials
 
-	Config    func() (util.Config, error)
+	Config    func() (*util.Config, error)
 	MachineId func() (string, error)
 }
 
@@ -29,8 +29,8 @@ func NewFactory() *Factory {
 	return f
 }
 
-func configFunc() func() (util.Config, error) {
-	return func() (util.Config, error) {
+func configFunc() func() (*util.Config, error) {
+	return func() (*util.Config, error) {
 		return util.LoadConfig()
 	}
 }
@@ -38,7 +38,7 @@ func configFunc() func() (util.Config, error) {
 func machineIdFunc(f *Factory) func() (string, error) {
 	cfg, err := f.Config()
 	if err != nil {
-		log.Fatalf("Failed to read configuration:  %v", err)
+		log.Fatalln(err)
 	}
 
 	return func() (string, error) {
@@ -49,7 +49,7 @@ func machineIdFunc(f *Factory) func() (string, error) {
 func newCredentials() *util.Credentials {
 	creds, err := util.ReadCredentials()
 	if err != nil {
-		log.Fatalf("Failed to reed credentials: %v", err)
+		log.Fatalln(err)
 		return nil
 	}
 

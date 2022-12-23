@@ -20,7 +20,7 @@ type StartOptions struct {
 	Iface      *net.Interface
 	PrintStats bool
 
-	Config func() (util.Config, error)
+	Config func() (*util.Config, error)
 }
 
 func newCmdStart(f *internal.Factory) *cobra.Command {
@@ -62,7 +62,9 @@ func startRun(opts *StartOptions) error {
 	}
 
 	loader := bpf.NewBpfLoader(opts.Iface)
-	loader.Load()
+	if err := loader.Load(); err != nil {
+		return err
+	}
 	defer loader.Close()
 
 	log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
@@ -71,7 +73,6 @@ func startRun(opts *StartOptions) error {
 	if err != nil {
 		return err
 	}
-
 	defer opts.GrpcClient.CloseConnection()
 
 	grpcTicker := time.NewTicker(time.Duration(cfg.BpfInterval) * time.Second)
@@ -85,7 +86,7 @@ func startRun(opts *StartOptions) error {
 
 			if err := loader.BpfObjects.PacketsQueue.LookupAndDelete(nil, packet); err != nil {
 				if !errors.Is(err, ebpf.ErrKeyNotExist) {
-					log.Fatalf("Lookup should have failed with error, %v, instead error is %v", ebpf.ErrKeyNotExist, err)
+					log.Printf("Lookup should have failed with error, %v, instead error is %v", ebpf.ErrKeyNotExist, err)
 				} else {
 					continue
 				}

@@ -15,8 +15,7 @@ func NewGrpcClient() *GrpcClient {
 	return &GrpcClient{}
 }
 
-func (gc *GrpcClient) Connect(target string) error {
-	var err error
+func (gc *GrpcClient) Connect(target string) (err error) {
 	gc.connection, err = grpc.Dial(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
