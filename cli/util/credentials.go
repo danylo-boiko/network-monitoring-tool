@@ -3,11 +3,22 @@ package util
 import (
 	"os"
 
+	"golang.org/x/net/context"
 	"gopkg.in/yaml.v3"
 )
 
 type Credentials struct {
 	JwtToken string
+}
+
+func (creds *Credentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	return map[string]string{
+		"authorization": "Bearer " + creds.JwtToken,
+	}, nil
+}
+
+func (creds *Credentials) RequireTransportSecurity() bool {
+	return false
 }
 
 func ReadCredentials() (*Credentials, error) {

@@ -49,7 +49,7 @@ func loginRun(opts *LoginOptions) error {
 		return err
 	}
 
-	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress)
+	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress, opts.Credentials)
 	if err != nil {
 		return err
 	}

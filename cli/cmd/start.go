@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/binary"
 	"errors"
 	"log"
 	"net"
@@ -16,17 +17,19 @@ import (
 )
 
 type StartOptions struct {
-	GrpcClient *grpc.GrpcClient
-	Iface      *net.Interface
-	PrintStats bool
+	GrpcClient  *grpc.GrpcClient
+	Credentials *util.Credentials
+	Iface       *net.Interface
+	PrintStats  bool
 
 	Config func() (*util.Config, error)
 }
 
 func newCmdStart(f *internal.Factory) *cobra.Command {
 	var opts = &StartOptions{
-		GrpcClient: f.GrpcClient,
-		Config:     f.Config,
+		GrpcClient:  f.GrpcClient,
+		Credentials: f.Credentials,
+		Config:      f.Config,
 	}
 
 	var cmd = &cobra.Command{
@@ -69,7 +72,7 @@ func startRun(opts *StartOptions) error {
 
 	log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 
-	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress)
+	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress, opts.Credentials)
 	if err != nil {
 		return err
 	}
@@ -93,7 +96,7 @@ func startRun(opts *StartOptions) error {
 			}
 
 			if opts.PrintStats {
-				log.Printf("IP: %d, size: %d, status: %d, protocol: %d", packet.Ip, packet.Size, packet.Status, packet.Protocol)
+				log.Printf("IP: %s, size: %d, status: %d, protocol: %d", intToIPv4(packet.Ip), packet.Size, packet.Status, packet.Protocol)
 			}
 
 			packets = append(packets, &grpc.PacketModel{
@@ -111,4 +114,12 @@ func startRun(opts *StartOptions) error {
 	}
 
 	return nil
+}
+
+func intToIPv4(ipaddr uint32) net.IP {
+	ip := make(net.IP, net.IPv4len)
+
+	binary.BigEndian.PutUint32(ip, ipaddr)
+
+	return ip
 }
