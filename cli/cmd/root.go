@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"errors"
 	"nmt_cli/internal"
+	"nmt_cli/util"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 )
 
@@ -15,10 +18,22 @@ func NewCmdRoot() *cobra.Command {
 		SilenceUsage:  true,
 	}
 
+	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if util.IsAuthCheckEnabled(cmd) && !util.IsAuthValid() {
+			return errors.New(authHelp())
+		}
+
+		return nil
+	}
+
 	factory := internal.NewFactory()
 
 	cmd.AddCommand(NewCmdAuth(factory))
 	cmd.AddCommand(newCmdStart(factory))
 
 	return cmd
+}
+
+func authHelp() string {
+	return heredoc.Doc("To get started with CLI, please run: nmt_cli auth login")
 }
