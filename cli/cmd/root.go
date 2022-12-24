@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"errors"
+	"fmt"
 	"nmt_cli/internal"
 	"nmt_cli/util"
+	"os"
 
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
@@ -19,10 +20,12 @@ func NewCmdRoot() *cobra.Command {
 	}
 
 	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		if util.IsAuthCheckEnabled(cmd) && !util.IsAuthValid() {
-			return errors.New(authHelp())
+		if util.IsAuthCheckEnabled(cmd) {
+			if err := util.ValidateAuth(); err != nil {
+				fmt.Fprintln(os.Stdout, authHelp())
+				return err
+			}
 		}
-
 		return nil
 	}
 

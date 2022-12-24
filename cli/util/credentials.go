@@ -1,8 +1,10 @@
 package util
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/net/context"
 	"gopkg.in/yaml.v3"
 )
@@ -21,22 +23,26 @@ func (creds *Credentials) RequireTransportSecurity() bool {
 	return false
 }
 
-func ReadCredentials() (*Credentials, error) {
-	if err := createIfNotExists(); err != nil {
-		return nil, err
-	}
+func (creds *Credentials) GetClaims(cfg *Config) (*jwt.StandardClaims, error) {
+	token, err := jwt.ParseWithClaims(creds.JwtToken, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+		_, success := token.Method.(*jwt.SigningMethodHMAC)
+		if !success {
+			return nil, fmt.Errorf("unexpected token signing method")
+		}
 
-	file, err := os.ReadFile(getCredsFilePath())
+		return []byte(cfg.JwtSecret), nil
+	})
+
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid token: %w", err)
 	}
 
-	var creds Credentials
-	if err := yaml.Unmarshal(file, &creds); err != nil {
-		return nil, err
+	claims, success := token.Claims.(*jwt.StandardClaims)
+	if !success {
+		return nil, fmt.Errorf("invalid token claims")
 	}
 
-	return &creds, nil
+	return claims, nil
 }
 
 func (creds *Credentials) Write() error {
@@ -58,6 +64,24 @@ func (creds *Credentials) Write() error {
 
 func (creds *Credentials) Reset() {
 	creds.JwtToken = ""
+}
+
+func ReadCredentials() (*Credentials, error) {
+	if err := createIfNotExists(); err != nil {
+		return nil, err
+	}
+
+	file, err := os.ReadFile(getCredsFilePath())
+	if err != nil {
+		return nil, err
+	}
+
+	var creds Credentials
+	if err := yaml.Unmarshal(file, &creds); err != nil {
+		return nil, err
+	}
+
+	return &creds, nil
 }
 
 func createIfNotExists() error {

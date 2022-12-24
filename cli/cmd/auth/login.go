@@ -40,6 +40,8 @@ func NewCmdLogin(f *internal.Factory) *cobra.Command {
 		},
 	}
 
+	util.DisableAuthCheck(cmd)
+
 	return cmd
 }
 

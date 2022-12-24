@@ -9,6 +9,7 @@ import (
 type Config struct {
 	AppId             string `mapstructure:"APP_ID"`
 	GrpcServerAddress string `mapstructure:"GRPC_SERVER_ADDRESS"`
+	JwtSecret         string `mapstructure:"JWT_SECRET"`
 	BpfInterval       uint32 `mapstructure:"BPF_INTERVAL"`
 }
 

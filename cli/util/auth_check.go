@@ -1,7 +1,7 @@
 package util
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/spf13/cobra"
 )
@@ -14,18 +14,31 @@ func DisableAuthCheck(cmd *cobra.Command) {
 	cmd.Annotations["skipAuthCheck"] = "true"
 }
 
-func IsAuthValid() bool {
+func ValidateAuth() error {
 	creds, err := ReadCredentials()
 	if err != nil {
-		fmt.Println(err)
-		return false
+		return err
 	}
 
-	if creds.JwtToken != "" {
-		return true
+	if creds.JwtToken == "" {
+		return errors.New("you are not authenticated (token is empty)")
 	}
 
-	return false
+	cfg, err := LoadConfig()
+	if err != nil {
+		return err
+	}
+
+	claims, err := creds.GetClaims(cfg)
+	if err != nil {
+		return err
+	}
+
+	if err = claims.Valid(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func IsAuthCheckEnabled(cmd *cobra.Command) bool {
