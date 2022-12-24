@@ -36,7 +36,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
             throw new ArgumentNullException(nameof(user), $"User with username '{request.Username}' not found");
         }
         
-        var signInResult = await _signInManager.PasswordSignInAsync(user, request.Password, true, false);
+        var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
         if (!signInResult.Succeeded)
         {

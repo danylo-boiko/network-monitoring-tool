@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/binary"
 	"errors"
 	"log"
 	"net"
@@ -9,9 +10,6 @@ import (
 	"nmt_cli/pkg/bpf"
 	"nmt_cli/pkg/grpc"
 	"nmt_cli/util"
-	"os"
-	"os/signal"
-	"syscall"
 	"time"
 
 	"github.com/cilium/ebpf"
@@ -19,38 +17,39 @@ import (
 )
 
 type StartOptions struct {
-	GrpcClient *grpc.GrpcClient
-	Iface      *net.Interface
-	PrintStats bool
+	GrpcClient  *grpc.GrpcClient
+	Credentials *util.Credentials
+	Iface       *net.Interface
+	PrintStats  bool
 
-	Config func() (util.Config, error)
+	Config func() (*util.Config, error)
 }
 
 func newCmdStart(f *internal.Factory) *cobra.Command {
 	var opts = &StartOptions{
-		GrpcClient: f.GrpcClient,
-		Config:     f.Config,
+		GrpcClient:  f.GrpcClient,
+		Credentials: f.Credentials,
+		Config:      f.Config,
 	}
 
 	var cmd = &cobra.Command{
 		Use:   "start <protocol>",
 		Short: "Start the processing of xpd packets",
 		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			ifaceName := args[0]
-			iface, err := net.InterfaceByName(ifaceName)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+
+			opts.Iface, err = net.InterfaceByName(args[0])
 			if err != nil {
-				log.Fatalf("Lookup network iface %q: %s", ifaceName, err)
+				return err
 			}
 
-			opts.Iface = iface
-			opts.PrintStats, _ = cmd.Flags().GetBool("stats")
+			opts.PrintStats, err = cmd.Flags().GetBool("stats")
+			if err != nil {
+				return err
+			}
 
-			go runStart(opts)
-
-			quit := make(chan os.Signal, 1)
-			signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
-			<-quit
+			return startRun(opts)
 		},
 	}
 
@@ -59,19 +58,24 @@ func newCmdStart(f *internal.Factory) *cobra.Command {
 	return cmd
 }
 
-func runStart(opts *StartOptions) {
+func startRun(opts *StartOptions) error {
 	cfg, err := opts.Config()
 	if err != nil {
-		log.Fatalf("Failed to read configuration:  %v", err)
+		return err
 	}
 
 	loader := bpf.NewBpfLoader(opts.Iface)
-	loader.Load()
+	if err := loader.Load(); err != nil {
+		return err
+	}
 	defer loader.Close()
 
 	log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 
-	opts.GrpcClient.Connect(cfg.GrpcServerAddress)
+	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress, opts.Credentials)
+	if err != nil {
+		return err
+	}
 	defer opts.GrpcClient.CloseConnection()
 
 	grpcTicker := time.NewTicker(time.Duration(cfg.BpfInterval) * time.Second)
@@ -85,14 +89,14 @@ func runStart(opts *StartOptions) {
 
 			if err := loader.BpfObjects.PacketsQueue.LookupAndDelete(nil, packet); err != nil {
 				if !errors.Is(err, ebpf.ErrKeyNotExist) {
-					log.Fatalf("Lookup should have failed with error, %v, instead error is %v", ebpf.ErrKeyNotExist, err)
+					log.Printf("Lookup should have failed with error, %v, instead error is %v", ebpf.ErrKeyNotExist, err)
 				} else {
 					continue
 				}
 			}
 
 			if opts.PrintStats {
-				log.Printf("IP: %d, size: %d, status: %d, protocol: %d", packet.Ip, packet.Size, packet.Status, packet.Protocol)
+				log.Printf("IP: %s, size: %d, status: %d, protocol: %d", intToIPv4(packet.Ip), packet.Size, packet.Status, packet.Protocol)
 			}
 
 			packets = append(packets, &grpc.PacketModel{
@@ -105,7 +109,17 @@ func runStart(opts *StartOptions) {
 
 		_, err := opts.GrpcClient.Packets.AddPackets(context.Background(), &grpc.AddPacketsRequest{Packets: packets})
 		if err != nil {
-			log.Fatalf("Failed to add packets: %v", err)
+			return err
 		}
 	}
+
+	return nil
+}
+
+func intToIPv4(ipaddr uint32) net.IP {
+	ip := make(net.IP, net.IPv4len)
+
+	binary.BigEndian.PutUint32(ip, ipaddr)
+
+	return ip
 }

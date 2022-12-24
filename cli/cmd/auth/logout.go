@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"nmt_cli/internal"
 	"nmt_cli/util"
 
@@ -30,14 +29,9 @@ func NewCmdLogout(f *internal.Factory) *cobra.Command {
 }
 
 func logoutRun(opts *LogoutOptions) error {
-	if opts.Credentials.JwtToken == "" {
-		return errors.New("you are not authenticated")
-	}
-
 	opts.Credentials.Reset()
 	if err := opts.Credentials.Write(); err != nil {
 		return err
 	}
-
 	return nil
 }

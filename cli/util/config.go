@@ -1,23 +1,31 @@
 package util
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	AppId             string `mapstructure:"APP_ID"`
 	GrpcServerAddress string `mapstructure:"GRPC_SERVER_ADDRESS"`
+	JwtSecret         string `mapstructure:"JWT_SECRET"`
 	BpfInterval       uint32 `mapstructure:"BPF_INTERVAL"`
 }
 
-func LoadConfig() (config Config, err error) {
+func LoadConfig() (*Config, error) {
+	var config Config
 	viper.SetConfigFile("app.env")
 
 	viper.AutomaticEnv()
 
-	err = viper.ReadInConfig()
-	if err != nil {
-		return
+	if err := viper.ReadInConfig(); err != nil {
+		return nil, fmt.Errorf("failed to read configuration: %w", err)
 	}
 
-	err = viper.Unmarshal(&config)
-	return
+	if err := viper.Unmarshal(&config); err != nil {
+		return nil, fmt.Errorf("failed to read configuration: %w", err)
+	}
+
+	return &config, nil
 }

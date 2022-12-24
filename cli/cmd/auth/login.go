@@ -19,7 +19,7 @@ type LoginOptions struct {
 	GrpcClient  *grpc.GrpcClient
 	Credentials *util.Credentials
 
-	Config    func() (util.Config, error)
+	Config    func() (*util.Config, error)
 	MachineId func() (string, error)
 }
 
@@ -40,6 +40,8 @@ func NewCmdLogin(f *internal.Factory) *cobra.Command {
 		},
 	}
 
+	util.DisableAuthCheck(cmd)
+
 	return cmd
 }
 
@@ -49,7 +51,10 @@ func loginRun(opts *LoginOptions) error {
 		return err
 	}
 
-	opts.GrpcClient.Connect(cfg.GrpcServerAddress)
+	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress, opts.Credentials)
+	if err != nil {
+		return err
+	}
 	defer opts.GrpcClient.CloseConnection()
 
 	username, err := readLine("Input username: ")

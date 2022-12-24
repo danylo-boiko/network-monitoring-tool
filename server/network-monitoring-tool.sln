@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nmt.Infrastructure", "Nmt.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nmt.Domain", "Nmt.Domain\Nmt.Domain.csproj", "{433FE910-16D3-48AD-80EA-67C3902A3A4F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nmt.GraphQL", "Nmt.GraphQL\Nmt.GraphQL.csproj", "{C877D76D-4F15-457E-B62F-631FFD30C92E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{433FE910-16D3-48AD-80EA-67C3902A3A4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{433FE910-16D3-48AD-80EA-67C3902A3A4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{433FE910-16D3-48AD-80EA-67C3902A3A4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C877D76D-4F15-457E-B62F-631FFD30C92E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C877D76D-4F15-457E-B62F-631FFD30C92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C877D76D-4F15-457E-B62F-631FFD30C92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C877D76D-4F15-457E-B62F-631FFD30C92E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

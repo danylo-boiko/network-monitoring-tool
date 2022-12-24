@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"log"
+	"nmt_cli/util"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -17,15 +17,17 @@ func NewGrpcClient() *GrpcClient {
 	return &GrpcClient{}
 }
 
-func (gc *GrpcClient) Connect(target string) {
-	var err error
-	gc.connection, err = grpc.Dial(target, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func (gc *GrpcClient) Connect(target string, creds *util.Credentials) (err error) {
+	TSLCreds := insecure.NewCredentials()
+	gc.connection, err = grpc.Dial(target, grpc.WithTransportCredentials(TSLCreds), grpc.WithPerRPCCredentials(creds))
 	if err != nil {
-		log.Fatalf("Failed to connect: %v", err)
+		return err
 	}
 
 	gc.Packets = NewPacketsClient(gc.connection)
 	gc.Auth = NewAuthClient(gc.connection)
+
+	return nil
 }
 
 func (gc *GrpcClient) CloseConnection() {
