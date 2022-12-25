@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
@@ -18,40 +19,63 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
     private readonly PostgresDbContext _dbContext;
     private readonly UserManager<User> _userManager;
     private readonly IMediator _mediator;
+    private readonly ILogger<RegisterCommandHandler> _logger;
 
-    public RegisterCommandHandler(PostgresDbContext dbContext, UserManager<User> userManager, IMediator mediator)
+    public RegisterCommandHandler(
+        PostgresDbContext dbContext, 
+        UserManager<User> userManager, 
+        IMediator mediator, 
+        ILogger<RegisterCommandHandler> logger)
     {
         _dbContext = dbContext;
         _userManager = userManager;
         _mediator = mediator;
+        _logger = logger;
     }
-    
+
     public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var isUsernameDuplicated = await _dbContext.Users.AnyAsync(u => u.UserName == request.Username, cancellationToken);
-
-        if (isUsernameDuplicated)
+        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        try
         {
-            throw new ArgumentException($"User with username '{request.Username}' already exists");
+            var isUsernameDuplicated = await _dbContext.Users.AnyAsync(u => u.UserName == request.Username, cancellationToken);
+            if (isUsernameDuplicated)
+            {
+                throw new ArgumentException($"User with username '{request.Username}' already exists");
+            }
+
+            var isEmailDuplicated = await _dbContext.Users.AnyAsync(u => u.Email == request.Email, cancellationToken);
+            if (isEmailDuplicated)
+            {
+                throw new ArgumentException($"User with email '{request.Email}' already exists");
+            }
+
+            var user = new User
+            {
+                UserName = request.Username,
+                Email = request.Email
+            };
+
+            var registerResult = await _userManager.CreateAsync(user, request.Password);
+            if (!registerResult.Succeeded)
+            {
+                var err = registerResult.Errors.First();
+                throw new Exception($"{err.Description}, {err.Code}");
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            return await _mediator.Send(new CreateTokenCommand
+            {
+                User = user,
+                DeviceId = null
+            }, cancellationToken);
         }
-
-        var user = new User
+        catch (Exception e)
         {
-            UserName = request.Username,
-            Email = request.Email
-        };
-
-        var registerResult = await _userManager.CreateAsync(user, request.Password);
-
-        if (!registerResult.Succeeded)
-        {
-            var err = registerResult.Errors.First();
-            throw new Exception($"{err.Description}, {err.Code}");
+            _logger.LogError(e.Message);
+            return string.Empty;
         }
-
-        return await _mediator.Send(new CreateTokenCommand
-        {
-            User = user
-        }, cancellationToken);
     }
 }

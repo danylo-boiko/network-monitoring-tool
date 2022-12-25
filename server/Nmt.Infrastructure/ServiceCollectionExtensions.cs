@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Mongo;
+using Nmt.Infrastructure.Data.Mongo.Extensions;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Infrastructure;
@@ -22,9 +23,12 @@ public static class ServiceCollectionExtensions
         {
             var settings = provider.GetRequiredService<MongoDbSettings>();
             var mongoConnectionString = configuration.GetConnectionString("Mongo");
-            
+
             var client = new MongoClient(mongoConnectionString);
-            return client.GetDatabase(settings.DatabaseName);
+            var database = client.GetDatabase(settings.DatabaseName);
+            database.ApplyIndexesConfiguration(settings);
+
+            return database;
         });
         
         return services;

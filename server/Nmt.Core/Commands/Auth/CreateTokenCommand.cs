@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Nmt.Domain.Configs;
+using Nmt.Domain.Consts;
 using Nmt.Domain.Models;
 
 namespace Nmt.Core.Commands.Auth;
@@ -12,13 +13,14 @@ namespace Nmt.Core.Commands.Auth;
 public record CreateTokenCommand : IRequest<string>
 {
     public User User { get; set; }
+    public Guid? DeviceId { get; set; }
 }
 
 public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, string>
 {
     private readonly UserManager<User> _userManager;
     private readonly JwtConfig _jwtConfig;
-    
+
     public CreateTokenCommandHandler(UserManager<User> userManager, JwtConfig jwtConfig)
     {
         _userManager = userManager;
@@ -28,8 +30,8 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, str
     public async Task<string> Handle(CreateTokenCommand request, CancellationToken cancellationToken)
     {
         var signingCredentials = GetSigningCredentials();
-        var claims = await GetClaims(request.User);
-       
+        var claims = await GetClaims(request.User, request.DeviceId);
+
         var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
         return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
     }
@@ -42,11 +44,12 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, str
         return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
     }
 
-    private async Task<IList<Claim>> GetClaims(User user)
+    private async Task<IList<Claim>> GetClaims(User user, Guid? deviceId)
     {
         var claims = new List<Claim>
         {
-            new (ClaimTypes.Name, user.UserName)
+            new (AuthClaims.UserId, user.Id.ToString()),
+            new (AuthClaims.DeviceId, deviceId?.ToString() ?? string.Empty)
         };
 
         var roles = await _userManager.GetRolesAsync(user);
