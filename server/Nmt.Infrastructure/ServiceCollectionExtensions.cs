@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
 
             return database;
         });
-        
+
         return services;
     }
 

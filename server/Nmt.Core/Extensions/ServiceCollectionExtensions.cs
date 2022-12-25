@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Nmt.Domain.Configs;
+using Nmt.Domain.Consts;
 
 namespace Nmt.Core.Extensions;
 
@@ -14,21 +15,31 @@ public static class ServiceCollectionExtensions
         var jwtConfig = configuration.GetSection(nameof(JwtConfig)).Get<JwtConfig>();
         services.AddSingleton(jwtConfig!);
 
-        services.AddAuthentication(opt => 
+        services.AddAuthentication(opts => 
         {
-            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(options => 
+        .AddJwtBearer(opts => 
         {
-            options.TokenValidationParameters = new TokenValidationParameters
+            opts.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
+                ValidateAudience = false,
                 ValidIssuer = jwtConfig.ValidIssuer,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Secret))
             };
+        });
+
+        services.AddAuthorization(opts =>
+        {
+            opts.AddPolicy(JwtBearerDefaults.AuthenticationScheme, policy =>
+            {
+                policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+                policy.RequireClaim(AuthClaims.UserId);
+            });
         });
 
         return services;

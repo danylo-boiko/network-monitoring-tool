@@ -8,17 +8,19 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-services.AddInfrastructure(configuration);
-services.AddMediatR(typeof(MediatREntryPoint).Assembly);
-services.ConfigureIdentity();
-services.ConfigureJwt(configuration);
-services.AddGrpc();
+services
+    .AddInfrastructure(configuration)
+    .AddMediatR(typeof(MediatREntryPoint).Assembly)
+    .ConfigureIdentity()
+    .ConfigureJwt(configuration)
+    .AddGrpc();
 
 var app = builder.Build();
 
 app.UseRouting();
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapGrpcService<AuthService>();
 app.MapGrpcService<PacketsService>();
