@@ -7,9 +7,7 @@ namespace Nmt.Domain.Models;
 
 public class Packet
 {
-    [BsonRepresentation(BsonType.ObjectId)]
     public Guid Id { get; set; }
-    [BsonRepresentation(BsonType.ObjectId)]
     public Guid DeviceId { get; set; }
     [BsonRepresentation(BsonType.Int64)]
     public uint Ip { get; set; }
