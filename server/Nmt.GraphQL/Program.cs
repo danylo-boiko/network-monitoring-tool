@@ -15,7 +15,7 @@ services
     .ConfigureIdentity()
     .ConfigureJwt(configuration)
     .AddGraphQLServer()
-    .AddQueryType<Packets>()
+    .AddQueryType<Users>()
     .AddMutationType<Auth>();
 
 var app = builder.Build();

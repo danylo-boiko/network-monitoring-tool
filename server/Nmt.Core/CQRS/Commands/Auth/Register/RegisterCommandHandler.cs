@@ -2,17 +2,11 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nmt.Core.CQRS.Commands.Auth.CreateToken;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
-namespace Nmt.Core.Commands.Auth;
-
-public record RegisterCommand : IRequest<string>
-{
-    public string Username { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-}
+namespace Nmt.Core.CQRS.Commands.Auth.Register;
 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
 {

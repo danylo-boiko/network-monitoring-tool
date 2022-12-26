@@ -3,8 +3,6 @@ using System.Security.Claims;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
-using MongoDB.Driver;
-using Nmt.Domain.Configs;
 using Nmt.Domain.Consts;
 using Nmt.Domain.Enums;
 using Nmt.Domain.Models;

@@ -1,5 +1,6 @@
 using MediatR;
-using Nmt.Core.Commands.Auth;
+using Nmt.Core.CQRS.Commands.Auth.Login;
+using Nmt.Core.CQRS.Commands.Auth.Register;
 
 namespace Nmt.GraphQL.Mutations;
 

@@ -1,6 +1,6 @@
 using Grpc.Core;
 using MediatR;
-using Nmt.Core.Commands.Auth;
+using Nmt.Core.CQRS.Commands.Auth.Login;
 using Nmt.Grpc.Protos;
 
 namespace Nmt.Grpc.Services;

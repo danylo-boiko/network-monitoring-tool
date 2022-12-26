@@ -8,13 +8,7 @@ using Nmt.Domain.Configs;
 using Nmt.Domain.Consts;
 using Nmt.Domain.Models;
 
-namespace Nmt.Core.Commands.Auth;
-
-public record CreateTokenCommand : IRequest<string>
-{
-    public User User { get; set; }
-    public Guid? DeviceId { get; set; }
-}
+namespace Nmt.Core.CQRS.Commands.Auth.CreateToken;
 
 public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, string>
 {

@@ -2,18 +2,11 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Nmt.Core.CQRS.Commands.Auth.CreateToken;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
-namespace Nmt.Core.Commands.Auth;
-
-public record LoginCommand : IRequest<string>
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
-    public string Hostname { get; set; }
-    public string MachineSpecificStamp { get; set; }
-}
+namespace Nmt.Core.CQRS.Commands.Auth.Login;
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
 {
@@ -42,7 +35,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Username, cancellationToken);
             if (user == null)
             {
-                throw new ArgumentNullException(nameof(user), $"User with username '{request.Username}' not found");
+                throw new ArgumentException($"User with username '{request.Username}' not found");
             }
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
