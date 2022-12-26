@@ -22,4 +22,8 @@
       <ProjectReference Include="..\Nmt.Infrastructure\Nmt.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Queries" />
+    </ItemGroup>
+
 </Project>

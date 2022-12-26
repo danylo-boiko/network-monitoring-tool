@@ -1,6 +1,6 @@
-namespace Nmt.Infrastructure.Data.Mongo;
+namespace Nmt.Domain.Configs;
 
-public class MongoDbSettings
+public class MongoDbConfig
 {
     public string DatabaseName { get; set; }
     public string PacketsCollectionName { get; set; }

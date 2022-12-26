@@ -4,6 +4,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using MongoDB.Driver;
+using Nmt.Domain.Configs;
 using Nmt.Domain.Consts;
 using Nmt.Domain.Enums;
 using Nmt.Domain.Models;
@@ -15,11 +16,11 @@ namespace Nmt.Grpc.Services;
 [Authorize]
 public class PacketsService : Packets.PacketsBase
 {
-    private readonly IMongoCollection<Packet> _packetsCollection;
+    private readonly MongoDbContext _mongoDbContext;
 
-    public PacketsService(IMongoDatabase mongoDatabase, MongoDbSettings mongoDbSettings)
+    public PacketsService(MongoDbContext mongoDbContext)
     {
-        _packetsCollection = mongoDatabase.GetCollection<Packet>(mongoDbSettings.PacketsCollectionName);
+        _mongoDbContext = mongoDbContext;
     }
 
     public override async Task<Empty> AddPackets(AddPacketsRequest request, ServerCallContext context)
@@ -35,7 +36,7 @@ public class PacketsService : Packets.PacketsBase
             Status = (PacketStatus)pm.Status
         });
 
-        await _packetsCollection.InsertManyAsync(packets, cancellationToken: context.CancellationToken);
+        await _mongoDbContext.Packets.InsertManyAsync(packets, cancellationToken: context.CancellationToken);
 
         return new Empty();
     }

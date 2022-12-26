@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using Nmt.Domain.Configs;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Mongo;
-using Nmt.Infrastructure.Data.Mongo.Extensions;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Infrastructure;
@@ -16,19 +16,15 @@ public static class ServiceCollectionExtensions
         var postgresConnectionString = configuration.GetConnectionString("Postgres");
         services.AddNpgsql<PostgresDbContext>(postgresConnectionString);
 
-        var mongoDbSettings = configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-        services.AddSingleton(mongoDbSettings!);
+        var mongoConnectionString = configuration.GetConnectionString("Mongo");
+        var mongoDbConfig = configuration.GetSection(nameof(MongoDbConfig)).Get<MongoDbConfig>();
 
-        services.AddTransient<IMongoDatabase>(provider =>
+        services.AddTransient<MongoDbContext>(_ =>
         {
-            var settings = provider.GetRequiredService<MongoDbSettings>();
-            var mongoConnectionString = configuration.GetConnectionString("Mongo");
-
             var client = new MongoClient(mongoConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
-            database.ApplyIndexesConfiguration(settings);
+            var database = client.GetDatabase(mongoDbConfig!.DatabaseName);
 
-            return database;
+            return new MongoDbContext(database, mongoDbConfig);
         });
 
         return services;

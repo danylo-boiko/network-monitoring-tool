@@ -13,6 +13,6 @@ public class Auth
     }
 
     public async Task<string> Login(LoginCommand input) => await _mediator.Send(input);
-    
+
     public async Task<string> Register(RegisterCommand input) => await _mediator.Send(input);
 }
