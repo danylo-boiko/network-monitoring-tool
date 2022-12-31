@@ -48,7 +48,7 @@ public class CreateTokenCommandHandler : IRequestHandler<CreateTokenCommand, str
 
         var roles = await _userManager.GetRolesAsync(user);
 
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(roles.Select(role => new Claim(AuthClaims.Role, role)));
 
         return claims;
     }

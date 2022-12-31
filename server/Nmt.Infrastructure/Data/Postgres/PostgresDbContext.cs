@@ -18,6 +18,8 @@ public class PostgresDbContext : IdentityDbContext<User, Role, Guid>
     {
         base.OnModelCreating(builder);
 
-        builder.ApplyEntityTypesConfigurations();
+        builder
+            .ApplyEntityTypesConfigurations()
+            .SeedRoles();
     }
 }

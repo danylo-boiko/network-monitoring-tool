@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nmt.Core.CQRS.Commands.Auth.CreateToken;
+using Nmt.Domain.Consts;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
@@ -56,6 +57,8 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
                 var err = registerResult.Errors.First();
                 throw new Exception($"{err.Description}, {err.Code}");
             }
+
+            await _userManager.AddToRoleAsync(user, UserRoles.User);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);

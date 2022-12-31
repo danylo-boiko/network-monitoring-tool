@@ -202,6 +202,26 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("193ce9c4-f743-48ab-8660-7b3323216dd8"),
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = new Guid("1cc31fd8-28c8-450f-8161-b982f556eba5"),
+                            Name = "Moderator",
+                            NormalizedName = "MODERATOR"
+                        },
+                        new
+                        {
+                            Id = new Guid("e1dbfe39-2dc0-4723-8af5-abec8f7906ab"),
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Nmt.Domain.Models.User", b =>

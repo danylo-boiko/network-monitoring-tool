@@ -1,8 +1,10 @@
+using HotChocolate.AspNetCore.Authorization;
 using MediatR;
 using Nmt.Core.CQRS.Queries.Users.GetUserById;
 
 namespace Nmt.GraphQL.Queries;
 
+[Authorize]
 public class Users
 {
     private readonly IMediator _mediator;
