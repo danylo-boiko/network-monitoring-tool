@@ -15,6 +15,7 @@ services
     .ConfigureIdentity()
     .ConfigureJwt(configuration)
     .AddGraphQLServer()
+    .AddAuthorization()
     .AddQueryType<Users>()
     .AddMutationType<Auth>();
 
