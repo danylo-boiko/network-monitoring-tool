@@ -16,15 +16,25 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Executi
 
     public async Task<ExecutionResult<UserDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var userDto = await _dbContext.Users
-            .Where(u => u.Id == request.UserId)
-            .Select(u => new UserDto
+        var userQuery =
+            from user in _dbContext.Users
+            join device in _dbContext.Devices on user.Id equals device.UserId into devices
+            where user.Id == request.UserId
+            select new UserDto()
             {
-                Id = u.Id,
-                Username = u.UserName!,
-                Email = u.Email!
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+                Id = user.Id,
+                Username = user.UserName,
+                Email = user.Email,
+                Devices = devices.Select(device => new UserDto.UserDeviceDto
+                {
+                    Id = device.Id,
+                    Hostname = device.Hostname,
+                    MachineSpecificStamp = device.MachineSpecificStamp,
+                    CreatedAt = device.CreatedAt
+                }).ToList()
+            };
+
+        var userDto = await userQuery.FirstOrDefaultAsync(cancellationToken);
 
         if (userDto == null)
         {

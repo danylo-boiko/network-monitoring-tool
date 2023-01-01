@@ -39,7 +39,8 @@ public class PacketsService : Packets.PacketsBase
                 Ip = pm.Ip,
                 Size = pm.Size,
                 Protocol = (ProtocolType)pm.Protocol,
-                Status = (PacketStatus)pm.Status
+                Status = (PacketStatus)pm.Status,
+                CreatedAt = DateTime.UtcNow
             }).ToList()
         }, context.CancellationToken);
 

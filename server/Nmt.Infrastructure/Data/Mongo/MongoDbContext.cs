@@ -22,7 +22,8 @@ public class MongoDbContext
     private void OnModelCreating()
     {
         var packetsBuilder = Builders<Packet>.IndexKeys;
-        var indexModel = new CreateIndexModel<Packet>(packetsBuilder.Ascending(p => p.DeviceId));
+        var indexKeys = packetsBuilder.Ascending(p => p.DeviceId).Ascending(p => p.CreatedAt);
+        var indexModel = new CreateIndexModel<Packet>(indexKeys);
         Packets.Indexes.CreateOne(indexModel);
     }
 }

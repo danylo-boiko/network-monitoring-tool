@@ -7,6 +7,6 @@ public record LoginCommand : IRequest<ExecutionResult<string>>
 {
     public string Username { get; set; }
     public string Password { get; set; }
-    public string Hostname { get; set; }
-    public string MachineSpecificStamp { get; set; }
+    public string? Hostname { get; set; }
+    public string? MachineSpecificStamp { get; set; }
 }
