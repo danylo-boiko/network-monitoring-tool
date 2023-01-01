@@ -45,19 +45,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
                 return new ExecutionResult<string>(new ErrorInfo("Provided incorrect password"));
             }
 
-            var device = await _dbContext.Devices.FirstOrDefaultAsync(d => d.UserId == user.Id && d.MachineSpecificStamp == request.MachineSpecificStamp, cancellationToken);
-            if (device == null)
-            {
-                device = new Device
-                {
-                    UserId = user.Id,
-                    Hostname = request.Hostname,
-                    MachineSpecificStamp = request.MachineSpecificStamp,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                await _dbContext.Devices.AddAsync(device, cancellationToken);
-            }
+            var deviceId = await GetOrCreateDevice(user.Id, request.Hostname, request.MachineSpecificStamp, cancellationToken);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
@@ -65,7 +53,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
             var jwtToken =  await _mediator.Send(new CreateTokenCommand
             {
                 UserId = user.Id,
-                DeviceId = device.Id
+                DeviceId = deviceId
             }, cancellationToken);
 
             return new ExecutionResult<string>(jwtToken);
@@ -75,6 +63,31 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
             _logger.LogError(e.Message);
             return new ExecutionResult<string>(new ErrorInfo(e.Message));
         }
+    }
+
+    private async Task<Guid?> GetOrCreateDevice(Guid userId, string? hostname, string? machineSpecificStamp, CancellationToken cancellationToken)
+    {
+        if (hostname == null || machineSpecificStamp == null)
+        {
+            return null;
+        }
+        
+        var device = await _dbContext.Devices.FirstOrDefaultAsync(d => d.UserId == userId && d.MachineSpecificStamp == machineSpecificStamp, cancellationToken);
+
+        if (device == null)
+        {
+            device = new Device
+            {
+                UserId = userId,
+                Hostname = hostname,
+                MachineSpecificStamp = machineSpecificStamp,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _dbContext.Devices.AddAsync(device, cancellationToken);
+        }
+
+        return device.Id;
     }
 }
 

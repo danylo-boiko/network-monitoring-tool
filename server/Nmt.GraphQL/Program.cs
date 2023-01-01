@@ -1,6 +1,7 @@
 using MediatR;
 using Nmt.Core;
 using Nmt.Core.Extensions;
+using Nmt.GraphQL;
 using Nmt.GraphQL.Mutations;
 using Nmt.GraphQL.Queries;
 using Nmt.Infrastructure;
@@ -15,7 +16,11 @@ services
     .ConfigureIdentity()
     .ConfigureJwt(configuration)
     .AddGraphQLServer()
-    .AddQueryType<Users>()
+    .AddAuthorization()
+    .AddErrorFilter<ErrorFilter>()
+    .AddQueryType(q => q.Name("Query"))
+    .AddType<Users>()
+    .AddType<Packets>()
     .AddMutationType<Auth>();
 
 var app = builder.Build();
