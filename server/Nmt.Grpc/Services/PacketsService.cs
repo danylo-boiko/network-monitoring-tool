@@ -1,35 +1,47 @@
 using System.Net.Sockets;
+using System.Security.Claims;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Nmt.Core.CQRS.Commands.Packets.CreatePackets;
+using Nmt.Domain.Consts;
 using Nmt.Domain.Enums;
 using Nmt.Domain.Models;
 using Nmt.Grpc.Protos;
 
 namespace Nmt.Grpc.Services;
 
+[Authorize]
 public class PacketsService : Packets.PacketsBase
 {
-    private readonly ILogger<PacketsService> _logger;
+    private readonly IMediator _mediator;
 
-    public PacketsService(ILogger<PacketsService> logger)
+    public PacketsService(IMediator mediator)
     {
-        _logger = logger;
+        _mediator = mediator;
     }
 
     public override async Task<Empty> AddPackets(AddPacketsRequest request, ServerCallContext context)
     {
-        var castedModels = request.Packets.Select(r => new Packet
-        {
-            Ip = r.Ip,
-            Size = r.Size,
-            Protocol = (ProtocolType)r.Protocol,
-            Status = (PacketStatus)r.Status
-        }).ToList();
+        var deviceIdClaim = context.GetHttpContext().User.FindFirstValue(AuthClaims.DeviceId);
 
-        foreach (var packet in castedModels)
+        if (!Guid.TryParse(deviceIdClaim, out Guid deviceId))
         {
-            _logger.LogInformation($"Ip: {packet.Ip}, size: {packet.Size}, status: {packet.Status}, protocol: {packet.Protocol}");
+            throw new RpcException(new Status(StatusCode.Unauthenticated, "Device id missed in your access token"));
         }
+
+        await _mediator.Send(new CreatePacketsCommand
+        {
+            Packets = request.Packets.Select(pm => new Packet
+            {
+                DeviceId = deviceId,
+                Ip = pm.Ip,
+                Size = pm.Size,
+                Protocol = (ProtocolType)pm.Protocol,
+                Status = (PacketStatus)pm.Status
+            }).ToList()
+        }, context.CancellationToken);
 
         return new Empty();
     }

@@ -4,6 +4,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Nmt.Infrastructure.Data.Postgres.Migrations
 {
     /// <inheritdoc />
@@ -59,7 +61,8 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RoleId = table.Column<Guid>(type: "uuid", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                    ClaimValue = table.Column<string>(type: "text", nullable: true),
+                    Discriminator = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -157,6 +160,85 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "BlockedIps",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Ip = table.Column<long>(type: "bigint", nullable: false),
+                    Reason = table.Column<string>(type: "text", nullable: true),
+                    BlockedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlockedIps", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BlockedIps_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Devices",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Hostname = table.Column<string>(type: "text", nullable: false),
+                    MachineSpecificStamp = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Devices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Devices_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44"), null, "User", "USER" },
+                    { new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0"), null, "Admin", "ADMIN" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoleClaims",
+                columns: new[] { "Id", "ClaimType", "ClaimValue", "Discriminator", "RoleId" },
+                values: new object[,]
+                {
+                    { 22, "Permissions", "1", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 23, "Permissions", "2", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 24, "Permissions", "3", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 25, "Permissions", "5", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 26, "Permissions", "6", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 27, "Permissions", "9", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 28, "Permissions", "10", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 29, "Permissions", "11", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 30, "Permissions", "12", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 31, "Permissions", "1", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 32, "Permissions", "2", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 33, "Permissions", "3", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 34, "Permissions", "4", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 35, "Permissions", "5", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 36, "Permissions", "6", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 37, "Permissions", "7", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 38, "Permissions", "8", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 39, "Permissions", "9", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 40, "Permissions", "10", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 41, "Permissions", "11", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 42, "Permissions", "12", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -189,10 +271,30 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_Email",
+                table: "AspNetUsers",
+                column: "Email");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_UserName",
+                table: "AspNetUsers",
+                column: "UserName");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlockedIps_UserId",
+                table: "BlockedIps",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Devices_UserId_MachineSpecificStamp",
+                table: "Devices",
+                columns: new[] { "UserId", "MachineSpecificStamp" });
         }
 
         /// <inheritdoc />
@@ -212,6 +314,12 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "BlockedIps");
+
+            migrationBuilder.DropTable(
+                name: "Devices");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

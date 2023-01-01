@@ -1,6 +1,7 @@
 using Grpc.Core;
 using MediatR;
-using Nmt.Core.Commands.Auth;
+using Nmt.Core.CQRS.Commands.Auth.Login;
+using Nmt.Core.Extensions;
 using Nmt.Grpc.Protos;
 
 namespace Nmt.Grpc.Services;
@@ -16,7 +17,7 @@ public class AuthService : Auth.AuthBase
 
     public override async Task<AuthResponse> Login(LoginRequest request, ServerCallContext context)
     {
-        var jwtToken = await _mediator.Send(new LoginCommand
+        var jwtTokenResult = await _mediator.Send(new LoginCommand
         {
             Username = request.Username,
             Password = request.Password,
@@ -24,9 +25,14 @@ public class AuthService : Auth.AuthBase
             MachineSpecificStamp = request.MachineSpecificStamp
         }, context.CancellationToken);
 
+        if (!jwtTokenResult.Success)
+        {
+            throw jwtTokenResult.ToGrpcException(StatusCode.NotFound);
+        }
+
         return new AuthResponse
         {
-            Token = jwtToken
+            Token = jwtTokenResult.Value
         };
     }
 }
