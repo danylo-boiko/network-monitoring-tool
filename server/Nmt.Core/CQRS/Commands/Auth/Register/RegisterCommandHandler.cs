@@ -1,3 +1,4 @@
+using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.Auth.Register;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ExecutionResult<string>>
 {
     private readonly PostgresDbContext _dbContext;
     private readonly UserManager<User> _userManager;
@@ -28,7 +29,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
         _logger = logger;
     }
 
-    public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<ExecutionResult<string>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
         try
@@ -36,13 +37,13 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
             var isUsernameDuplicated = await _dbContext.Users.AnyAsync(u => u.UserName == request.Username, cancellationToken);
             if (isUsernameDuplicated)
             {
-                throw new ArgumentException($"User with username '{request.Username}' already exists");
+                return new ExecutionResult<string>(new ErrorInfo($"User with username '{request.Username}' already exists"));
             }
 
             var isEmailDuplicated = await _dbContext.Users.AnyAsync(u => u.Email == request.Email, cancellationToken);
             if (isEmailDuplicated)
             {
-                throw new ArgumentException($"User with email '{request.Email}' already exists");
+                return new ExecutionResult<string>(new ErrorInfo($"User with email '{request.Email}' already exists"));
             }
 
             var user = new User
@@ -55,7 +56,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
             if (!registerResult.Succeeded)
             {
                 var err = registerResult.Errors.First();
-                throw new Exception($"{err.Description}, {err.Code}");
+                return new ExecutionResult<string>(new ErrorInfo(err.Code, err.Description));
             }
 
             await _userManager.AddToRoleAsync(user, UserRoles.User);
@@ -63,16 +64,18 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            return await _mediator.Send(new CreateTokenCommand
+            var jwtToken = await _mediator.Send(new CreateTokenCommand
             {
-                User = user,
+                UserId = user.Id,
                 DeviceId = null
             }, cancellationToken);
+
+            return new ExecutionResult<string>(jwtToken);
         }
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            return string.Empty;
+            return new ExecutionResult<string>(new ErrorInfo(e.Message));
         }
     }
 }

@@ -18,7 +18,7 @@ public class MongoDbContext
 
         OnModelCreating();
     }
-    
+
     private void OnModelCreating()
     {
         var packetsBuilder = Builders<Packet>.IndexKeys;

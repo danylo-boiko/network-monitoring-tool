@@ -1,3 +1,4 @@
+using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.Auth.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult<string>>
 {
     private readonly PostgresDbContext _dbContext;
     private readonly SignInManager<User> _signInManager;
@@ -27,7 +28,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
         _logger = logger;
     }
 
-    public async Task<string> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<ExecutionResult<string>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
         try
@@ -35,13 +36,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Username, cancellationToken);
             if (user == null)
             {
-                throw new ArgumentException($"User with username '{request.Username}' not found");
+                return new ExecutionResult<string>(new ErrorInfo($"User with username '{request.Username}' not found"));
             }
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (!signInResult.Succeeded)
             {
-                throw new ArgumentException("Provided incorrect password");
+                return new ExecutionResult<string>(new ErrorInfo("Provided incorrect password"));
             }
 
             var device = await _dbContext.Devices.FirstOrDefaultAsync(d => d.UserId == user.Id && d.MachineSpecificStamp == request.MachineSpecificStamp, cancellationToken);
@@ -61,16 +62,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            return await _mediator.Send(new CreateTokenCommand
+            var jwtToken =  await _mediator.Send(new CreateTokenCommand
             {
-                User = user,
+                UserId = user.Id,
                 DeviceId = device.Id
             }, cancellationToken);
+
+            return new ExecutionResult<string>(jwtToken);
         }
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            return String.Empty;
+            return new ExecutionResult<string>(new ErrorInfo(e.Message));
         }
     }
 }

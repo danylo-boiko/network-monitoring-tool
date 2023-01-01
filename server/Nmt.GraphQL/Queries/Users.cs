@@ -1,18 +1,20 @@
-using HotChocolate.AspNetCore.Authorization;
 using MediatR;
 using Nmt.Core.CQRS.Queries.Users.GetUserById;
+using Nmt.Core.Extensions;
 
 namespace Nmt.GraphQL.Queries;
 
-[Authorize]
 public class Users
 {
-    private readonly IMediator _mediator;
-
-    public Users(IMediator mediator)
+    public async Task<UserDto> GetUserById([Service] IMediator mediator, GetUserByIdQuery input)
     {
-        _mediator = mediator;
-    }
+        var userResult = await mediator.Send(input);
 
-    public async Task<UserDto> GetUserById(GetUserByIdQuery input) => await _mediator.Send(input);
+        if (!userResult.Success)
+        {
+            throw userResult.ToGraphQLException();
+        }
+
+        return userResult.Value;
+    }
 }

@@ -2,39 +2,46 @@ using System.Net.Sockets;
 using System.Security.Claims;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Nmt.Core.CQRS.Commands.Packets.CreatePackets;
 using Nmt.Domain.Consts;
 using Nmt.Domain.Enums;
 using Nmt.Domain.Models;
 using Nmt.Grpc.Protos;
-using Nmt.Infrastructure.Data.Mongo;
 
 namespace Nmt.Grpc.Services;
 
 [Authorize]
 public class PacketsService : Packets.PacketsBase
 {
-    private readonly MongoDbContext _mongoDbContext;
+    private readonly IMediator _mediator;
 
-    public PacketsService(MongoDbContext mongoDbContext)
+    public PacketsService(IMediator mediator)
     {
-        _mongoDbContext = mongoDbContext;
+        _mediator = mediator;
     }
 
     public override async Task<Empty> AddPackets(AddPacketsRequest request, ServerCallContext context)
     {
-        var deviceId = context.GetHttpContext().User.FindFirstValue(AuthClaims.DeviceId);
+        var deviceIdClaim = context.GetHttpContext().User.FindFirstValue(AuthClaims.DeviceId);
 
-        var packets = request.Packets.Select(pm => new Packet
+        if (!Guid.TryParse(deviceIdClaim, out Guid deviceId))
         {
-            DeviceId = Guid.Parse(deviceId!),
-            Ip = pm.Ip,
-            Size = pm.Size,
-            Protocol = (ProtocolType)pm.Protocol,
-            Status = (PacketStatus)pm.Status
-        });
+            throw new RpcException(new Status(StatusCode.Unauthenticated, "Device id missed in your access token"));
+        }
 
-        await _mongoDbContext.Packets.InsertManyAsync(packets, cancellationToken: context.CancellationToken);
+        await _mediator.Send(new CreatePacketsCommand
+        {
+            Packets = request.Packets.Select(pm => new Packet
+            {
+                DeviceId = deviceId,
+                Ip = pm.Ip,
+                Size = pm.Size,
+                Protocol = (ProtocolType)pm.Protocol,
+                Status = (PacketStatus)pm.Status
+            }).ToList()
+        }, context.CancellationToken);
 
         return new Empty();
     }
