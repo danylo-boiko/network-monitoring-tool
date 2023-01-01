@@ -20,6 +20,6 @@ public class PostgresDbContext : IdentityDbContext<User, Role, Guid>
 
         builder
             .ApplyEntityTypesConfigurations()
-            .SeedRoles();
+            .SeedRolesAndClaims();
     }
 }

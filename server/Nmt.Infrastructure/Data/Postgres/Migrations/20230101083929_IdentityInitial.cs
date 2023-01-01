@@ -61,7 +61,8 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RoleId = table.Column<Guid>(type: "uuid", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                    ClaimValue = table.Column<string>(type: "text", nullable: true),
+                    Discriminator = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -206,9 +207,36 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("193ce9c4-f743-48ab-8660-7b3323216dd8"), null, "User", "USER" },
-                    { new Guid("1cc31fd8-28c8-450f-8161-b982f556eba5"), null, "Moderator", "MODERATOR" },
-                    { new Guid("e1dbfe39-2dc0-4723-8af5-abec8f7906ab"), null, "Admin", "ADMIN" }
+                    { new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44"), null, "User", "USER" },
+                    { new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0"), null, "Admin", "ADMIN" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoleClaims",
+                columns: new[] { "Id", "ClaimType", "ClaimValue", "Discriminator", "RoleId" },
+                values: new object[,]
+                {
+                    { 22, "Permissions", "1", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 23, "Permissions", "2", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 24, "Permissions", "3", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 25, "Permissions", "5", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 26, "Permissions", "6", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 27, "Permissions", "9", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 28, "Permissions", "10", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 29, "Permissions", "11", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 30, "Permissions", "12", "RoleClaim", new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44") },
+                    { 31, "Permissions", "1", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 32, "Permissions", "2", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 33, "Permissions", "3", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 34, "Permissions", "4", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 35, "Permissions", "5", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 36, "Permissions", "6", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 37, "Permissions", "7", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 38, "Permissions", "8", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 39, "Permissions", "9", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 40, "Permissions", "10", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 41, "Permissions", "11", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") },
+                    { 42, "Permissions", "12", "RoleClaim", new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0") }
                 });
 
             migrationBuilder.CreateIndex(

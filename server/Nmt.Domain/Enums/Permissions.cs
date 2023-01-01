@@ -1,4 +1,4 @@
-namespace Nmt.Domain.Consts;
+namespace Nmt.Domain.Enums;
 
 public enum Permissions
 {

@@ -36,6 +36,10 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("text");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid");
 
@@ -44,6 +48,10 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRoleClaim<Guid>");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -206,19 +214,13 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("193ce9c4-f743-48ab-8660-7b3323216dd8"),
+                            Id = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44"),
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("1cc31fd8-28c8-450f-8161-b982f556eba5"),
-                            Name = "Moderator",
-                            NormalizedName = "MODERATOR"
-                        },
-                        new
-                        {
-                            Id = new Guid("e1dbfe39-2dc0-4723-8af5-abec8f7906ab"),
+                            Id = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -291,6 +293,162 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                     b.HasIndex("UserName");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Nmt.Domain.Models.RoleClaim", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>");
+
+                    b.HasDiscriminator().HasValue("RoleClaim");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 22,
+                            ClaimType = "Permissions",
+                            ClaimValue = "1",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 23,
+                            ClaimType = "Permissions",
+                            ClaimValue = "2",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 24,
+                            ClaimType = "Permissions",
+                            ClaimValue = "3",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 25,
+                            ClaimType = "Permissions",
+                            ClaimValue = "5",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 26,
+                            ClaimType = "Permissions",
+                            ClaimValue = "6",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 27,
+                            ClaimType = "Permissions",
+                            ClaimValue = "9",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 28,
+                            ClaimType = "Permissions",
+                            ClaimValue = "10",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 29,
+                            ClaimType = "Permissions",
+                            ClaimValue = "11",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 30,
+                            ClaimType = "Permissions",
+                            ClaimValue = "12",
+                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                        },
+                        new
+                        {
+                            Id = 31,
+                            ClaimType = "Permissions",
+                            ClaimValue = "1",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 32,
+                            ClaimType = "Permissions",
+                            ClaimValue = "2",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 33,
+                            ClaimType = "Permissions",
+                            ClaimValue = "3",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 34,
+                            ClaimType = "Permissions",
+                            ClaimValue = "4",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 35,
+                            ClaimType = "Permissions",
+                            ClaimValue = "5",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 36,
+                            ClaimType = "Permissions",
+                            ClaimValue = "6",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 37,
+                            ClaimType = "Permissions",
+                            ClaimValue = "7",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 38,
+                            ClaimType = "Permissions",
+                            ClaimValue = "8",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 39,
+                            ClaimType = "Permissions",
+                            ClaimValue = "9",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 40,
+                            ClaimType = "Permissions",
+                            ClaimValue = "10",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 41,
+                            ClaimType = "Permissions",
+                            ClaimValue = "11",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        },
+                        new
+                        {
+                            Id = 42,
+                            ClaimType = "Permissions",
+                            ClaimValue = "12",
+                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
