@@ -78,6 +78,17 @@ func startRun(opts *StartOptions) error {
 	}
 	defer opts.GrpcClient.CloseConnection()
 
+	ipFiltersResponse, err := opts.GrpcClient.IpFilters.GetIpFilters(context.Background(), &grpc.GetIpFiltersRequest{})
+	if err != nil {
+		return err
+	}
+
+	for _, ipFilter := range ipFiltersResponse.IpFilters {
+		if err := loader.BpfObjects.IpFiltersMap.Put(ipFilter.Ip, ipFilter.FilterAction); err != nil {
+			return err
+		}
+	}
+
 	grpcTicker := time.NewTicker(time.Duration(cfg.BpfInterval) * time.Second)
 	defer grpcTicker.Stop()
 

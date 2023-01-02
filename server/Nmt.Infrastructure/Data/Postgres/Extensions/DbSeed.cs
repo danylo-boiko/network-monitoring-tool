@@ -18,11 +18,11 @@ public static class DbSeed
             NormalizedName = nameof(UserRoles.User).ToUpper()
         };
 
-        var userRolePermissionClaims = GetRolePermissionClaims(userRole.Id, new HashSet<Permissions>
+        var userRolePermissionClaims = GetRolePermissionClaims(userRole.Id, new HashSet<Permission>
         {
-            Permissions.UsersDelete,
-            Permissions.PacketsUpdate,
-            Permissions.PacketsDelete
+            Permission.UsersDelete,
+            Permission.PacketsUpdate,
+            Permission.PacketsDelete
         });
 
         var adminRole = new Role
@@ -45,11 +45,11 @@ public static class DbSeed
         return builder;
     }
 
-    private static IList<RoleClaim> GetRolePermissionClaims(Guid roleId, ISet<Permissions>? excludeFilter = null)
+    private static IList<RoleClaim> GetRolePermissionClaims(Guid roleId, ISet<Permission>? excludeFilter = null)
     {
         var permissions = new List<RoleClaim>();
 
-        foreach (var permission in (Permissions[])Enum.GetValues(typeof(Permissions)))
+        foreach (var permission in (Permission[])Enum.GetValues(typeof(Permission)))
         {
             if (excludeFilter == null || !excludeFilter.Contains(permission))
             {
@@ -57,7 +57,7 @@ public static class DbSeed
                 {
                     Id = _nextRoleClaimId,
                     RoleId = roleId,
-                    ClaimType = nameof(Permissions),
+                    ClaimType = nameof(Permission),
                     ClaimValue = permission.GetHashCode().ToString()
                 });
 

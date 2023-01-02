@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Cache\Redis" />
       <Folder Include="Data\Postgres\Migrations" />
     </ItemGroup>
 

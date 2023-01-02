@@ -8,6 +8,7 @@ using Nmt.Core.CQRS.Commands.Packets.CreatePackets;
 using Nmt.Domain.Consts;
 using Nmt.Domain.Enums;
 using Nmt.Domain.Models;
+using Nmt.Grpc.Extensions;
 using Nmt.Grpc.Protos;
 
 namespace Nmt.Grpc.Services;
@@ -24,12 +25,7 @@ public class PacketsService : Packets.PacketsBase
 
     public override async Task<Empty> AddPackets(AddPacketsRequest request, ServerCallContext context)
     {
-        var deviceIdClaim = context.GetHttpContext().User.FindFirstValue(AuthClaims.DeviceId);
-
-        if (!Guid.TryParse(deviceIdClaim, out Guid deviceId))
-        {
-            throw new RpcException(new Status(StatusCode.Unauthenticated, "Device id missed in your access token"));
-        }
+        var deviceId = context.GetAuthClaimValue(AuthClaims.DeviceId);
 
         await _mediator.Send(new CreatePacketsCommand
         {

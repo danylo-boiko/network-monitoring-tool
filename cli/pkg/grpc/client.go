@@ -11,6 +11,7 @@ type GrpcClient struct {
 	connection *grpc.ClientConn
 	Auth       AuthClient
 	Packets    PacketsClient
+	IpFilters  IpFiltersClient
 }
 
 func NewGrpcClient() *GrpcClient {
@@ -24,8 +25,9 @@ func (gc *GrpcClient) Connect(target string, creds *util.Credentials) (err error
 		return err
 	}
 
-	gc.Packets = NewPacketsClient(gc.connection)
 	gc.Auth = NewAuthClient(gc.connection)
+	gc.Packets = NewPacketsClient(gc.connection)
+	gc.IpFilters = NewIpFiltersClient(gc.connection)
 
 	return nil
 }
