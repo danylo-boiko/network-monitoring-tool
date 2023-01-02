@@ -27,10 +27,13 @@ public static class ServiceCollectionExtensions
             return new MongoDbContext(database, mongoDbConfig);
         });
 
+        services.ConfigurePostgres();
+        services.ConfigureMongo();
+
         return services;
     }
 
-    public static IServiceCollection ConfigureIdentity(this IServiceCollection services)
+    private static IServiceCollection ConfigurePostgres(this IServiceCollection services)
     {
         services.AddIdentity<User, Role>(o => 
         {
@@ -44,6 +47,19 @@ public static class ServiceCollectionExtensions
         })
         .AddEntityFrameworkStores<PostgresDbContext>()
         .AddDefaultTokenProviders();
+
+        return services;
+    }
+
+    private static IServiceCollection ConfigureMongo(this IServiceCollection services)
+    {
+        var mongoDbContext = services.BuildServiceProvider().GetService<MongoDbContext>()!;
+
+        var packetsIndex = Builders<Packet>.IndexKeys
+            .Ascending(p => p.DeviceId)
+            .Ascending(p => p.CreatedAt);
+
+        mongoDbContext.Packets.Indexes.CreateOne(new CreateIndexModel<Packet>(packetsIndex));
 
         return services;
     }

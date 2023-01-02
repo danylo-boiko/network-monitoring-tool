@@ -11,12 +11,12 @@ public static class ServerCallContextExtensions
 
         if (claimValueStr == null)
         {
-            throw new RpcException(new Status(StatusCode.Unauthenticated, $"'{claimType}' missed in your access token"));
+            throw new RpcException(new Status(StatusCode.Unauthenticated, $"'{claimType}' missed in access token"));
         }
 
         if (!Guid.TryParse(claimValueStr, out Guid claimValue))
         {
-            throw new RpcException(new Status(StatusCode.Unauthenticated, $"Impossible to parse your '{claimType}'"));
+            throw new RpcException(new Status(StatusCode.Unauthenticated, $"Impossible to parse '{claimType}'"));
         }
 
         return claimValue;

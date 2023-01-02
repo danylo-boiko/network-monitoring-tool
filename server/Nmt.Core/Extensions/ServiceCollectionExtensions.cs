@@ -12,8 +12,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
     {
-        var jwtConfig = configuration.GetSection(nameof(JwtConfig)).Get<JwtConfig>();
-        services.AddSingleton(jwtConfig!);
+        var jwtConfig = configuration.GetSection(nameof(JwtConfig)).Get<JwtConfig>()!;
+        services.AddSingleton(jwtConfig);
 
         services.AddAuthentication(opts => 
         {

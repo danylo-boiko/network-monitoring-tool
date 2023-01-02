@@ -6,7 +6,7 @@ using Nmt.Core.Extensions;
 namespace Nmt.GraphQL.Queries;
 
 [Authorize]
-[ExtendObjectType("Query")]
+[ExtendObjectType(ObjectTypes.Query)]
 public class Users
 {
     public async Task<UserDto> GetUserById([Service] IMediator mediator, GetUserByIdQuery input)

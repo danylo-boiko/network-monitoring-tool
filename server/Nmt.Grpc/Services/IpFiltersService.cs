@@ -25,7 +25,7 @@ public class IpFiltersService : IpFilters.IpFiltersBase
         var ipFiltersResult = await _mediator.Send(new GetIpFiltersByUserIdQuery
         {
             UserId = userId
-        });
+        }, context.CancellationToken);
 
         var ipFilters = ipFiltersResult.Value.Select(i => new IpFilterModel
         {

@@ -8,11 +8,11 @@ namespace Nmt.Core.CQRS.Queries.Packets.GetPacketsByDeviceId;
 
 public class GetPacketsByDeviceIdQueryHandler : IRequestHandler<GetPacketsByDeviceIdQuery, ExecutionResult<IList<PacketDto>>>
 {
-    private readonly MongoDbContext _mongoDbContext;
+    private readonly MongoDbContext _dbContext;
 
-    public GetPacketsByDeviceIdQueryHandler(MongoDbContext mongoDbContext)
+    public GetPacketsByDeviceIdQueryHandler(MongoDbContext dbContext)
     {
-        _mongoDbContext = mongoDbContext;
+        _dbContext = dbContext;
     }
 
     public async Task<ExecutionResult<IList<PacketDto>>> Handle(GetPacketsByDeviceIdQuery request, CancellationToken cancellationToken)
@@ -30,7 +30,7 @@ public class GetPacketsByDeviceIdQueryHandler : IRequestHandler<GetPacketsByDevi
             filter &= filterBuilder.Lte(p => p.CreatedAt, request.DateTo.Value);
         }
 
-        var packets = await _mongoDbContext.Packets
+        var packets = await _dbContext.Packets
             .Find(filter)
             .Project(p => new PacketDto
             {
