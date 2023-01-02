@@ -10,6 +10,11 @@
 
 #include "bpf_includes.h"
 
+enum IpFilterAction {
+    PassWithoutCollecting = 1,
+    Drop = 2
+};
+
 enum PacketStatus {
     Passed = 1,
     Dropped = 2
@@ -36,11 +41,11 @@ struct bpf_map_def SEC("maps") packets_queue = {
 };
 
 // Key   - IPv4 address
-// Value - Is blocked (bool flag)
-struct bpf_map_def SEC("maps") blocked_ips_map = {
+// Value - IP Filter Action
+struct bpf_map_def SEC("maps") ip_filters_map = {
         .type        = BPF_MAP_TYPE_LRU_HASH,
         .key_size    = sizeof(uint),
-        .value_size  = sizeof(bool),
+        .value_size  = sizeof(enum IpFilterAction),
         .max_entries = map_max_entries,
         .map_flags   = 0
 };
@@ -69,11 +74,15 @@ int bpf_xdp_handler(struct xdp_md *ctx) {
         return XDP_ACTION;
     }
 
-    // Check is ip blocked.
+    // Check ip filters.
     uint ip = (uint)(iph->saddr);
-    bool is_ip_blocked = bpf_map_lookup_elem(&blocked_ips_map, &ip);
-    if (is_ip_blocked) {
-        XDP_ACTION = XDP_DROP;
+    enum IpFilterAction *ip_filter_action = bpf_map_lookup_elem(&ip_filters_map, &ip);
+    if (ip_filter_action) {
+        if (*ip_filter_action == PassWithoutCollecting) {
+            return XDP_ACTION;
+        } else if (*ip_filter_action == Drop) {
+            XDP_ACTION = XDP_DROP;
+        }
     }
 
     struct Packet packet;
@@ -82,7 +91,7 @@ int bpf_xdp_handler(struct xdp_md *ctx) {
     packet.ip = ip;
     packet.size = data_end - data;
     packet.protocol = iph->protocol;
-    packet.status = is_ip_blocked ? Dropped : Passed;
+    packet.status = XDP_ACTION == XDP_DROP ? Dropped : Passed;
 
     // Add information about packet to queue.
     int error = bpf_map_push_elem(&packets_queue, &packet, BPF_ANY);

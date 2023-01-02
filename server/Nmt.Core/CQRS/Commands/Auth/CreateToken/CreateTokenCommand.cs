@@ -1,5 +1,4 @@
 using MediatR;
-using Nmt.Domain.Models;
 
 namespace Nmt.Core.CQRS.Commands.Auth.CreateToken;
 

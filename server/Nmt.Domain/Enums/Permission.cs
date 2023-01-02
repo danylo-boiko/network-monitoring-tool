@@ -1,6 +1,6 @@
 namespace Nmt.Domain.Enums;
 
-public enum Permissions
+public enum Permission
 {
     UsersRead = 1,
     UsersCreate = 2,

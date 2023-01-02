@@ -9,7 +9,7 @@ public static class ModelBuilderExtensions
     {
         builder.ApplyConfiguration(new UserEntityTypeConfiguration());
         builder.ApplyConfiguration(new DeviceEntityTypeConfiguration());
-        builder.ApplyConfiguration(new BlockedIpEntityTypeConfiguration());
+        builder.ApplyConfiguration(new IpFilterEntityTypeConfiguration());
 
         return builder;
     }

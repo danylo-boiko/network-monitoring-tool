@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "Nmt.Grpc.Protos";
+option go_package = "pkg/grpc";
+
+package ip_filters;
+
+service IpFilters {
+  rpc GetIpFilters(GetIpFiltersRequest) returns (IpFiltersResponse);
+}
+
+message IpFilterModel {
+  uint32 ip = 1;
+  int32 filterAction = 4;
+}
+
+message GetIpFiltersRequest {
+}
+
+message IpFiltersResponse {
+  repeated IpFilterModel ipFilters = 1;
+}

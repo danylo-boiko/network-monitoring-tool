@@ -69,8 +69,8 @@ type bpfProgramSpecs struct {
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfMapSpecs struct {
-	BlockedIpsMap *ebpf.MapSpec `ebpf:"blocked_ips_map"`
-	PacketsQueue  *ebpf.MapSpec `ebpf:"packets_queue"`
+	IpFiltersMap *ebpf.MapSpec `ebpf:"ip_filters_map"`
+	PacketsQueue *ebpf.MapSpec `ebpf:"packets_queue"`
 }
 
 // bpfObjects contains all objects after they have been loaded into the kernel.
@@ -92,13 +92,13 @@ func (o *bpfObjects) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfMaps struct {
-	BlockedIpsMap *ebpf.Map `ebpf:"blocked_ips_map"`
-	PacketsQueue  *ebpf.Map `ebpf:"packets_queue"`
+	IpFiltersMap *ebpf.Map `ebpf:"ip_filters_map"`
+	PacketsQueue *ebpf.Map `ebpf:"packets_queue"`
 }
 
 func (m *bpfMaps) Close() error {
 	return _BpfClose(
-		m.BlockedIpsMap,
+		m.IpFiltersMap,
 		m.PacketsQueue,
 	)
 }

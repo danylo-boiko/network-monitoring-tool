@@ -71,7 +71,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
         {
             return null;
         }
-        
+
         var device = await _dbContext.Devices.FirstOrDefaultAsync(d => d.UserId == userId && d.MachineSpecificStamp == machineSpecificStamp, cancellationToken);
 
         if (device == null)

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Nmt.Infrastructure.Data.Postgres.Migrations
 {
     [DbContext(typeof(PostgresDbContext))]
-    [Migration("20230101083929_IdentityInitial")]
-    partial class IdentityInitial
+    [Migration("20230102212447_DbInitial")]
+    partial class DbInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,31 +136,6 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Nmt.Domain.Models.BlockedIp", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("BlockedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("Ip")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BlockedIps");
-                });
-
             modelBuilder.Entity("Nmt.Domain.Models.Device", b =>
                 {
                     b.Property<Guid>("Id")
@@ -186,6 +161,34 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                     b.HasIndex("UserId", "MachineSpecificStamp");
 
                     b.ToTable("Devices");
+                });
+
+            modelBuilder.Entity("Nmt.Domain.Models.IpFilter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FilterAction")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("Ip")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("IpFilters");
                 });
 
             modelBuilder.Entity("Nmt.Domain.Models.Role", b =>
@@ -217,13 +220,13 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44"),
+                            Id = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb"),
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0"),
+                            Id = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -308,149 +311,149 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                         new
                         {
                             Id = 22,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "1",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 23,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "2",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 24,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "3",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 25,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "5",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 26,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "6",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 27,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "9",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 28,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "10",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 29,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "11",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 30,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "12",
-                            RoleId = new Guid("9252b6f4-5c44-411d-85b4-9e96e3648e44")
+                            RoleId = new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb")
                         },
                         new
                         {
                             Id = 31,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "1",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 32,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "2",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 33,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "3",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 34,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "4",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 35,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "5",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 36,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "6",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 37,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "7",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 38,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "8",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 39,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "9",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 40,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "10",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 41,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "11",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         },
                         new
                         {
                             Id = 42,
-                            ClaimType = "Permissions",
+                            ClaimType = "Permission",
                             ClaimValue = "12",
-                            RoleId = new Guid("b03c655f-fb29-40c9-a0c2-5fe29349c9b0")
+                            RoleId = new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0")
                         });
                 });
 
@@ -505,7 +508,7 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Nmt.Domain.Models.BlockedIp", b =>
+            modelBuilder.Entity("Nmt.Domain.Models.Device", b =>
                 {
                     b.HasOne("Nmt.Domain.Models.User", null)
                         .WithMany()
@@ -514,7 +517,7 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Nmt.Domain.Models.Device", b =>
+            modelBuilder.Entity("Nmt.Domain.Models.IpFilter", b =>
                 {
                     b.HasOne("Nmt.Domain.Models.User", null)
                         .WithMany()
