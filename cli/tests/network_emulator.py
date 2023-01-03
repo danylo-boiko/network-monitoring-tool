@@ -3,7 +3,6 @@ from random import randrange
 from scapy.all import sendp
 from scapy.layers.inet import *
 
-
 DEFAULT_SENDING_INTERVAL_SECONDS = 2
 DEFAULT_COUNT_OF_PACKETS = 5
 
@@ -18,16 +17,16 @@ def send_packets(destination: str, iface: str, source_ip: str, sleep_seconds: in
         protocol_id = randrange(0, 4)
 
         if protocol_id == 0:
-            sendp(Ether()/IP(src=source_ip, dst=destination, ttl=(1, 1))/TCP(dport=port, flags='S'), iface=iface)
+            sendp(Ether() / IP(src=source_ip, dst=destination, ttl=(1, 1)) / TCP(dport=port, flags='S'), iface=iface)
             protocol = 'TCP'
         elif protocol_id == 1:
-            sendp(Ether()/IP(src=source_ip, dst=destination, ttl=(1, 1))/UDP(dport=port), iface=iface)
+            sendp(Ether() / IP(src=source_ip, dst=destination, ttl=(1, 1)) / UDP(dport=port), iface=iface)
             protocol = 'UDP'
         elif protocol_id == 2:
-            sendp(Ether()/IP(src=source_ip, dst=destination, ttl=(1, 1))/ICMP(), iface=iface)
+            sendp(Ether() / IP(src=source_ip, dst=destination, ttl=(1, 1)) / ICMP(), iface=iface)
             protocol = 'ICMP'
         else:
-            sendp(Ether()/IP(src=source_ip, dst=destination, ttl=(1, 1)), iface=iface)
+            sendp(Ether() / IP(src=source_ip, dst=destination, ttl=(1, 1)), iface=iface)
             protocol = 'Other'
 
         print('Source IP: {}\tProtocol: {}'.format(source_ip, protocol))
