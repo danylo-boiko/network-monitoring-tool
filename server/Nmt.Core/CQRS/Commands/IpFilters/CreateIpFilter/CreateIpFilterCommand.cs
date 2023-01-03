@@ -1,13 +1,13 @@
+using LS.Helpers.Hosting.API;
+using MediatR;
 using Nmt.Domain.Enums;
 
-namespace Nmt.Domain.Models;
+namespace Nmt.Core.CQRS.Commands.IpFilters.CreateIpFilter;
 
-public class IpFilter
+public record CreateIpFilterCommand : IRequest<ExecutionResult>
 {
-    public Guid Id { get; set; }
     public Guid UserId { get; set; }
     public uint Ip { get; set; }
     public IpFilterAction FilterAction { get; set; }
     public string? Comment { get; set; }
-    public DateTime CreatedAt { get; set; }
 }

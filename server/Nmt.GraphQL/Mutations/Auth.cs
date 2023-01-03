@@ -5,6 +5,7 @@ using Nmt.Core.Extensions;
 
 namespace Nmt.GraphQL.Mutations;
 
+[ExtendObjectType(ObjectTypes.Mutation)]
 public class Auth
 {
     public async Task<string> Login([Service] IMediator mediator, LoginCommand input)

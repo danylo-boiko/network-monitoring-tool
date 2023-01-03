@@ -15,15 +15,5 @@ public class MongoDbContext
     {
         _database = database;
         _config = config;
-
-        OnModelCreating();
-    }
-
-    private void OnModelCreating()
-    {
-        var packetsBuilder = Builders<Packet>.IndexKeys;
-        var indexKeys = packetsBuilder.Ascending(p => p.DeviceId).Ascending(p => p.CreatedAt);
-        var indexModel = new CreateIndexModel<Packet>(indexKeys);
-        Packets.Indexes.CreateOne(indexModel);
     }
 }

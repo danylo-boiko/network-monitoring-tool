@@ -78,12 +78,12 @@ func startRun(opts *StartOptions) error {
 	}
 	defer opts.GrpcClient.CloseConnection()
 
-	ipFiltersResponse, err := opts.GrpcClient.IpFilters.GetIpFilters(context.Background(), &grpc.GetIpFiltersRequest{})
+	response, err := opts.GrpcClient.IpFilters.GetIpFilters(context.Background(), &grpc.GetIpFiltersRequest{})
 	if err != nil {
 		return err
 	}
 
-	for _, ipFilter := range ipFiltersResponse.IpFilters {
+	for _, ipFilter := range response.IpFilters {
 		if err := loader.BpfObjects.IpFiltersMap.Put(ipFilter.Ip, ipFilter.FilterAction); err != nil {
 			return err
 		}
@@ -118,9 +118,14 @@ func startRun(opts *StartOptions) error {
 			})
 		}
 
-		_, err := opts.GrpcClient.Packets.AddPackets(context.Background(), &grpc.AddPacketsRequest{Packets: packets})
-		if err != nil {
-			return err
+		if len(packets) > 0 {
+			addPacketsRequest := &grpc.AddPacketsRequest{
+				Packets: packets,
+			}
+
+			if _, err := opts.GrpcClient.Packets.AddPackets(context.Background(), addPacketsRequest); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -129,8 +134,6 @@ func startRun(opts *StartOptions) error {
 
 func intToIPv4(ipaddr uint32) net.IP {
 	ip := make(net.IP, net.IPv4len)
-
 	binary.BigEndian.PutUint32(ip, ipaddr)
-
 	return ip
 }

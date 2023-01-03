@@ -5,16 +5,16 @@ namespace Nmt.Core.CQRS.Commands.Packets.CreatePackets;
 
 public class CreatePacketsCommandHandler : IRequestHandler<CreatePacketsCommand>
 {
-    private readonly MongoDbContext _mongoDbContext;
+    private readonly MongoDbContext _dbContext;
 
-    public CreatePacketsCommandHandler(MongoDbContext mongoDbContext)
+    public CreatePacketsCommandHandler(MongoDbContext dbContext)
     {
-        _mongoDbContext = mongoDbContext;
+        _dbContext = dbContext;
     }
 
     public async Task<Unit> Handle(CreatePacketsCommand request, CancellationToken cancellationToken)
     {
-        await _mongoDbContext.Packets.InsertManyAsync(request.Packets, cancellationToken: cancellationToken);
+        await _dbContext.Packets.InsertManyAsync(request.Packets, cancellationToken: cancellationToken);
 
         return Unit.Value;
     }

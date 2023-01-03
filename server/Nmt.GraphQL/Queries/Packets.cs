@@ -6,7 +6,7 @@ using Nmt.Core.Extensions;
 namespace Nmt.GraphQL.Queries;
 
 [Authorize]
-[ExtendObjectType("Query")]
+[ExtendObjectType(ObjectTypes.Query)]
 public class Packets
 {
     public async Task<IList<PacketDto>> GetPacketsByDeviceId([Service] IMediator mediator, GetPacketsByDeviceIdQuery input)

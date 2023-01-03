@@ -13,15 +13,16 @@ var configuration = builder.Configuration;
 services
     .AddInfrastructure(configuration)
     .AddMediatR(typeof(MediatREntryPoint).Assembly)
-    .ConfigureIdentity()
     .ConfigureJwt(configuration)
     .AddGraphQLServer()
     .AddAuthorization()
     .AddErrorFilter<ErrorFilter>()
-    .AddQueryType(q => q.Name("Query"))
+    .AddQueryType(q => q.Name(ObjectTypes.Query))
     .AddType<Users>()
     .AddType<Packets>()
-    .AddMutationType<Auth>();
+    .AddMutationType(q => q.Name(ObjectTypes.Mutation))
+    .AddType<Auth>()
+    .AddType<IpFilters>();
 
 var app = builder.Build();
 
