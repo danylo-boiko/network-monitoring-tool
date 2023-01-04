@@ -11,7 +11,7 @@ var configuration = builder.Configuration;
 services
     .AddInfrastructure(configuration)
     .AddMediatR(typeof(MediatREntryPoint).Assembly)
-    .ConfigureJwt(configuration)
+    .AddAuthentication(configuration)
     .AddGrpc();
 
 var app = builder.Build();

@@ -1,14 +1,14 @@
 using Grpc.Core;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Nmt.Core.CQRS.Queries.IpFilters.GetIpFiltersByUserId;
 using Nmt.Domain.Consts;
+using Nmt.Domain.Enums;
+using Nmt.Grpc.Attributes;
 using Nmt.Grpc.Extensions;
 using Nmt.Grpc.Protos;
 
 namespace Nmt.Grpc.Services;
 
-[Authorize]
 public class IpFiltersService : IpFilters.IpFiltersBase
 {
     private readonly IMediator _mediator;
@@ -17,7 +17,8 @@ public class IpFiltersService : IpFilters.IpFiltersBase
     {
         _mediator = mediator;
     }
-    
+
+    [PermissionsAuthorize(Permission.IpFiltersRead)]
     public override async Task<IpFiltersResponse> GetIpFilters(GetIpFiltersRequest request, ServerCallContext context)
     {
         var userId = context.GetAuthClaimValue(AuthClaims.UserId);

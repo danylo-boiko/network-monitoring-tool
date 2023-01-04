@@ -2,17 +2,16 @@ using System.Net.Sockets;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Nmt.Core.CQRS.Commands.Packets.CreatePackets;
 using Nmt.Domain.Consts;
 using Nmt.Domain.Enums;
 using Nmt.Domain.Models;
+using Nmt.Grpc.Attributes;
 using Nmt.Grpc.Extensions;
 using Nmt.Grpc.Protos;
 
 namespace Nmt.Grpc.Services;
 
-[Authorize]
 public class PacketsService : Packets.PacketsBase
 {
     private readonly IMediator _mediator;
@@ -22,6 +21,7 @@ public class PacketsService : Packets.PacketsBase
         _mediator = mediator;
     }
 
+    [PermissionsAuthorize(Permission.PacketsCreate)]
     public override async Task<Empty> AddPackets(AddPacketsRequest request, ServerCallContext context)
     {
         var deviceId = context.GetAuthClaimValue(AuthClaims.DeviceId);
