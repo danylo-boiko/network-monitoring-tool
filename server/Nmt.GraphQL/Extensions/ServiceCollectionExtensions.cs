@@ -1,4 +1,5 @@
 using HotChocolate.Execution.Configuration;
+using Nmt.GraphQL.Consts;
 using Nmt.GraphQL.Mutations;
 using Nmt.GraphQL.Queries;
 using Nmt.GraphQL.Services;

@@ -1,5 +1,6 @@
 using HotChocolate.AspNetCore.Authorization;
 using Nmt.Core.CQRS.Queries.Users.GetUserById;
+using Nmt.GraphQL.Consts;
 using Nmt.GraphQL.Services.Interfaces;
 
 namespace Nmt.GraphQL.Queries;

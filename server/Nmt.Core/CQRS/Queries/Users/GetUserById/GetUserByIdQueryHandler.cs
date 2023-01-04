@@ -20,7 +20,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Executi
         var userQuery =
             from user in _dbContext.Users
             where user.Id == request.UserId
-            select new UserDto()
+            select new UserDto
             {
                 Id = user.Id,
                 Username = user.UserName,

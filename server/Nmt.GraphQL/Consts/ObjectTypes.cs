@@ -1,4 +1,4 @@
-namespace Nmt.GraphQL;
+namespace Nmt.GraphQL.Consts;
 
 public static class ObjectTypes
 {
