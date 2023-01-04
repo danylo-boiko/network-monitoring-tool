@@ -5,7 +5,7 @@ using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.IpFilters.CreateIpFilter;
 
-public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterCommand, ExecutionResult>
+public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterCommand, ExecutionResult<Guid>>
 {
     private readonly PostgresDbContext _dbContext;
 
@@ -14,19 +14,21 @@ public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterComman
         _dbContext = dbContext;
     }
 
-    public async Task<ExecutionResult> Handle(CreateIpFilterCommand request, CancellationToken cancellationToken)
+    public async Task<ExecutionResult<Guid>> Handle(CreateIpFilterCommand request, CancellationToken cancellationToken)
     {
-        await _dbContext.IpFilters.AddAsync(new IpFilter
+        var ipFilter = new IpFilter
         {
             UserId = request.UserId,
-            Ip = request.Ip,
+            Ip = (uint)request.Ip,
             FilterAction = request.FilterAction,
             Comment = request.Comment,
             CreatedAt = DateTime.UtcNow
-        }, cancellationToken);
+        };
+
+        await _dbContext.IpFilters.AddAsync(ipFilter, cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return new ExecutionResult();
+        return new ExecutionResult<Guid>(ipFilter.Id);
     }
 }

@@ -1,6 +1,6 @@
 namespace Nmt.Domain.Enums;
 
-public enum Permission
+public enum Permission : byte
 {
     UsersRead = 1,
     UsersCreate = 2,
@@ -12,8 +12,8 @@ public enum Permission
     PacketsUpdate = 7,
     PacketsDelete = 8,
 
-    BlockedIpsRead = 9,
-    BlockedIpsCreate = 10,
-    BlockedIpsUpdate = 11,
-    BlockedIpsDelete = 12
+    IpFiltersRead = 9,
+    IpFiltersCreate = 10,
+    IpFiltersUpdate = 11,
+    IpFiltersDelete = 12
 }
