@@ -1,8 +1,7 @@
 using HotChocolate.AspNetCore.Authorization;
-using MediatR;
 using Nmt.Core.CQRS.Commands.IpFilters.CreateIpFilter;
 using Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
-using Nmt.Core.Extensions;
+using Nmt.GraphQL.Services.Interfaces;
 
 namespace Nmt.GraphQL.Mutations;
 
@@ -10,18 +9,13 @@ namespace Nmt.GraphQL.Mutations;
 [ExtendObjectType(ObjectTypes.Mutation)]
 public class IpFilters
 {
-    public async Task CreateIpFilter([Service] IMediator mediator, CreateIpFilterCommand input)
+    public async Task<Guid> CreateIpFilter([Service] IExecutionResultService executionResultService, CreateIpFilterCommand input)
     {
-        await mediator.Send(input);
+        return await executionResultService.HandleExecutionResultRequest(input);
     }
 
-    public async Task DeleteIpFilter([Service] IMediator mediator, DeleteIpFilterCommand input)
+    public async Task<bool> DeleteIpFilter([Service] IExecutionResultService executionResultService, DeleteIpFilterCommand input)
     {
-        var executionResult = await mediator.Send(input);
-
-        if (!executionResult.Success)
-        {
-            throw executionResult.ToGraphQLException();
-        }
+        return await executionResultService.HandleExecutionResultRequest(input);
     }
 }

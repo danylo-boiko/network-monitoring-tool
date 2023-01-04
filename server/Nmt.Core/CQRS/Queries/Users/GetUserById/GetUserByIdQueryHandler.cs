@@ -18,19 +18,26 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Executi
     {
         var userQuery =
             from user in _dbContext.Users
-            join device in _dbContext.Devices on user.Id equals device.UserId into devices
             where user.Id == request.UserId
             select new UserDto()
             {
                 Id = user.Id,
                 Username = user.UserName,
                 Email = user.Email,
-                Devices = devices.Select(device => new UserDto.UserDeviceDto
+                Devices = _dbContext.Devices.Where(d => d.UserId == user.Id).Select(d => new UserDto.UserDeviceDto
                 {
-                    Id = device.Id,
-                    Hostname = device.Hostname,
-                    MachineSpecificStamp = device.MachineSpecificStamp,
-                    CreatedAt = device.CreatedAt
+                    Id = d.Id,
+                    Hostname = d.Hostname,
+                    MachineSpecificStamp = d.MachineSpecificStamp,
+                    CreatedAt = d.CreatedAt
+                }).ToList(),
+                IpFilters = _dbContext.IpFilters.Where(i => i.UserId == user.Id).Select(i => new UserDto.IpFilterDto
+                {
+                    Id = i.Id,
+                    Ip = i.Ip,
+                    FilterAction = i.FilterAction,
+                    Comment = i.Comment,
+                    CreatedAt = i.CreatedAt
                 }).ToList()
             };
 

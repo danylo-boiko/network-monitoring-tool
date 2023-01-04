@@ -1,7 +1,6 @@
 using HotChocolate.AspNetCore.Authorization;
-using MediatR;
 using Nmt.Core.CQRS.Queries.Packets.GetPacketsByDeviceId;
-using Nmt.Core.Extensions;
+using Nmt.GraphQL.Services.Interfaces;
 
 namespace Nmt.GraphQL.Queries;
 
@@ -9,15 +8,8 @@ namespace Nmt.GraphQL.Queries;
 [ExtendObjectType(ObjectTypes.Query)]
 public class Packets
 {
-    public async Task<IList<PacketDto>> GetPacketsByDeviceId([Service] IMediator mediator, GetPacketsByDeviceIdQuery input)
+    public async Task<IList<PacketDto>> GetPacketsByDeviceId([Service] IExecutionResultService executionResultService, GetPacketsByDeviceIdQuery input)
     {
-        var packersResult = await mediator.Send(input);
-
-        if (!packersResult.Success)
-        {
-            throw packersResult.ToGraphQLException();
-        }
-
-        return packersResult.Value;
+        return await executionResultService.HandleExecutionResultRequest(input);
     }
 }

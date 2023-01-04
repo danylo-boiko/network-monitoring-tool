@@ -1,34 +1,19 @@
-using MediatR;
 using Nmt.Core.CQRS.Commands.Auth.Login;
 using Nmt.Core.CQRS.Commands.Auth.Register;
-using Nmt.Core.Extensions;
+using Nmt.GraphQL.Services.Interfaces;
 
 namespace Nmt.GraphQL.Mutations;
 
 [ExtendObjectType(ObjectTypes.Mutation)]
 public class Auth
 {
-    public async Task<string> Login([Service] IMediator mediator, LoginCommand input)
+    public async Task<string> Login([Service] IExecutionResultService executionResultService, LoginCommand input)
     {
-        var jwtTokenResult = await mediator.Send(input);
-
-        if (!jwtTokenResult.Success)
-        {
-            throw jwtTokenResult.ToGraphQLException();
-        }
-
-        return jwtTokenResult.Value;
+        return await executionResultService.HandleExecutionResultRequest(input);
     }
 
-    public async Task<string> Register([Service] IMediator mediator, RegisterCommand input)
+    public async Task<string> Register([Service] IExecutionResultService executionResultService, RegisterCommand input)
     {
-        var jwtTokenResult = await mediator.Send(input);
-
-        if (!jwtTokenResult.Success)
-        {
-            throw jwtTokenResult.ToGraphQLException();
-        }
-
-        return jwtTokenResult.Value;
+        return await executionResultService.HandleExecutionResultRequest(input);
     }
 }

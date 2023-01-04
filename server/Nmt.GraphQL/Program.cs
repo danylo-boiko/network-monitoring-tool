@@ -4,6 +4,8 @@ using Nmt.Core.Extensions;
 using Nmt.GraphQL;
 using Nmt.GraphQL.Mutations;
 using Nmt.GraphQL.Queries;
+using Nmt.GraphQL.Services;
+using Nmt.GraphQL.Services.Interfaces;
 using Nmt.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,7 @@ var configuration = builder.Configuration;
 
 services
     .AddInfrastructure(configuration)
+    .AddTransient<IExecutionResultService, ExecutionResultService>()
     .AddMediatR(typeof(MediatREntryPoint).Assembly)
     .ConfigureJwt(configuration)
     .AddGraphQLServer()
