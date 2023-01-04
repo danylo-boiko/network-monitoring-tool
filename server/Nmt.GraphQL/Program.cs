@@ -1,11 +1,7 @@
 using MediatR;
 using Nmt.Core;
 using Nmt.Core.Extensions;
-using Nmt.GraphQL;
-using Nmt.GraphQL.Mutations;
-using Nmt.GraphQL.Queries;
-using Nmt.GraphQL.Services;
-using Nmt.GraphQL.Services.Interfaces;
+using Nmt.GraphQL.Extensions;
 using Nmt.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,18 +10,10 @@ var configuration = builder.Configuration;
 
 services
     .AddInfrastructure(configuration)
-    .AddTransient<IExecutionResultService, ExecutionResultService>()
     .AddMediatR(typeof(MediatREntryPoint).Assembly)
-    .ConfigureJwt(configuration)
-    .AddGraphQLServer()
-    .AddAuthorization()
-    .AddErrorFilter<ErrorFilter>()
-    .AddQueryType(q => q.Name(ObjectTypes.Query))
-    .AddType<Users>()
-    .AddType<Packets>()
-    .AddMutationType(q => q.Name(ObjectTypes.Mutation))
-    .AddType<Auth>()
-    .AddType<IpFilters>();
+    .AddAuthentication(configuration)
+    .AddServices()
+    .AddGraphQL();
 
 var app = builder.Build();
 

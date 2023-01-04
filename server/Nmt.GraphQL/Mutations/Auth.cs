@@ -1,5 +1,6 @@
 using Nmt.Core.CQRS.Commands.Auth.Login;
 using Nmt.Core.CQRS.Commands.Auth.Register;
+using Nmt.GraphQL.Consts;
 using Nmt.GraphQL.Services.Interfaces;
 
 namespace Nmt.GraphQL.Mutations;
