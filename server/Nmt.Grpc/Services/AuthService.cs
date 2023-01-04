@@ -27,7 +27,7 @@ public class AuthService : Auth.AuthBase
 
         if (!jwtTokenResult.Success)
         {
-            throw jwtTokenResult.ToGrpcException(StatusCode.NotFound);
+            throw jwtTokenResult.ToGrpcException();
         }
 
         return new AuthResponse

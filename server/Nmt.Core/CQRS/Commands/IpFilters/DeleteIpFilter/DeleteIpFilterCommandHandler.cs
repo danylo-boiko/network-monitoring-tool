@@ -1,6 +1,7 @@
 using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Nmt.Domain.Consts;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
@@ -19,7 +20,7 @@ public class DeleteIpFilterCommandHandler : IRequestHandler<DeleteIpFilterComman
         var ipFilter = await _dbContext.IpFilters.FirstOrDefaultAsync(i => i.Id == request.IpFilterId, cancellationToken);
         if (ipFilter == null)
         {
-            return new ExecutionResult<bool>(new ErrorInfo($"IP filter with id '{request.IpFilterId}' not found"));
+            return new ExecutionResult<bool>(new ErrorInfo(StatusCodes.NotFound, $"IP filter with id '{request.IpFilterId}' not found"));
         }
 
         _dbContext.IpFilters.Remove(ipFilter);

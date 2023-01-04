@@ -1,6 +1,7 @@
 using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Nmt.Domain.Consts;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Queries.Users.GetUserById;
@@ -45,7 +46,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, Executi
 
         if (userDto == null)
         {
-            return new ExecutionResult<UserDto>(new ErrorInfo($"User with id '{request.UserId}' not found"));
+            return new ExecutionResult<UserDto>(new ErrorInfo(StatusCodes.NotFound, $"User with id '{request.UserId}' not found"));
         }
 
         return new ExecutionResult<UserDto>(userDto);

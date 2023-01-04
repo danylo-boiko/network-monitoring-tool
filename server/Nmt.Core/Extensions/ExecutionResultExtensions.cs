@@ -6,14 +6,27 @@ namespace Nmt.Core.Extensions;
 
 public static class ExecutionResultExtensions
 {
-    public static RpcException ToGrpcException(this ExecutionResult executionResult, StatusCode statusCode)
+    public static RpcException ToGrpcException(this ExecutionResult executionResult)
     {
-        return new RpcException(new Status(statusCode, executionResult.ErrorMessage()));
+        var statusCode = executionResult.Errors.First().Key;
+        var grpcStatusCode = ToGrpcStatusCode(statusCode);
+
+        return new RpcException(new Status(grpcStatusCode, executionResult.ErrorMessage()));
     }
 
     public static GraphQLException ToGraphQLException(this ExecutionResult executionResult)
     {
         return new GraphQLException(executionResult.ErrorMessage());
+    }
+
+    private static StatusCode ToGrpcStatusCode(string statusCode)
+    {
+        if (Enum.TryParse(statusCode, true, out StatusCode grpcStatusCode))
+        {
+            return grpcStatusCode;
+        }
+
+        return StatusCode.Internal;
     }
 
     private static string ErrorMessage(this ExecutionResult executionResult)

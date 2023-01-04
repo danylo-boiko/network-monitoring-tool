@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nmt.Core.CQRS.Commands.Auth.CreateToken;
+using Nmt.Domain.Consts;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
@@ -36,13 +37,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Username, cancellationToken);
             if (user == null)
             {
-                return new ExecutionResult<string>(new ErrorInfo($"User with username '{request.Username}' not found"));
+                return new ExecutionResult<string>(new ErrorInfo(StatusCodes.NotFound, $"User with username '{request.Username}' not found"));
             }
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (!signInResult.Succeeded)
             {
-                return new ExecutionResult<string>(new ErrorInfo("Provided incorrect password"));
+                return new ExecutionResult<string>(new ErrorInfo(StatusCodes.Unauthenticated, "Provided incorrect password"));
             }
 
             var deviceId = await GetOrCreateDevice(user.Id, request.Hostname, request.MachineSpecificStamp, cancellationToken);

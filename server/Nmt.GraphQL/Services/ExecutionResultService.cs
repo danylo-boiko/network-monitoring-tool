@@ -16,13 +16,13 @@ public class ExecutionResultService : IExecutionResultService
 
     public async Task<T> HandleExecutionResultRequest<T>(IRequest<ExecutionResult<T>> request)
     {
-        var userResult = await _mediator.Send(request);
+        var requestResult = await _mediator.Send(request);
 
-        if (!userResult.Success)
+        if (!requestResult.Success)
         {
-            throw userResult.ToGraphQLException();
+            throw requestResult.ToGraphQLException();
         }
 
-        return userResult.Value;
+        return requestResult.Value;
     }
 }

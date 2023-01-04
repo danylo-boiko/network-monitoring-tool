@@ -1,6 +1,6 @@
 namespace Nmt.Domain.Enums;
 
-public enum IpFilterAction
+public enum IpFilterAction : byte
 {
     PassWithoutCollecting = 1,
     Drop = 2
