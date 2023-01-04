@@ -9,9 +9,6 @@ public class PermissionsRequirement : IAuthorizationRequirement
 
     public PermissionsRequirement(string policyName)
     {
-        Permissions = policyName
-            .Split(',')
-            .Select(permission => (Permission)int.Parse(permission))
-            .ToHashSet();
+        Permissions = PermissionsHelper.ToPermissionsSet(policyName);
     }
 }

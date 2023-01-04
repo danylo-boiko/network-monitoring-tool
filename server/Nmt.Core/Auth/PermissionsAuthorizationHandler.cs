@@ -19,7 +19,7 @@ public class PermissionsAuthorizationHandler : AuthorizationHandler<PermissionsR
             return Task.CompletedTask;
         }
 
-        context.Fail(new AuthorizationFailureReason(this, "You don't have permissions for this operation"));
+        context.Fail();
         return Task.CompletedTask;
     }
 }

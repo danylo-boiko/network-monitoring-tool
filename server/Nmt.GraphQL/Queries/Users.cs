@@ -9,7 +9,7 @@ namespace Nmt.GraphQL.Queries;
 [ExtendObjectType(ObjectTypes.Query)]
 public class Users
 {
-    [PermissionsAuthorize(Permission.UsersDelete)]
+    [PermissionsAuthorize(Permission.UsersRead)]
     public async Task<UserDto> GetUserById([Service] IExecutionResultService executionResultService, GetUserByIdQuery input)
     {
         return await executionResultService.HandleExecutionResultRequest(input);
