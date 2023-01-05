@@ -5,5 +5,8 @@ namespace Nmt.Core.CQRS.Queries.Users.GetUserById;
 
 public class GetUserByIdCachePolicy : ICachePolicy<GetUserByIdQuery, ExecutionResult<UserDto>>
 {
-    public string GetCacheKey(GetUserByIdQuery request) => $"{nameof(GetUserByIdQuery)}_{request.UserId}";
+    public string GetCacheKey(GetUserByIdQuery request)
+    {
+        return GetUserByIdQuery.GetCacheKey(request.UserId);
+    }
 }

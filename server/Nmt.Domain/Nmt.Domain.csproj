@@ -7,6 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Reference Include="MediatR.Contracts">
+        <HintPath>..\..\..\..\.nuget\packages\mediatr.contracts\1.0.1\lib\netstandard2.0\MediatR.Contracts.dll</HintPath>
+      </Reference>
       <Reference Include="Microsoft.Extensions.Identity.Stores">
         <HintPath>..\..\..\..\.nuget\packages\microsoft.extensions.identity.stores\7.0.1\lib\net7.0\Microsoft.Extensions.Identity.Stores.dll</HintPath>
       </Reference>

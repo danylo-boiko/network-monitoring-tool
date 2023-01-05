@@ -5,5 +5,8 @@ namespace Nmt.Core.CQRS.Queries.IpFilters.GetIpFiltersByUserId;
 
 public class GetIpFiltersByUserIdCachePolicy : ICachePolicy<GetIpFiltersByUserIdQuery, ExecutionResult<IList<IpFilterDto>>>
 {
-    public string GetCacheKey(GetIpFiltersByUserIdQuery request) => $"{nameof(GetIpFiltersByUserIdQuery)}_{request.UserId}";
+    public string GetCacheKey(GetIpFiltersByUserIdQuery request)
+    {
+        return GetIpFiltersByUserIdQuery.GetCacheKey(request.UserId);
+    }
 }
