@@ -10,6 +10,7 @@ var configuration = builder.Configuration;
 
 services
     .AddInfrastructure(configuration)
+    .AddRedisCache()
     .AddMediatR(typeof(MediatREntryPoint).Assembly)
     .AddAuthentication(configuration)
     .AddGrpc();
