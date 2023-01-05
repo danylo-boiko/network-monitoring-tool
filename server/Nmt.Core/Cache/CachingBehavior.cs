@@ -12,7 +12,10 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     private readonly IDistributedRedisCache _redisCache;
     private readonly ILogger<CachingBehavior<TRequest, TResponse>> _logger;
 
-    public CachingBehavior(IEnumerable<ICachePolicy<TRequest, TResponse>> cachePolicies, IDistributedRedisCache redisCache, ILogger<CachingBehavior<TRequest, TResponse>> logger)
+    public CachingBehavior(
+        IEnumerable<ICachePolicy<TRequest, TResponse>> cachePolicies, 
+        IDistributedRedisCache redisCache, 
+        ILogger<CachingBehavior<TRequest, TResponse>> logger)
     {
         _cachePolicies = cachePolicies;
         _redisCache = redisCache;

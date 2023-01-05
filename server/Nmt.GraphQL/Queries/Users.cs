@@ -1,4 +1,4 @@
-using Nmt.Core.CQRS.Queries.Users.GetUserById;
+using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 using Nmt.Domain.Enums;
 using Nmt.GraphQL.Attributes;
 using Nmt.GraphQL.Consts;
@@ -10,7 +10,7 @@ namespace Nmt.GraphQL.Queries;
 public class Users
 {
     [PermissionsAuthorize(Permission.UsersRead)]
-    public async Task<UserDto> GetUserById([Service] IExecutionResultService executionResultService, GetUserByIdQuery input)
+    public async Task<UserDto> GetUserById([Service] IExecutionResultService executionResultService, GetUserWithDevicesAndIpFiltersByIdQuery input)
     {
         return await executionResultService.HandleExecutionResultRequest(input);
     }
