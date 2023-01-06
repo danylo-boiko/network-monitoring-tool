@@ -16,13 +16,10 @@ public class MemoryCache : Interfaces.IMemoryCache
         return _cache.Get<T>(key);
     }
 
-    public void Set<T>(string key, T value, DateTimeOffset duration)
+    public void Set<T>(string key, T value, TimeSpan duration)
     {
-        _cache.Set(key, value, duration);
-    }
+        var cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(duration);
 
-    public void Remove(string key)
-    {
-        _cache.Remove(key);
+        _cache.Set(key, value, cacheEntryOptions);
     }
 }
