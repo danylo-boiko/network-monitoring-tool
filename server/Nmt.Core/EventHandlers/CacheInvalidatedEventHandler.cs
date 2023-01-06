@@ -1,6 +1,6 @@
 using MediatR;
 using Nmt.Domain.Events;
-using Nmt.Infrastructure.Redis.Interfaces;
+using Nmt.Infrastructure.Cache.Redis.Interfaces;
 
 namespace Nmt.Core.EventHandlers;
 

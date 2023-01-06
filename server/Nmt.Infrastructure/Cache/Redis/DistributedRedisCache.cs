@@ -1,9 +1,9 @@
 using System.Text;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Nmt.Infrastructure.Redis.Interfaces;
+using Nmt.Infrastructure.Cache.Redis.Interfaces;
 
-namespace Nmt.Infrastructure.Redis;
+namespace Nmt.Infrastructure.Cache.Redis;
 
 public class DistributedRedisCache : IDistributedRedisCache
 {
@@ -50,10 +50,5 @@ public class DistributedRedisCache : IDistributedRedisCache
     public async Task RemoveAsync(string key, CancellationToken cancellationToken)
     {
         await _distributedCache.RemoveAsync(key, cancellationToken);
-    }
-
-    public async Task<bool> ContainsKey(string key, CancellationToken cancellationToken)
-    {
-        return await _distributedCache.GetAsync(key, cancellationToken) != null;
     }
 }

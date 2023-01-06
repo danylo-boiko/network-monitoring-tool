@@ -2,7 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Nmt.Core.Cache.Interfaces;
-using Nmt.Infrastructure.Redis.Interfaces;
+using Nmt.Infrastructure.Cache.Redis.Interfaces;
 
 namespace Nmt.Core.Cache;
 

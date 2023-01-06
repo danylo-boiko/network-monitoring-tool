@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Nmt.Domain.Configs;
 using Nmt.Domain.Models;
+using Nmt.Infrastructure.Cache.MemoryCache;
+using Nmt.Infrastructure.Cache.MemoryCache.Interfaces;
+using Nmt.Infrastructure.Cache.Redis;
+using Nmt.Infrastructure.Cache.Redis.Interfaces;
 using Nmt.Infrastructure.Data.Mongo;
 using Nmt.Infrastructure.Data.Postgres;
-using Nmt.Infrastructure.Redis;
-using Nmt.Infrastructure.Redis.Interfaces;
 
 namespace Nmt.Infrastructure;
 
@@ -35,7 +37,7 @@ public static class ServiceCollectionExtensions
 
         services.ConfigureMongo();
 
-        // Redis
+        // Redis cache
         var redisConnectionString = configuration.GetConnectionString("Redis");
         services.AddDistributedRedisCache(opts =>
         {
@@ -43,6 +45,11 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddTransient<IDistributedRedisCache, DistributedRedisCache>();
+
+        // Memory cache
+        services.AddMemoryCache();
+
+        services.AddTransient<IMemoryCache, MemoryCache>();
 
         return services;
     }
