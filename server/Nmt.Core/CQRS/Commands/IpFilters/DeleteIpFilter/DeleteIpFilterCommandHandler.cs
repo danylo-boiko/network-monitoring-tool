@@ -1,7 +1,9 @@
 using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 using Nmt.Domain.Consts;
+using Nmt.Domain.Events;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
@@ -9,10 +11,12 @@ namespace Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
 public class DeleteIpFilterCommandHandler : IRequestHandler<DeleteIpFilterCommand, ExecutionResult<bool>>
 {
     private readonly PostgresDbContext _dbContext;
+    private readonly IMediator _mediator;
 
-    public DeleteIpFilterCommandHandler(PostgresDbContext dbContext)
+    public DeleteIpFilterCommandHandler(PostgresDbContext dbContext, IMediator mediator)
     {
         _dbContext = dbContext;
+        _mediator = mediator;
     }
 
     public async Task<ExecutionResult<bool>> Handle(DeleteIpFilterCommand request, CancellationToken cancellationToken)
@@ -26,7 +30,11 @@ public class DeleteIpFilterCommandHandler : IRequestHandler<DeleteIpFilterComman
         _dbContext.IpFilters.Remove(ipFilter);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
-
+        await _mediator.Publish(new CacheInvalidated
+        {
+            Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(ipFilter.UserId)
+        }, cancellationToken);
+        
         return new ExecutionResult<bool>(true);
     }
 }

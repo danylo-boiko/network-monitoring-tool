@@ -1,6 +1,6 @@
 using Nmt.Domain.Enums;
 
-namespace Nmt.Core.CQRS.Queries.Users.GetUserById;
+namespace Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 
 public class UserDto
 {

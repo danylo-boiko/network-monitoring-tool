@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using Nmt.Domain.Consts;
 using Nmt.Infrastructure.Data.Postgres;
 
-namespace Nmt.Core.CQRS.Queries.Users.GetUserById;
+namespace Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 
-public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, ExecutionResult<UserDto>>
+public class GetUserWithDevicesAndIpFiltersByIdQueryHandler : IRequestHandler<GetUserWithDevicesAndIpFiltersByIdQuery, ExecutionResult<UserDto>>
 {
     private readonly PostgresDbContext _dbContext;
 
-    public GetUserByIdQueryHandler(PostgresDbContext dbContext)
+    public GetUserWithDevicesAndIpFiltersByIdQueryHandler(PostgresDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<ExecutionResult<UserDto>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+    public async Task<ExecutionResult<UserDto>> Handle(GetUserWithDevicesAndIpFiltersByIdQuery request, CancellationToken cancellationToken)
     {
         var userQuery =
             from user in _dbContext.Users

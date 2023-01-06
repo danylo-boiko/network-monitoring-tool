@@ -1,10 +1,13 @@
 using System.Text;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Nmt.Core.Auth;
+using Nmt.Core.Cache;
+using Nmt.Core.Cache.Interfaces;
 using Nmt.Domain.Configs;
 using Nmt.Domain.Consts;
 
@@ -46,6 +49,19 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IAuthorizationHandler, PermissionsAuthorizationHandler>();
         services.AddSingleton<IAuthorizationPolicyProvider, PermissionsAuthorizationPolicyProvider>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddRedisCache(this IServiceCollection services)
+    {
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+
+        services.Scan(scan => scan
+            .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            .AddClasses(classes => classes.AssignableTo(typeof(ICachePolicy<,>)), false)
+            .AsImplementedInterfaces()
+            .WithTransientLifetime());
 
         return services;
     }

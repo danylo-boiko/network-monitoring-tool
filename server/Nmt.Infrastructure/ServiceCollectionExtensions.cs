@@ -4,6 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Nmt.Domain.Configs;
 using Nmt.Domain.Models;
+using Nmt.Infrastructure.Cache.MemoryCache;
+using Nmt.Infrastructure.Cache.MemoryCache.Interfaces;
+using Nmt.Infrastructure.Cache.Redis;
+using Nmt.Infrastructure.Cache.Redis.Interfaces;
 using Nmt.Infrastructure.Data.Mongo;
 using Nmt.Infrastructure.Data.Postgres;
 
@@ -13,9 +17,13 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        // PostgreSQL
         var postgresConnectionString = configuration.GetConnectionString("Postgres");
         services.AddNpgsql<PostgresDbContext>(postgresConnectionString);
 
+        services.ConfigurePostgres();
+
+        // MongoDB
         var mongoConnectionString = configuration.GetConnectionString("Mongo");
         var mongoDbConfig = configuration.GetSection(nameof(MongoDbConfig)).Get<MongoDbConfig>();
 
@@ -27,8 +35,21 @@ public static class ServiceCollectionExtensions
             return new MongoDbContext(database, mongoDbConfig);
         });
 
-        services.ConfigurePostgres();
         services.ConfigureMongo();
+
+        // Redis cache
+        var redisConnectionString = configuration.GetConnectionString("Redis");
+        services.AddDistributedRedisCache(opts =>
+        {
+            opts.Configuration = redisConnectionString;
+        });
+
+        services.AddTransient<IDistributedRedisCache, DistributedRedisCache>();
+
+        // Memory cache
+        services.AddMemoryCache();
+
+        services.AddTransient<IMemoryCache, MemoryCache>();
 
         return services;
     }

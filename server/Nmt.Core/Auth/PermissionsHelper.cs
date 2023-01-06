@@ -4,7 +4,7 @@ namespace Nmt.Core.Auth;
 
 public static class PermissionsHelper
 {
-    public static string ToPolicyName(Permission[] permissions)
+    public static string ToPolicyName(IEnumerable<Permission> permissions)
     {
         return string.Join(',', permissions.Select(permission => (int)permission));
     }
