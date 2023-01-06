@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nmt.Core.CQRS.Commands.Auth.CreateToken;
+using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 using Nmt.Domain.Consts;
+using Nmt.Domain.Events;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
@@ -86,6 +88,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
             };
 
             await _dbContext.Devices.AddAsync(device, cancellationToken);
+            await _mediator.Publish(new CacheInvalidated
+            {
+                Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(device.UserId)
+            }, cancellationToken);
         }
 
         return device.Id;

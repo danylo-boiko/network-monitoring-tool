@@ -2,4 +2,7 @@ using MediatR;
 
 namespace Nmt.Domain.Events;
 
-public record CacheInvalidated(string Key) : INotification;
+public record CacheInvalidated : INotification
+{
+    public string Key { get; set; }
+}
