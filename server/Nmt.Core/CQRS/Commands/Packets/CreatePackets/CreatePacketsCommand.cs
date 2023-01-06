@@ -5,5 +5,6 @@ namespace Nmt.Core.CQRS.Commands.Packets.CreatePackets;
 
 public record CreatePacketsCommand : IRequest
 {
+    public Guid DeviceId { get; set; }
     public IList<Packet> Packets { get; set; }
 }
