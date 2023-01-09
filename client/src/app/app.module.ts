@@ -1,18 +1,26 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
-import { AppRoutingModule } from './app-routing.module';
+import { AuthModule } from "./modules/auth/auth.module";
 import { AppComponent } from './app.component';
+import { RouterModule, Routes } from "@angular/router";
+
+const routes: Routes = [
+  { path: '', redirectTo: '/login', pathMatch: 'full' }
+];
 
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
+    AuthModule,
     BrowserModule,
-    AppRoutingModule
+    RouterModule.forRoot(routes)
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [
+    AppComponent
+  ]
 })
-export class AppModule { }
+export class AppModule {
+}
