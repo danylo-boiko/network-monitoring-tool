@@ -1,0 +1,22 @@
+<div class="container" *ngIf="loginForm">
+  <form class="form-container" [formGroup]="loginForm" (ngSubmit)="login()">
+    <h1 class="form-title">Welcome !</h1>
+
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Username</mat-label>
+      <input matInput formControlName="username"/>
+    </mat-form-field>
+
+    <mat-form-field hideRequiredMarker appearance="outline" >
+      <mat-label>Password</mat-label>
+      <input matInput [type]="loginForm.get('showPassword')!.value ? 'text' : 'password'" formControlName="password"/>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="showPassword">Show password</mat-checkbox>
+
+    <div class="form-bottom">
+      <a routerLink="/register">Create account</a>
+      <button mat-flat-button color="primary">Login</button>
+    </div>
+  </form>
+</div>
