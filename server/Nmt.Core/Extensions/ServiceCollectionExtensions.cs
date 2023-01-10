@@ -1,4 +1,6 @@
 using System.Text;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,6 +64,16 @@ public static class ServiceCollectionExtensions
             .AddClasses(classes => classes.AssignableTo(typeof(ICachePolicy<,>)), false)
             .AsImplementedInterfaces()
             .WithTransientLifetime());
+
+        return services;
+    }
+
+    public static IServiceCollection AddFluentValidation(this IServiceCollection services)
+    {
+        services
+            .AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters()
+            .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
 
         return services;
     }

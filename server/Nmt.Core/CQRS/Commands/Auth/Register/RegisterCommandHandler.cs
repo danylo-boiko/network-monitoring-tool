@@ -37,13 +37,13 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
             var isUsernameDuplicated = await _dbContext.Users.AnyAsync(u => u.UserName == request.Username, cancellationToken);
             if (isUsernameDuplicated)
             {
-                return new ExecutionResult<string>(new ErrorInfo(StatusCodes.AlreadyExists, $"User with username '{request.Username}' already exists"));
+                return new ExecutionResult<string>(new ErrorInfo(nameof(request.Username), "User with this username already exists"));
             }
 
             var isEmailDuplicated = await _dbContext.Users.AnyAsync(u => u.Email == request.Email, cancellationToken);
             if (isEmailDuplicated)
             {
-                return new ExecutionResult<string>(new ErrorInfo(StatusCodes.AlreadyExists, $"User with email '{request.Email}' already exists"));
+                return new ExecutionResult<string>(new ErrorInfo(nameof(request.Email), "User with this email already exists"));
             }
 
             var user = new User

@@ -39,13 +39,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Username, cancellationToken);
             if (user == null)
             {
-                return new ExecutionResult<string>(new ErrorInfo(StatusCodes.NotFound, $"User with username '{request.Username}' not found"));
+                return new ExecutionResult<string>(new ErrorInfo(nameof(request.Username), "User with this username not found"));
             }
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
             if (!signInResult.Succeeded)
             {
-                return new ExecutionResult<string>(new ErrorInfo(StatusCodes.Unauthenticated, "Provided incorrect password"));
+                return new ExecutionResult<string>(new ErrorInfo(nameof(request.Password), "Incorrect password"));
             }
 
             var deviceId = await GetOrCreateDevice(user.Id, request.Hostname, request.MachineSpecificStamp, cancellationToken);

@@ -7,6 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AppAny.HotChocolate.FluentValidation" Version="0.9.0" />
+        <PackageReference Include="HotChocolate.Abstractions" Version="12.16.0" />
         <PackageReference Include="HotChocolate.AspNetCore" Version="12.15.2" />
         <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="12.15.2" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />

@@ -25,7 +25,7 @@ public class GetUserWithDevicesAndIpFiltersByIdQueryHandler : IRequestHandler<Ge
                 Id = user.Id,
                 Username = user.UserName,
                 Email = user.Email,
-                Devices = _dbContext.Devices.Where(d => d.UserId == user.Id).Select(d => new UserDto.UserDeviceDto
+                Devices = _dbContext.Devices.Where(d => d.UserId == user.Id).Select(d => new UserDto.DeviceDto
                 {
                     Id = d.Id,
                     Hostname = d.Hostname,
@@ -46,7 +46,7 @@ public class GetUserWithDevicesAndIpFiltersByIdQueryHandler : IRequestHandler<Ge
 
         if (userDto == null)
         {
-            return new ExecutionResult<UserDto>(new ErrorInfo(StatusCodes.NotFound, $"User with id '{request.UserId}' not found"));
+            return new ExecutionResult<UserDto>(new ErrorInfo(nameof(request.UserId), $"User with id '{request.UserId}' not found"));
         }
 
         return new ExecutionResult<UserDto>(userDto);
