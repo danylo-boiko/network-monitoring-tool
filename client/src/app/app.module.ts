@@ -4,6 +4,8 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { AppComponent } from './app.component';
 import { RouterModule, Routes } from "@angular/router";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { GraphQLModule } from './modules/graphql/graphql.module';
+import { HttpClientModule } from '@angular/common/http';
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' }
@@ -17,6 +19,8 @@ const routes: Routes = [
     AuthModule,
     BrowserModule,
     BrowserAnimationsModule,
+    GraphQLModule,
+    HttpClientModule,
     RouterModule.forRoot(routes)
   ],
   providers: [],
