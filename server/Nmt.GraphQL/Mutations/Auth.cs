@@ -1,6 +1,8 @@
 using AppAny.HotChocolate.FluentValidation;
 using Nmt.Core.CQRS.Commands.Auth.Login;
 using Nmt.Core.CQRS.Commands.Auth.Register;
+using Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
+using Nmt.Core.CQRS.Commands.Auth.VerifyTwoFactorCode;
 using Nmt.GraphQL.Consts;
 using Nmt.GraphQL.Services.Interfaces;
 
@@ -16,9 +18,23 @@ public class Auth
         return await executionResultService.HandleExecutionResultRequest(input);
     }
 
-    public async Task<string> Register(
+    public async Task<bool> Register(
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] RegisterCommand input)
+    {
+        return await executionResultService.HandleExecutionResultRequest(input);
+    }
+    
+    public async Task<bool> SendTwoFactorCodeCommand(
+        [Service] IExecutionResultService executionResultService, 
+        [UseFluentValidation] SendTwoFactorCodeCommand input)
+    {
+        return await executionResultService.HandleExecutionResultRequest(input);
+    }
+
+    public async Task<bool> VerifyTwoFactorCodeCommand(
+        [Service] IExecutionResultService executionResultService, 
+        [UseFluentValidation] VerifyTwoFactorCodeCommand input)
     {
         return await executionResultService.HandleExecutionResultRequest(input);
     }

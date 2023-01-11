@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nmt.Core.CQRS.Commands.Auth.CreateToken;
+using Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
 using Nmt.Domain.Consts;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.Auth.Register;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ExecutionResult<string>>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ExecutionResult<bool>>
 {
     private readonly PostgresDbContext _dbContext;
     private readonly UserManager<User> _userManager;
@@ -29,7 +30,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
         _logger = logger;
     }
 
-    public async Task<ExecutionResult<string>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<ExecutionResult<bool>> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
         try
@@ -37,13 +38,13 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
             var isUsernameDuplicated = await _dbContext.Users.AnyAsync(u => u.UserName == request.Username, cancellationToken);
             if (isUsernameDuplicated)
             {
-                return new ExecutionResult<string>(new ErrorInfo(nameof(request.Username), "User with this username already exists"));
+                return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Username), "User with this username already exists"));
             }
 
             var isEmailDuplicated = await _dbContext.Users.AnyAsync(u => u.Email == request.Email, cancellationToken);
             if (isEmailDuplicated)
             {
-                return new ExecutionResult<string>(new ErrorInfo(nameof(request.Email), "User with this email already exists"));
+                return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Email), "User with this email already exists"));
             }
 
             var user = new User
@@ -52,11 +53,14 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
                 Email = request.Email
             };
 
-            var registerResult = await _userManager.CreateAsync(user, request.Password);
-            if (!registerResult.Succeeded)
+            var userCreationResult = await _userManager.CreateAsync(user, request.Password);
+            if (!userCreationResult.Succeeded)
             {
-                var err = registerResult.Errors.First();
-                return new ExecutionResult<string>(new ErrorInfo(err.Code, err.Description));
+                var errors = userCreationResult.Errors
+                    .Select(e => new ErrorInfo(e.Description))
+                    .ToList();
+
+                return new ExecutionResult<bool>(errors);
             }
 
             await _userManager.AddToRoleAsync(user, UserRoles.User);
@@ -64,18 +68,15 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            var jwtToken = await _mediator.Send(new CreateTokenCommand
+            return await _mediator.Send(new SendTwoFactorCodeCommand
             {
-                UserId = user.Id,
-                DeviceId = null
+                Email = user.Email
             }, cancellationToken);
-
-            return new ExecutionResult<string>(jwtToken);
         }
         catch (Exception e)
         {
             _logger.LogError(e.Message);
-            return new ExecutionResult<string>(new ErrorInfo(e.Message));
+            return new ExecutionResult<bool>(new ErrorInfo(e.Message));
         }
     }
 }

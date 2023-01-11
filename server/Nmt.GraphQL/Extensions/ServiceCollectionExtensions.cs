@@ -3,21 +3,12 @@ using HotChocolate.Execution.Configuration;
 using Nmt.GraphQL.Consts;
 using Nmt.GraphQL.Mutations;
 using Nmt.GraphQL.Queries;
-using Nmt.GraphQL.Services;
-using Nmt.GraphQL.Services.Interfaces;
 using ExecutionResultExtensions = Nmt.Core.Extensions.ExecutionResultExtensions;
 
 namespace Nmt.GraphQL.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddServices(this IServiceCollection services)
-    {
-        services.AddTransient<IExecutionResultService, ExecutionResultService>();
-
-        return services;
-    }
-
     public static IServiceCollection AddCors(this IServiceCollection services, IConfiguration configuration)
     {
         var clientUrl = configuration.GetValue<string>("ClientUrl")!;

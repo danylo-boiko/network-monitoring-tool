@@ -30,6 +30,7 @@ public class DeleteIpFilterCommandHandler : IRequestHandler<DeleteIpFilterComman
         _dbContext.IpFilters.Remove(ipFilter);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+
         await _mediator.Publish(new CacheInvalidated
         {
             Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(ipFilter.UserId)

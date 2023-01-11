@@ -6,7 +6,5 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
     public LoginCommandValidator()
     {
-        RuleFor(lc => lc.Username)
-            .Length(3, 64);
     }
 }

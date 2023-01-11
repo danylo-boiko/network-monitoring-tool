@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Nmt.Core.CQRS.Commands.Auth.CreateToken;
 using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
-using Nmt.Domain.Consts;
 using Nmt.Domain.Events;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
@@ -15,18 +14,18 @@ namespace Nmt.Core.CQRS.Commands.Auth.Login;
 public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult<string>>
 {
     private readonly PostgresDbContext _dbContext;
-    private readonly SignInManager<User> _signInManager;
+    private readonly UserManager<User> _userManager;
     private readonly IMediator _mediator;
     private readonly ILogger<LoginCommandHandler> _logger;
 
     public LoginCommandHandler(
         PostgresDbContext dbContext,
-        SignInManager<User> signInManager,
+        UserManager<User> userManager,
         IMediator mediator,
         ILogger<LoginCommandHandler> logger)
     {
         _dbContext = dbContext;
-        _signInManager = signInManager;
+        _userManager = userManager;
         _mediator = mediator;
         _logger = logger;
     }
@@ -42,10 +41,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
                 return new ExecutionResult<string>(new ErrorInfo(nameof(request.Username), "User with this username not found"));
             }
 
-            var signInResult = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-            if (!signInResult.Succeeded)
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+            if (!isPasswordValid)
             {
                 return new ExecutionResult<string>(new ErrorInfo(nameof(request.Password), "Incorrect password"));
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                return new ExecutionResult<string>(new ErrorInfo(nameof(user.EmailConfirmed), "Email is not confirmed"));
             }
 
             var deviceId = await GetOrCreateDevice(user.Id, request.Hostname, request.MachineSpecificStamp, cancellationToken);
@@ -75,24 +79,30 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
             return null;
         }
 
-        var device = await _dbContext.Devices.FirstOrDefaultAsync(d => d.UserId == userId && d.MachineSpecificStamp == machineSpecificStamp, cancellationToken);
+        var deviceId = await _dbContext.Devices
+            .Where(d => d.UserId == userId && d.MachineSpecificStamp == machineSpecificStamp)
+            .Select(d => d.Id)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (device == null)
+        if (deviceId != Guid.Empty)
         {
-            device = new Device
-            {
-                UserId = userId,
-                Hostname = hostname,
-                MachineSpecificStamp = machineSpecificStamp,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _dbContext.Devices.AddAsync(device, cancellationToken);
-            await _mediator.Publish(new CacheInvalidated
-            {
-                Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(device.UserId)
-            }, cancellationToken);
+            return deviceId;
         }
+
+        var device = new Device
+        {
+            UserId = userId,
+            Hostname = hostname,
+            MachineSpecificStamp = machineSpecificStamp,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await _dbContext.Devices.AddAsync(device, cancellationToken);
+
+        await _mediator.Publish(new CacheInvalidated
+        {
+            Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(device.UserId)
+        }, cancellationToken);
 
         return device.Id;
     }
