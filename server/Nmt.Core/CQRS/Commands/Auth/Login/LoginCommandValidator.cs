@@ -21,7 +21,7 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
             .WithMessage("Password shouldn't be empty")
             .MinimumLength(8)
             .WithMessage("Password should has at least 8 characters")
-            .Matches("^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$")
+            .Matches(@"^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9\s!@#$%^&*()_+=-`~\\\]\[{}|';:/.,?><]+)$")
             .WithMessage("Password must contains at least one letter and one number");
     }
 }

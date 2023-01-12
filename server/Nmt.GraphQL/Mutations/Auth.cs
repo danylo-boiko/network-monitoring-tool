@@ -25,14 +25,14 @@ public class Auth
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
     
-    public async Task<bool> SendTwoFactorCodeCommand(
+    public async Task<bool> SendTwoFactorCode(
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] SendTwoFactorCodeCommand input)
     {
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 
-    public async Task<bool> VerifyTwoFactorCodeCommand(
+    public async Task<bool> VerifyTwoFactorCode(
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] VerifyTwoFactorCodeCommand input)
     {

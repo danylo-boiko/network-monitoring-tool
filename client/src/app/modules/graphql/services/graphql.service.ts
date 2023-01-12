@@ -80,7 +80,9 @@ export type Mutation = {
   createIpFilter: Scalars['UUID'];
   deleteIpFilter: Scalars['Boolean'];
   login: Scalars['String'];
-  register: Scalars['String'];
+  register: Scalars['Boolean'];
+  sendTwoFactorCode: Scalars['Boolean'];
+  verifyTwoFactorCode: Scalars['Boolean'];
 };
 
 
@@ -101,6 +103,16 @@ export type MutationLoginArgs = {
 
 export type MutationRegisterArgs = {
   input: RegisterCommandInput;
+};
+
+
+export type MutationSendTwoFactorCodeArgs = {
+  input: SendTwoFactorCodeCommandInput;
+};
+
+
+export type MutationVerifyTwoFactorCodeArgs = {
+  input: VerifyTwoFactorCodeCommandInput;
 };
 
 export type PacketDto = {
@@ -161,9 +173,14 @@ export type QueryUserByIdArgs = {
 };
 
 export type RegisterCommandInput = {
+  confirmPassword: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
   username: Scalars['String'];
+};
+
+export type SendTwoFactorCodeCommandInput = {
+  email: Scalars['String'];
 };
 
 export type UserDto = {
@@ -173,6 +190,11 @@ export type UserDto = {
   id: Scalars['UUID'];
   ipFilters: Array<IpFilterDto>;
   username: Scalars['String'];
+};
+
+export type VerifyTwoFactorCodeCommandInput = {
+  email: Scalars['String'];
+  twoFactorCode: Scalars['String'];
 };
 
 export type LoginMutationVariables = Exact<{
@@ -187,7 +209,21 @@ export type RegisterMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMutation = { __typename?: 'Mutation', register: string };
+export type RegisterMutation = { __typename?: 'Mutation', register: boolean };
+
+export type SendTwoFactorCodeMutationVariables = Exact<{
+  input: SendTwoFactorCodeCommandInput;
+}>;
+
+
+export type SendTwoFactorCodeMutation = { __typename?: 'Mutation', sendTwoFactorCode: boolean };
+
+export type VerifyTwoFactorCodeMutationVariables = Exact<{
+  input: VerifyTwoFactorCodeCommandInput;
+}>;
+
+
+export type VerifyTwoFactorCodeMutation = { __typename?: 'Mutation', verifyTwoFactorCode: boolean };
 
 export const LoginDocument = gql`
     mutation Login($input: LoginCommandInput!) {
@@ -216,6 +252,38 @@ export const RegisterDocument = gql`
   })
   export class RegisterGQL extends Apollo.Mutation<RegisterMutation, RegisterMutationVariables> {
     override document = RegisterDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const SendTwoFactorCodeDocument = gql`
+    mutation SendTwoFactorCode($input: SendTwoFactorCodeCommandInput!) {
+  sendTwoFactorCode(input: $input)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class SendTwoFactorCodeGQL extends Apollo.Mutation<SendTwoFactorCodeMutation, SendTwoFactorCodeMutationVariables> {
+    override document = SendTwoFactorCodeDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const VerifyTwoFactorCodeDocument = gql`
+    mutation VerifyTwoFactorCode($input: VerifyTwoFactorCodeCommandInput!) {
+  verifyTwoFactorCode(input: $input)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class VerifyTwoFactorCodeGQL extends Apollo.Mutation<VerifyTwoFactorCodeMutation, VerifyTwoFactorCodeMutationVariables> {
+    override document = VerifyTwoFactorCodeDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
