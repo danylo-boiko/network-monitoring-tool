@@ -6,5 +6,10 @@ public class SendTwoFactorCodeCommandValidator : AbstractValidator<SendTwoFactor
 {
     public SendTwoFactorCodeCommandValidator()
     {
+        RuleFor(c => c.Email)
+            .NotEmpty()
+            .WithMessage("Email shouldn't be empty")
+            .EmailAddress()
+            .WithMessage("Email has invalid format");
     }
 }

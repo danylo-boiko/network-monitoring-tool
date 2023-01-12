@@ -61,8 +61,8 @@ public static class ServiceCollectionExtensions
             opts.User.RequireUniqueEmail = true;
             opts.SignIn.RequireConfirmedEmail = true;
             opts.Password.RequireDigit = true;
-            opts.Password.RequireLowercase = true;
-            opts.Password.RequireUppercase = true;
+            opts.Password.RequireUppercase = false;
+            opts.Password.RequireLowercase = false;
             opts.Password.RequireNonAlphanumeric = false;
             opts.Password.RequiredLength = 8;
         })
