@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Nmt.Core.Cache.Interfaces;
 using Nmt.Infrastructure.Cache.Redis.Interfaces;
 
-namespace Nmt.Core.Cache;
+namespace Nmt.Core.Cache.Behaviors;
 
 public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {

@@ -1,17 +1,28 @@
+using AppAny.HotChocolate.FluentValidation;
 using HotChocolate.Execution.Configuration;
 using Nmt.GraphQL.Consts;
 using Nmt.GraphQL.Mutations;
 using Nmt.GraphQL.Queries;
-using Nmt.GraphQL.Services;
-using Nmt.GraphQL.Services.Interfaces;
+using ExecutionResultExtensions = Nmt.Core.Extensions.ExecutionResultExtensions;
 
 namespace Nmt.GraphQL.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddCors(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddTransient<IExecutionResultService, ExecutionResultService>();
+        var clientUrl = configuration.GetValue<string>("ClientUrl")!;
+
+        services.AddCors(opts =>
+        {
+            opts.AddDefaultPolicy(pb =>
+            {
+                pb.WithOrigins(clientUrl)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+        });
 
         return services;
     }
@@ -23,7 +34,12 @@ public static class ServiceCollectionExtensions
             .AddAuthorization()
             .AddErrorFilter<ErrorFilter>()
             .AddQueries()
-            .AddMutations();
+            .AddMutations()
+            .AddFluentValidation(vb => vb.UseErrorMapper((builder, context) =>
+            {
+                builder.SetMessage(context.ValidationFailure.ErrorMessage);
+                builder.SetExtension(ExecutionResultExtensions.GraphQLPropertyName, context.ValidationFailure.PropertyName);
+            }));
 
         return services;
     }

@@ -1,4 +1,6 @@
 using System.Text;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,8 +8,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Nmt.Core.Auth;
-using Nmt.Core.Cache;
+using Nmt.Core.Cache.Behaviors;
 using Nmt.Core.Cache.Interfaces;
+using Nmt.Core.TokenProviders;
+using Nmt.Domain.Common;
 using Nmt.Domain.Configs;
 using Nmt.Domain.Consts;
 
@@ -62,6 +66,37 @@ public static class ServiceCollectionExtensions
             .AddClasses(classes => classes.AssignableTo(typeof(ICachePolicy<,>)), false)
             .AsImplementedInterfaces()
             .WithTransientLifetime());
+
+        return services;
+    }
+
+    public static IServiceCollection AddFluentValidation(this IServiceCollection services)
+    {
+        services
+            .AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters()
+            .AddValidatorsFromAssemblies(AppDomain.CurrentDomain.GetAssemblies());
+
+        return services;
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.Scan(scan => scan
+            .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
+            .AddClasses(classes => classes.AssignableTo(typeof(IService)), false)
+            .AsImplementedInterfaces()
+            .WithTransientLifetime());
+
+        services.AddTransient<TwoFactorCodeProvider>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddSmtpConfigs(this IServiceCollection services, IConfiguration configuration)
+    {
+        var googleSmtpConfig = configuration.GetSection(nameof(GoogleSmtpConfig)).Get<GoogleSmtpConfig>()!;
+        services.AddSingleton(googleSmtpConfig);
 
         return services;
     }

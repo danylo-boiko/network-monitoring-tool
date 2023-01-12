@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using Nmt.Core.Auth;
+using Nmt.Core.Helpers;
 using Nmt.Domain.Enums;
 
 namespace Nmt.Grpc.Attributes;

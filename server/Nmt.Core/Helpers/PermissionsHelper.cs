@@ -1,6 +1,6 @@
 using Nmt.Domain.Enums;
 
-namespace Nmt.Core.Auth;
+namespace Nmt.Core.Helpers;
 
 public static class PermissionsHelper
 {

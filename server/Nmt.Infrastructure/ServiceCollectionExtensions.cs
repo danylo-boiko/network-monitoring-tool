@@ -56,15 +56,15 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection ConfigurePostgres(this IServiceCollection services)
     {
-        services.AddIdentity<User, Role>(o => 
+        services.AddIdentity<User, Role>(opts => 
         {
-            o.Password.RequireDigit = true;
-            o.Password.RequireLowercase = true;
-            o.Password.RequireUppercase = true;
-            o.Password.RequireNonAlphanumeric = false;
-            o.Password.RequiredLength = 8;
-
-            o.User.RequireUniqueEmail = true;
+            opts.User.RequireUniqueEmail = true;
+            opts.SignIn.RequireConfirmedEmail = true;
+            opts.Password.RequireDigit = true;
+            opts.Password.RequireUppercase = false;
+            opts.Password.RequireLowercase = false;
+            opts.Password.RequireNonAlphanumeric = false;
+            opts.Password.RequiredLength = 8;
         })
         .AddEntityFrameworkStores<PostgresDbContext>()
         .AddDefaultTokenProviders();

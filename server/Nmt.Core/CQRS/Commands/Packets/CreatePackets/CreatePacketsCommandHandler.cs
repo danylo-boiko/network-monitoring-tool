@@ -1,5 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver.Linq;
+using Nmt.Domain.Enums;
 using Nmt.Infrastructure.Cache.MemoryCache.Interfaces;
 using Nmt.Infrastructure.Data.Mongo;
 
@@ -28,12 +30,20 @@ public class CreatePacketsCommandHandler : IRequestHandler<CreatePacketsCommand>
         await _dbContext.Packets.InsertManyAsync(request.Packets, cancellationToken: cancellationToken);
 
         var packetsAggregateCacheKey = PacketsAggregate.GetCacheKey(request.DeviceId);
-        var countOfUniqueIps = request.Packets.Select(p => p.Ip).Distinct().Count();
+
+        var passedPackets = request.Packets
+            .Where(p => p.Status == PacketStatus.Passed)
+            .ToList();
+
+        var countOfUniqueIps = passedPackets
+            .Select(p => p.Ip)
+            .Distinct()
+            .Count();
 
         var packetsAggregate = new PacketsAggregate
         {
             CountOfUniqueIps = countOfUniqueIps,
-            AverageCountOfPacketsPerIp = (float)request.Packets.Count / (float)countOfUniqueIps
+            AverageCountOfPacketsPerIp = (float)passedPackets.Count / (float)countOfUniqueIps
         };
 
         var cachedPacketsAggregate = _memoryCache.Get<PacketsAggregate>(packetsAggregateCacheKey);

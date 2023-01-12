@@ -32,6 +32,7 @@ public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterComman
         await _dbContext.IpFilters.AddAsync(ipFilter, cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+
         await _mediator.Publish(new CacheInvalidated
         {
             Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(ipFilter.UserId)

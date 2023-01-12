@@ -6,27 +6,23 @@ namespace Nmt.Core.Extensions;
 
 public static class ExecutionResultExtensions
 {
+    public static readonly string GraphQLPropertyName = "property";
+
     public static RpcException ToGrpcException(this ExecutionResult executionResult)
     {
-        var statusCode = executionResult.Errors.First().Key;
-        var grpcStatusCode = ToGrpcStatusCode(statusCode);
-
-        return new RpcException(new Status(grpcStatusCode, executionResult.ErrorMessage()));
+        return new RpcException(new Status(StatusCode.Internal, executionResult.ErrorMessage()));
     }
 
     public static GraphQLException ToGraphQLException(this ExecutionResult executionResult)
     {
-        return new GraphQLException(executionResult.ErrorMessage());
-    }
+        var errors = executionResult.Errors
+            .Select(e => new Error(message: e.ErrorMessage, extensions: new Dictionary<string, object?>
+            {
+                { GraphQLPropertyName, e.Key }
+            }))
+            .ToList();
 
-    private static StatusCode ToGrpcStatusCode(string statusCode)
-    {
-        if (Enum.TryParse(statusCode, true, out StatusCode grpcStatusCode))
-        {
-            return grpcStatusCode;
-        }
-
-        return StatusCode.Internal;
+        return new GraphQLException(errors);
     }
 
     private static string ErrorMessage(this ExecutionResult executionResult)

@@ -1,0 +1,13 @@
+overwrite: true
+generates:
+  ./src/app/modules/graphql/services/graphql.service.ts:
+    schema:
+      - http://localhost:5077/graphql
+    documents:
+      - src/app/modules/graphql/documents/*.document.graphql
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-apollo-angular
+    config:
+      addExplicitOverride: true

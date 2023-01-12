@@ -24,12 +24,13 @@ public class DeleteIpFilterCommandHandler : IRequestHandler<DeleteIpFilterComman
         var ipFilter = await _dbContext.IpFilters.FirstOrDefaultAsync(i => i.Id == request.IpFilterId, cancellationToken);
         if (ipFilter == null)
         {
-            return new ExecutionResult<bool>(new ErrorInfo(StatusCodes.NotFound, $"IP filter with id '{request.IpFilterId}' not found"));
+            return new ExecutionResult<bool>(new ErrorInfo(nameof(request.IpFilterId), $"IP filter with id '{request.IpFilterId}' not found"));
         }
 
         _dbContext.IpFilters.Remove(ipFilter);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+
         await _mediator.Publish(new CacheInvalidated
         {
             Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(ipFilter.UserId)

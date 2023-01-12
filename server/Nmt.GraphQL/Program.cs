@@ -13,10 +13,15 @@ services
     .AddRedisCache()
     .AddMediatR(typeof(MediatREntryPoint).Assembly)
     .AddAuthentication(configuration)
+    .AddFluentValidation()
     .AddServices()
+    .AddSmtpConfigs(configuration)
+    .AddCors(configuration)
     .AddGraphQL();
 
 var app = builder.Build();
+
+app.UseCors();
 
 app.UseRouting();
 

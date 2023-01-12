@@ -1,0 +1,15 @@
+mutation Login($input: LoginCommandInput!) {
+  login(input: $input)
+}
+
+mutation Register($input: RegisterCommandInput!) {
+  register(input: $input)
+}
+
+mutation SendTwoFactorCode($input: SendTwoFactorCodeCommandInput!) {
+  sendTwoFactorCode(input: $input)
+}
+
+mutation VerifyTwoFactorCode($input: VerifyTwoFactorCodeCommandInput!) {
+  verifyTwoFactorCode(input: $input)
+}
