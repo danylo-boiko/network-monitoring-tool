@@ -15,27 +15,27 @@ public class Auth
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] LoginCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequest(input);
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 
     public async Task<bool> Register(
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] RegisterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequest(input);
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
     
     public async Task<bool> SendTwoFactorCodeCommand(
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] SendTwoFactorCodeCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequest(input);
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 
     public async Task<bool> VerifyTwoFactorCodeCommand(
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] VerifyTwoFactorCodeCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequest(input);
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 }

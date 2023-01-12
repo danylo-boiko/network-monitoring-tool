@@ -14,7 +14,7 @@ public class ExecutionResultService : IExecutionResultService
         _mediator = mediator;
     }
 
-    public async Task<T> HandleExecutionResultRequest<T>(IRequest<ExecutionResult<T>> request)
+    public async Task<T> HandleExecutionResultRequestAsync<T>(IRequest<ExecutionResult<T>> request)
     {
         var requestResult = await _mediator.Send(request);
 

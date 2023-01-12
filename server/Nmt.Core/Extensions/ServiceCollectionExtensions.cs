@@ -92,4 +92,12 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddSmtpConfigs(this IServiceCollection services, IConfiguration configuration)
+    {
+        var googleSmtpConfig = configuration.GetSection(nameof(GoogleSmtpConfig)).Get<GoogleSmtpConfig>()!;
+        services.AddSingleton(googleSmtpConfig);
+
+        return services;
+    }
 }

@@ -13,12 +13,12 @@ public class IpFilters
     [PermissionsAuthorize(Permission.IpFiltersCreate)]
     public async Task<Guid> CreateIpFilter([Service] IExecutionResultService executionResultService, CreateIpFilterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequest(input);
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 
     [PermissionsAuthorize(Permission.IpFiltersDelete)]
     public async Task<bool> DeleteIpFilter([Service] IExecutionResultService executionResultService, DeleteIpFilterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequest(input);
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 }

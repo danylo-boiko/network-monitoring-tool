@@ -6,5 +6,5 @@ namespace Nmt.GraphQL.Services.Interfaces;
 
 public interface IExecutionResultService : IService
 {
-    public Task<T> HandleExecutionResultRequest<T>(IRequest<ExecutionResult<T>> request);
+    public Task<T> HandleExecutionResultRequestAsync<T>(IRequest<ExecutionResult<T>> request);
 }

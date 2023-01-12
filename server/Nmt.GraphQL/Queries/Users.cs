@@ -12,6 +12,6 @@ public class Users
     [PermissionsAuthorize(Permission.UsersRead)]
     public async Task<UserDto> GetUserById([Service] IExecutionResultService executionResultService, GetUserWithDevicesAndIpFiltersByIdQuery input)
     {
-        return await executionResultService.HandleExecutionResultRequest(input);
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 }

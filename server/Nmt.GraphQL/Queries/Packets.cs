@@ -12,6 +12,6 @@ public class Packets
     [PermissionsAuthorize(Permission.PacketsRead)]
     public async Task<IList<PacketDto>> GetPacketsByDeviceId([Service] IExecutionResultService executionResultService, GetPacketsByDeviceIdQuery input)
     {
-        return await executionResultService.HandleExecutionResultRequest(input);
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 }

@@ -15,6 +15,7 @@ services
     .AddAuthentication(configuration)
     .AddFluentValidation()
     .AddServices()
+    .AddSmtpConfigs(configuration)
     .AddCors(configuration)
     .AddGraphQL();
 

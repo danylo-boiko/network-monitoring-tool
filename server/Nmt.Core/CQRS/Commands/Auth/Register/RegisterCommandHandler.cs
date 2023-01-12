@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Nmt.Core.CQRS.Commands.Auth.CreateToken;
 using Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
 using Nmt.Domain.Consts;
 using Nmt.Domain.Models;
