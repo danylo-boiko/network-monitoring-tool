@@ -27,16 +27,22 @@ export class JwtTokenService {
     return this.isTokenValid(this.refreshTokenKey);
   }
 
-  public setAuthTokens(accessToken: string, refreshToken: string) {
+  public hasAuthTokens(): boolean {
+    return this.getAccessToken() != null && this.getRefreshToken() != null;
+  }
+
+  public setAuthTokens(accessToken: string, refreshToken: string): void {
     localStorage.setItem(this.accessTokenKey, accessToken);
     localStorage.setItem(this.refreshTokenKey, refreshToken);
   }
 
-  private isTokenValid(token: string | null): boolean {
-    if (token) {
-      return !this.jwtHelper.isTokenExpired(token);
-    }
+  public removeAuthTokens(): void {
+    localStorage.removeItem(this.accessTokenKey);
+    localStorage.removeItem(this.refreshTokenKey);
+  }
 
-    return false;
+  private isTokenValid(tokenKey: string): boolean {
+    const token = localStorage.getItem(tokenKey);
+    return token != null && !this.jwtHelper.isTokenExpired(token);
   }
 }

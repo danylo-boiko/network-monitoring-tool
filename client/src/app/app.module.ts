@@ -5,7 +5,10 @@ import { AppComponent } from './app.component';
 import { RouterModule, Routes } from "@angular/router";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GraphQLModule } from './modules/graphql/graphql.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { SharedModule } from "./modules/shared/shared.module";
+import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { AuthInterceptor } from "./interceptors/auth.interceptor";
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' }
@@ -17,13 +20,25 @@ const routes: Routes = [
   ],
   imports: [
     AuthModule,
+    GraphQLModule,
+    SharedModule,
     BrowserModule,
     BrowserAnimationsModule,
-    GraphQLModule,
     HttpClientModule,
     RouterModule.forRoot(routes)
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
+    {
+      provide: JWT_OPTIONS,
+      useValue: JWT_OPTIONS
+    },
+    JwtHelperService
+  ],
   bootstrap: [
     AppComponent
   ]

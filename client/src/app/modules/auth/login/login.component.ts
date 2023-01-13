@@ -5,6 +5,7 @@ import { MutationResult } from 'apollo-angular';
 import { AuthService } from "../../graphql/services/auth.service";
 import { LoginMutation } from '../../graphql/services/graphql.service';
 import { ErrorsService } from "../../graphql/services/errors.service";
+import { JwtTokenService } from '../../shared/services/jwt-token.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,10 @@ import { ErrorsService } from "../../graphql/services/errors.service";
 export class LoginComponent implements OnInit {
   public loginForm!: FormGroup;
 
-  constructor(private readonly _authService: AuthService, private readonly _errorsService: ErrorsService) {
+  constructor(
+    private readonly _authService: AuthService,
+    private readonly _jwtTokenService: JwtTokenService,
+    private readonly _errorsService: ErrorsService) {
   }
 
   public ngOnInit(): void {
@@ -35,8 +39,11 @@ export class LoginComponent implements OnInit {
     this._authService
       .login({username, password})
       .subscribe({
-        next: (value: MutationResult<LoginMutation>) => {
-          console.log(value);
+        next: (response: MutationResult<LoginMutation>) => {
+          if (!response.loading) {
+            const tokens = response.data?.login!;
+            this._jwtTokenService.setAuthTokens(tokens.accessToken, tokens.refreshToken);
+          }
         },
         error: (err: ApolloError) => {
           const validationErrors = this._errorsService.getValidationErrors(err);

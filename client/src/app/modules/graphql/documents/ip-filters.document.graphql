@@ -1,0 +1,7 @@
+mutation CreateIpFilter($input: CreateIpFilterCommandInput!) {
+  createIpFilter(input: $input)
+}
+
+mutation DeleteIpFilter($input: DeleteIpFilterCommandInput!) {
+  deleteIpFilter(input: $input)
+}

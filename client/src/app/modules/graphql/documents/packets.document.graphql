@@ -1,0 +1,10 @@
+query GetPacketsByDeviceId($input: GetPacketsByDeviceIdQueryInput!) {
+  packetsByDeviceId(input: $input) {
+    id,
+    ip,
+    size,
+    protocol,
+    status,
+    createdAt
+  }
+}
