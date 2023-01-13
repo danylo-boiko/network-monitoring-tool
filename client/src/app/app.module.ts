@@ -9,6 +9,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { SharedModule } from "./modules/shared/shared.module";
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { AuthInterceptor } from "./interceptors/auth.interceptor";
+import { DashboardModule } from "./modules/dashboard/dashboard.module";
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' }
@@ -22,6 +23,7 @@ const routes: Routes = [
     AuthModule,
     GraphQLModule,
     SharedModule,
+    DashboardModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,

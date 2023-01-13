@@ -275,7 +275,7 @@ export type GetUserByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetUserByIdQuery = { __typename?: 'Query', userById: { __typename?: 'UserDto', username: string, devices: Array<{ __typename?: 'DeviceDto', id: any, hostname: string, machineSpecificStamp: string, createdAt: any }>, ipFilters: Array<{ __typename?: 'IpFilterDto', id: any, ip: any, filterAction: IpFilterAction, comment?: string | null, createdAt: any }> } };
+export type GetUserByIdQuery = { __typename?: 'Query', userById: { __typename?: 'UserDto', devices: Array<{ __typename?: 'DeviceDto', id: any, hostname: string, machineSpecificStamp: string, createdAt: any }>, ipFilters: Array<{ __typename?: 'IpFilterDto', id: any, ip: any, filterAction: IpFilterAction, comment?: string | null, createdAt: any }> } };
 
 export const LoginDocument = gql`
     mutation Login($input: LoginCommandInput!) {
@@ -421,7 +421,6 @@ export const GetPacketsByDeviceIdDocument = gql`
 export const GetUserByIdDocument = gql`
     query GetUserById($input: GetUserWithDevicesAndIpFiltersByIdQueryInput!) {
   userById(input: $input) {
-    username
     devices {
       id
       hostname

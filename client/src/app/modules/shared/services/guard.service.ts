@@ -14,7 +14,7 @@ export class GuardService implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (!this._jwtTokenService.isAccessTokenValid()) {
-      this._router.navigate(['login']);
+      this._router.navigateByUrl("/login");
       return false;
     }
     return true;

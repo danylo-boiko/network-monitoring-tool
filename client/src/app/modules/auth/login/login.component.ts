@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { FormControl, FormGroup } from "@angular/forms";
 import { ApolloError } from '@apollo/client/core';
 import { MutationResult } from 'apollo-angular';
 import { AuthService } from "../../graphql/services/auth.service";
 import { LoginMutation } from '../../graphql/services/graphql.service';
-import { ErrorsService } from "../../graphql/services/errors.service";
 import { JwtTokenService } from '../../shared/services/jwt-token.service';
+import { LoginForm } from './login.form';
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -13,19 +14,25 @@ import { JwtTokenService } from '../../shared/services/jwt-token.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  public loginForm!: FormGroup;
+  public loginForm!: FormGroup<LoginForm>;
 
   constructor(
     private readonly _authService: AuthService,
     private readonly _jwtTokenService: JwtTokenService,
-    private readonly _errorsService: ErrorsService) {
+    private readonly _router: Router) {
   }
 
   public ngOnInit(): void {
-    this.loginForm = new FormGroup({
-      username: new FormControl(null),
-      password: new FormControl(null),
-      showPassword: new FormControl(false)
+    this.loginForm = new FormGroup<LoginForm>({
+      username: new FormControl<string>("", {
+        nonNullable: true
+      }),
+      password: new FormControl<string>("", {
+        nonNullable: true
+      }),
+      showPassword: new FormControl<boolean>(false, {
+        nonNullable: true
+      })
     });
   }
 
@@ -34,23 +41,21 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const { username, password } = this.loginForm.value;
-
     this._authService
-      .login({username, password})
+      .login(this.loginForm.getRawValue())
       .subscribe({
         next: (response: MutationResult<LoginMutation>) => {
           if (!response.loading) {
-            const tokens = response.data?.login!;
-            this._jwtTokenService.setAuthTokens(tokens.accessToken, tokens.refreshToken);
+            this._router.navigateByUrl('/verify-email', {
+              state: {
+                email: "",
+                sendTwoFactorCode: true
+              }
+            });
           }
         },
         error: (err: ApolloError) => {
-          const validationErrors = this._errorsService.getValidationErrors(err);
-          console.log(validationErrors);
-          if (validationErrors.size == 0) {
-            throw err;
-          }
+          console.log(err.networkError);
         }
       });
   }

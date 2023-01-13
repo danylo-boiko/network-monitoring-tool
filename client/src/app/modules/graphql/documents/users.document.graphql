@@ -1,6 +1,5 @@
 query GetUserById($input: GetUserWithDevicesAndIpFiltersByIdQueryInput!) {
   userById(input: $input) {
-    username,
     devices {
       id,
       hostname,
