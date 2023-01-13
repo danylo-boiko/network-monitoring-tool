@@ -1,9 +1,10 @@
 using LS.Helpers.Hosting.API;
 using MediatR;
+using Nmt.Core.CQRS.Commands.Auth.RefreshToken;
 
 namespace Nmt.Core.CQRS.Commands.Auth.Login;
 
-public record LoginCommand : IRequest<ExecutionResult<string>>
+public record LoginCommand : IRequest<ExecutionResult<TokenDto>>
 {
     public string Username { get; set; }
     public string Password { get; set; }

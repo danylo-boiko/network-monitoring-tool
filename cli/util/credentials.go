@@ -10,12 +10,13 @@ import (
 )
 
 type Credentials struct {
-	JwtToken string
+	AccessToken  string
+	RefreshToken string
 }
 
 func (creds *Credentials) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
-		"authorization": "Bearer " + creds.JwtToken,
+		"authorization": "Bearer " + creds.AccessToken,
 	}, nil
 }
 
@@ -23,47 +24,19 @@ func (creds *Credentials) RequireTransportSecurity() bool {
 	return false
 }
 
-func (creds *Credentials) GetClaims(cfg *Config) (*jwt.StandardClaims, error) {
-	token, err := jwt.ParseWithClaims(creds.JwtToken, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		_, success := token.Method.(*jwt.SigningMethodHMAC)
-		if !success {
-			return nil, fmt.Errorf("unexpected token signing method")
-		}
-
-		return []byte(cfg.JwtSecret), nil
-	})
-
-	if err != nil {
-		return nil, fmt.Errorf("invalid token: %w", err)
-	}
-
-	claims, success := token.Claims.(*jwt.StandardClaims)
-	if !success {
-		return nil, fmt.Errorf("invalid token claims")
-	}
-
-	return claims, nil
+func (creds *Credentials) Reset() error {
+	return creds.Update("", "")
 }
 
-func (creds *Credentials) Write() error {
-	if err := createIfNotExists(); err != nil {
-		return err
-	}
+func (creds *Credentials) Update(accessToken string, refreshToken string) error {
+	creds.AccessToken = accessToken
+	creds.RefreshToken = refreshToken
 
-	data, err := yaml.Marshal(&creds)
-	if err != nil {
-		return err
-	}
-
-	if err := os.WriteFile(getCredsFilePath(), data, os.ModePerm); err != nil {
+	if err := creds.write(); err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (creds *Credentials) Reset() {
-	creds.JwtToken = ""
 }
 
 func ReadCredentials() (*Credentials, error) {
@@ -82,6 +55,45 @@ func ReadCredentials() (*Credentials, error) {
 	}
 
 	return &creds, nil
+}
+
+func GetClaims(token string, cfg *Config) (*jwt.StandardClaims, error) {
+	parsedToken, err := jwt.ParseWithClaims(token, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+		_, success := token.Method.(*jwt.SigningMethodHMAC)
+		if !success {
+			return nil, fmt.Errorf("unexpected token signing method")
+		}
+
+		return []byte(cfg.JwtSecret), nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("invalid token: %w", err)
+	}
+
+	claims, success := parsedToken.Claims.(*jwt.StandardClaims)
+	if !success {
+		return nil, fmt.Errorf("invalid token claims")
+	}
+
+	return claims, nil
+}
+
+func (creds *Credentials) write() error {
+	if err := createIfNotExists(); err != nil {
+		return err
+	}
+
+	data, err := yaml.Marshal(&creds)
+	if err != nil {
+		return err
+	}
+
+	if err := os.WriteFile(getCredsFilePath(), data, os.ModePerm); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func createIfNotExists() error {

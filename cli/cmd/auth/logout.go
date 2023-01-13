@@ -29,9 +29,5 @@ func NewCmdLogout(f *internal.Factory) *cobra.Command {
 }
 
 func logoutRun(opts *LogoutOptions) error {
-	opts.Credentials.Reset()
-	if err := opts.Credentials.Write(); err != nil {
-		return err
-	}
-	return nil
+	return opts.Credentials.Reset()
 }

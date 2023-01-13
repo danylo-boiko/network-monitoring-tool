@@ -11,7 +11,7 @@ service IpFilters {
 
 message IpFilterModel {
   uint32 ip = 1;
-  int32 filterAction = 4;
+  int32 filterAction = 2;
 }
 
 message GetIpFiltersRequest {

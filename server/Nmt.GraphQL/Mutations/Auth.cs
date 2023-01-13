@@ -1,5 +1,6 @@
 using AppAny.HotChocolate.FluentValidation;
 using Nmt.Core.CQRS.Commands.Auth.Login;
+using Nmt.Core.CQRS.Commands.Auth.RefreshToken;
 using Nmt.Core.CQRS.Commands.Auth.Register;
 using Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
 using Nmt.Core.CQRS.Commands.Auth.VerifyTwoFactorCode;
@@ -11,7 +12,7 @@ namespace Nmt.GraphQL.Mutations;
 [ExtendObjectType(ObjectTypes.Mutation)]
 public class Auth
 {
-    public async Task<string> Login(
+    public async Task<TokenDto> Login(
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] LoginCommand input)
     {
@@ -24,7 +25,14 @@ public class Auth
     {
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
-    
+
+    public async Task<TokenDto> RefreshToken(
+        [Service] IExecutionResultService executionResultService, 
+        [UseFluentValidation] RefreshTokenCommand input)
+    {
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
+    }
+
     public async Task<bool> SendTwoFactorCode(
         [Service] IExecutionResultService executionResultService, 
         [UseFluentValidation] SendTwoFactorCodeCommand input)
