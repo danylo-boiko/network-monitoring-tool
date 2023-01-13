@@ -1,13 +1,27 @@
 import { Injectable } from '@angular/core';
-import { LoginCommandInput, LoginGQL, RegisterGQL } from "./graphql.service";
+import {
+  LoginCommandInput,
+  LoginGQL,
+  RefreshTokenCommandInput,
+  RefreshTokenGQL,
+  RegisterCommandInput,
+  RegisterGQL,
+  SendTwoFactorCodeCommandInput,
+  SendTwoFactorCodeGQL,
+  VerifyTwoFactorCodeCommandInput,
+  VerifyTwoFactorCodeGQL,
+} from "./graphql.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly authTokenKey: string = 'auth-token';
-
-  constructor(private readonly _loginGQL: LoginGQL, private readonly _registerGQL: RegisterGQL) {
+  constructor(
+    private readonly _loginGQL: LoginGQL,
+    private readonly _registerGQL: RegisterGQL,
+    private readonly _refreshToken: RefreshTokenGQL,
+    private readonly _sendTwoFactorCode: SendTwoFactorCodeGQL,
+    private readonly _verifyTwoFactorCode: VerifyTwoFactorCodeGQL) {
   }
 
   public login({username, password}: LoginCommandInput) {
@@ -17,11 +31,52 @@ export class AuthService {
         password
       }
     }, {
-      errorPolicy: "all"
+      errorPolicy: 'all',
     });
   }
 
-  private setAuthToken(token: string): void {
-    localStorage.setItem(this.authTokenKey, token);
+  public register({username, email, password, confirmPassword}: RegisterCommandInput) {
+    return this._registerGQL.mutate({
+      input: {
+        username,
+        email,
+        password,
+        confirmPassword
+      }
+    }, {
+      errorPolicy: 'all',
+    });
+  }
+
+  public refreshToken({accessToken, refreshToken}: RefreshTokenCommandInput) {
+    return this._refreshToken.mutate({
+      input: {
+        accessToken,
+        refreshToken
+      }
+    }, {
+      errorPolicy: 'all',
+    });
+  }
+
+  public sendTwoFactorCode({email}: SendTwoFactorCodeCommandInput) {
+    return this._sendTwoFactorCode.mutate({
+      input: {
+        email
+      }
+    }, {
+      errorPolicy: 'all',
+    });
+  }
+
+  public verifyTwoFactorCode({email, twoFactorCode}: VerifyTwoFactorCodeCommandInput) {
+    return this._verifyTwoFactorCode.mutate({
+      input: {
+        email,
+        twoFactorCode
+      }
+    }, {
+      errorPolicy: 'all',
+    });
   }
 }
