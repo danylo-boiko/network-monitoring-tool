@@ -1,1 +1,30 @@
-<p>register works!</p>
+<div class="container" *ngIf="registerForm">
+  <form class="form-container" [formGroup]="registerForm" (ngSubmit)="register()">
+    <h1 class="form-title">Get Started</h1>
+
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Username</mat-label>
+      <input matInput [formControl]="registerForm.controls.username"/>
+    </mat-form-field>
+
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput [formControl]="registerForm.controls.email"/>
+    </mat-form-field>
+
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" [formControl]="registerForm.controls.password"/>
+    </mat-form-field>
+
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Confirm password</mat-label>
+      <input matInput type="password" [formControl]="registerForm.controls.confirmPassword"/>
+    </mat-form-field>
+
+    <div class="form-bottom">
+      <a routerLink="/login">Already have an account ?</a>
+      <button mat-flat-button color="primary">Register</button>
+    </div>
+  </form>
+</div>

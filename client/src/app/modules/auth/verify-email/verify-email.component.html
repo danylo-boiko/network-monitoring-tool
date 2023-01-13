@@ -1,1 +1,15 @@
-<p>verify-email works!</p>
+<div class="container" *ngIf="verifyEmailForm">
+  <form class="form-container" [formGroup]="verifyEmailForm" (ngSubmit)="verifyEmail()">
+    <h1 class="form-title">Check your email</h1>
+
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Two factor code</mat-label>
+      <input matInput [formControl]="verifyEmailForm.controls.twoFactorCode"/>
+    </mat-form-field>
+
+    <div class="form-bottom">
+      <a (click)="sendTwoFactorCode()">Send me a new code</a>
+      <button mat-flat-button color="primary">Verify</button>
+    </div>
+  </form>
+</div>

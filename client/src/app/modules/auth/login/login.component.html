@@ -4,18 +4,18 @@
 
     <mat-form-field hideRequiredMarker appearance="outline">
       <mat-label>Username</mat-label>
-      <input matInput formControlName="username"/>
+      <input matInput [formControl]="loginForm.controls.username"/>
     </mat-form-field>
 
-    <mat-form-field hideRequiredMarker appearance="outline" >
+    <mat-form-field hideRequiredMarker appearance="outline">
       <mat-label>Password</mat-label>
-      <input matInput [type]="loginForm.get('showPassword')!.value ? 'text' : 'password'" formControlName="password"/>
+      <input matInput [type]="loginForm.controls.showPassword.value ? 'text' : 'password'" [formControl]="loginForm.controls.password"/>
     </mat-form-field>
 
-    <mat-checkbox formControlName="showPassword">Show password</mat-checkbox>
+    <mat-checkbox [formControl]="loginForm.controls.showPassword">Show password</mat-checkbox>
 
     <div class="form-bottom">
-      <a routerLink="/register">Create account</a>
+      <a routerLink="/register">Create an account</a>
       <button mat-flat-button color="primary">Login</button>
     </div>
   </form>
