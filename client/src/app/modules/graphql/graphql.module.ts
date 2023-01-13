@@ -5,15 +5,11 @@ import { HttpLink } from 'apollo-angular/http';
 import { environment } from '../../../environments/environment';
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
-  const httpLinkHandler = httpLink.create({
-    uri: environment.graphQL,
-    includeExtensions: true
-  });
-
   return {
-    link: from([
-      httpLinkHandler
-    ]),
+    link: httpLink.create({
+      uri: environment.graphQL,
+      includeExtensions: true
+    }),
     cache: new InMemoryCache()
   };
 }

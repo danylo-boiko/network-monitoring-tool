@@ -249,6 +249,34 @@ export type VerifyTwoFactorCodeMutationVariables = Exact<{
 
 export type VerifyTwoFactorCodeMutation = { __typename?: 'Mutation', verifyTwoFactorCode: boolean };
 
+export type CreateIpFilterMutationVariables = Exact<{
+  input: CreateIpFilterCommandInput;
+}>;
+
+
+export type CreateIpFilterMutation = { __typename?: 'Mutation', createIpFilter: any };
+
+export type DeleteIpFilterMutationVariables = Exact<{
+  input: DeleteIpFilterCommandInput;
+}>;
+
+
+export type DeleteIpFilterMutation = { __typename?: 'Mutation', deleteIpFilter: boolean };
+
+export type GetPacketsByDeviceIdQueryVariables = Exact<{
+  input: GetPacketsByDeviceIdQueryInput;
+}>;
+
+
+export type GetPacketsByDeviceIdQuery = { __typename?: 'Query', packetsByDeviceId: Array<{ __typename?: 'PacketDto', id: any, ip: any, size: any, protocol: ProtocolType, status: PacketStatus, createdAt: any }> };
+
+export type GetUserByIdQueryVariables = Exact<{
+  input: GetUserWithDevicesAndIpFiltersByIdQueryInput;
+}>;
+
+
+export type GetUserByIdQuery = { __typename?: 'Query', userById: { __typename?: 'UserDto', username: string, devices: Array<{ __typename?: 'DeviceDto', id: any, hostname: string, machineSpecificStamp: string, createdAt: any }>, ipFilters: Array<{ __typename?: 'IpFilterDto', id: any, ip: any, filterAction: IpFilterAction, comment?: string | null, createdAt: any }> } };
+
 export const LoginDocument = gql`
     mutation Login($input: LoginCommandInput!) {
   login(input: $input) {
@@ -330,6 +358,92 @@ export const VerifyTwoFactorCodeDocument = gql`
   })
   export class VerifyTwoFactorCodeGQL extends Apollo.Mutation<VerifyTwoFactorCodeMutation, VerifyTwoFactorCodeMutationVariables> {
     override document = VerifyTwoFactorCodeDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const CreateIpFilterDocument = gql`
+    mutation CreateIpFilter($input: CreateIpFilterCommandInput!) {
+  createIpFilter(input: $input)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class CreateIpFilterGQL extends Apollo.Mutation<CreateIpFilterMutation, CreateIpFilterMutationVariables> {
+    override document = CreateIpFilterDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const DeleteIpFilterDocument = gql`
+    mutation DeleteIpFilter($input: DeleteIpFilterCommandInput!) {
+  deleteIpFilter(input: $input)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class DeleteIpFilterGQL extends Apollo.Mutation<DeleteIpFilterMutation, DeleteIpFilterMutationVariables> {
+    override document = DeleteIpFilterDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const GetPacketsByDeviceIdDocument = gql`
+    query GetPacketsByDeviceId($input: GetPacketsByDeviceIdQueryInput!) {
+  packetsByDeviceId(input: $input) {
+    id
+    ip
+    size
+    protocol
+    status
+    createdAt
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class GetPacketsByDeviceIdGQL extends Apollo.Query<GetPacketsByDeviceIdQuery, GetPacketsByDeviceIdQueryVariables> {
+    override document = GetPacketsByDeviceIdDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const GetUserByIdDocument = gql`
+    query GetUserById($input: GetUserWithDevicesAndIpFiltersByIdQueryInput!) {
+  userById(input: $input) {
+    username
+    devices {
+      id
+      hostname
+      machineSpecificStamp
+      createdAt
+    }
+    ipFilters {
+      id
+      ip
+      filterAction
+      comment
+      createdAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class GetUserByIdGQL extends Apollo.Query<GetUserByIdQuery, GetUserByIdQueryVariables> {
+    override document = GetUserByIdDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
