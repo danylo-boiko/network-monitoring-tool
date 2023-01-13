@@ -1,9 +1,19 @@
 mutation Login($input: LoginCommandInput!) {
-  login(input: $input)
+  login(input: $input) {
+    accessToken,
+    refreshToken
+  }
 }
 
 mutation Register($input: RegisterCommandInput!) {
   register(input: $input)
+}
+
+mutation RefreshToken($input: RefreshTokenCommandInput!) {
+  refreshToken(input: $input) {
+    accessToken,
+    refreshToken
+  }
 }
 
 mutation SendTwoFactorCode($input: SendTwoFactorCodeCommandInput!) {

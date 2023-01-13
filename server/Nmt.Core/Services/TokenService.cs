@@ -77,7 +77,9 @@ public class TokenService : ITokenService
         var claims = new List<Claim>
         {
             new (AuthClaims.UserId, userId.ToString()),
-            new (AuthClaims.DeviceId, deviceId != null && deviceId.Value != Guid.Empty ? deviceId.Value.ToString() : string.Empty)
+            new (AuthClaims.DeviceId, deviceId != null && deviceId.Value != Guid.Empty 
+                ? deviceId.Value.ToString() 
+                : string.Empty)
         };
 
         var rolesQuery =

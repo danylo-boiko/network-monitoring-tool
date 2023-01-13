@@ -79,7 +79,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   createIpFilter: Scalars['UUID'];
   deleteIpFilter: Scalars['Boolean'];
-  login: Scalars['String'];
+  login: TokenDto;
+  refreshToken: TokenDto;
   register: Scalars['Boolean'];
   sendTwoFactorCode: Scalars['Boolean'];
   verifyTwoFactorCode: Scalars['Boolean'];
@@ -98,6 +99,11 @@ export type MutationDeleteIpFilterArgs = {
 
 export type MutationLoginArgs = {
   input: LoginCommandInput;
+};
+
+
+export type MutationRefreshTokenArgs = {
+  input: RefreshTokenCommandInput;
 };
 
 
@@ -172,6 +178,11 @@ export type QueryUserByIdArgs = {
   input: GetUserWithDevicesAndIpFiltersByIdQueryInput;
 };
 
+export type RefreshTokenCommandInput = {
+  accessToken: Scalars['String'];
+  refreshToken: Scalars['String'];
+};
+
 export type RegisterCommandInput = {
   confirmPassword: Scalars['String'];
   email: Scalars['String'];
@@ -181,6 +192,12 @@ export type RegisterCommandInput = {
 
 export type SendTwoFactorCodeCommandInput = {
   email: Scalars['String'];
+};
+
+export type TokenDto = {
+  __typename?: 'TokenDto';
+  accessToken: Scalars['String'];
+  refreshToken: Scalars['String'];
 };
 
 export type UserDto = {
@@ -202,7 +219,7 @@ export type LoginMutationVariables = Exact<{
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: string };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'TokenDto', accessToken: string, refreshToken: string } };
 
 export type RegisterMutationVariables = Exact<{
   input: RegisterCommandInput;
@@ -210,6 +227,13 @@ export type RegisterMutationVariables = Exact<{
 
 
 export type RegisterMutation = { __typename?: 'Mutation', register: boolean };
+
+export type RefreshTokenMutationVariables = Exact<{
+  input: RefreshTokenCommandInput;
+}>;
+
+
+export type RefreshTokenMutation = { __typename?: 'Mutation', refreshToken: { __typename?: 'TokenDto', accessToken: string, refreshToken: string } };
 
 export type SendTwoFactorCodeMutationVariables = Exact<{
   input: SendTwoFactorCodeCommandInput;
@@ -227,7 +251,10 @@ export type VerifyTwoFactorCodeMutation = { __typename?: 'Mutation', verifyTwoFa
 
 export const LoginDocument = gql`
     mutation Login($input: LoginCommandInput!) {
-  login(input: $input)
+  login(input: $input) {
+    accessToken
+    refreshToken
+  }
 }
     `;
 
@@ -252,6 +279,25 @@ export const RegisterDocument = gql`
   })
   export class RegisterGQL extends Apollo.Mutation<RegisterMutation, RegisterMutationVariables> {
     override document = RegisterDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const RefreshTokenDocument = gql`
+    mutation RefreshToken($input: RefreshTokenCommandInput!) {
+  refreshToken(input: $input) {
+    accessToken
+    refreshToken
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RefreshTokenGQL extends Apollo.Mutation<RefreshTokenMutation, RefreshTokenMutationVariables> {
+    override document = RefreshTokenDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
