@@ -87,8 +87,7 @@ func loginRun(opts *LoginOptions) error {
 		return err
 	}
 
-	opts.Credentials.JwtToken = response.Token
-	if err := opts.Credentials.Write(); err != nil {
+	if err := opts.Credentials.Update(response.AccessToken, response.RefreshToken); err != nil {
 		return err
 	}
 

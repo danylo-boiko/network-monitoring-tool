@@ -19,17 +19,17 @@ func NewCmdRoot() *cobra.Command {
 		SilenceUsage:  true,
 	}
 
+	factory := internal.NewFactory()
+
 	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		if util.IsAuthCheckEnabled(cmd) {
-			if err := util.ValidateAuth(); err != nil {
+			if err := factory.GrpcClient.ValidateAuth(); err != nil {
 				fmt.Fprintln(os.Stdout, authHelp())
 				return err
 			}
 		}
 		return nil
 	}
-
-	factory := internal.NewFactory()
 
 	cmd.AddCommand(NewCmdAuth(factory))
 	cmd.AddCommand(newCmdStart(factory))

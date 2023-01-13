@@ -6,7 +6,7 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
     public RegisterCommandValidator()
     {
-        RuleFor(user => user.Username)
+        RuleFor(c => c.Username)
             .NotEmpty()
             .WithMessage("Username shouldn't be empty")
             .MinimumLength(3)

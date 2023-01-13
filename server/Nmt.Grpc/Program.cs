@@ -13,6 +13,8 @@ services
     .AddRedisCache()
     .AddMediatR(typeof(MediatREntryPoint).Assembly)
     .AddAuthentication(configuration)
+    .AddServices()
+    .AddSmtpConfigs(configuration)
     .AddGrpc();
 
 var app = builder.Build();
