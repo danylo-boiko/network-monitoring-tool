@@ -15,19 +15,19 @@ import { Router } from '@angular/router';
 })
 export class VerifyEmailComponent implements OnInit {
   public verifyEmailForm!: FormGroup<VerifyEmailForm>;
-  public email!: string;
+  public username!: string;
 
   constructor(
     private readonly _authService: AuthService,
     private readonly _jwtTokenService: JwtTokenService,
     private readonly _router: Router) {
     const state = this._router.getCurrentNavigation()?.extras.state;
-    if (!state || !state['email']) {
+    if (!state || !state['username']) {
       this._router.navigateByUrl('/login');
     }
 
-    this.email = state!['email'];
-    if (state!['sendTwoFactorCode']) {
+    this.username = state!['username'];
+    if (state!['needToSendTwoFactorCode']) {
       this.sendTwoFactorCode();
     }
   }
@@ -47,7 +47,7 @@ export class VerifyEmailComponent implements OnInit {
 
     this._authService
       .verifyTwoFactorCode({
-        email: this.email,
+        username: this.username,
         twoFactorCode: this.verifyEmailForm.value.twoFactorCode!
       })
       .subscribe({
@@ -65,7 +65,7 @@ export class VerifyEmailComponent implements OnInit {
   public sendTwoFactorCode(): void {
     this._authService
       .sendTwoFactorCode({
-        email: this.email
+        username: this.username,
       })
       .subscribe({
         next: (response: MutationResult<SendTwoFactorCodeMutation>) => {

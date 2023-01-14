@@ -6,11 +6,9 @@ public class VerifyTwoFactorCodeCommandValidator : AbstractValidator<VerifyTwoFa
 {
     public VerifyTwoFactorCodeCommandValidator()
     {
-        RuleFor(c => c.Email)
+        RuleFor(c => c.Username)
             .NotEmpty()
-            .WithMessage("Email shouldn't be empty")
-            .EmailAddress()
-            .WithMessage("Email has invalid format");
+            .WithMessage("Username shouldn't be empty");
 
         RuleFor(c => c.TwoFactorCode)
             .NotEmpty()

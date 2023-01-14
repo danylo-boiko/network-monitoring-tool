@@ -51,8 +51,8 @@ export class RegisterComponent implements OnInit {
           if (!response.loading && response.data?.register) {
             this._router.navigateByUrl('/verify-email', {
               state: {
-                email: this.registerForm.value.email,
-                sendTwoFactorCode: false
+                username: this.registerForm.value.username,
+                needToSendTwoFactorCode: false
               }
             });
           }

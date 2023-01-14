@@ -59,20 +59,20 @@ export class AuthService {
     });
   }
 
-  public sendTwoFactorCode({email}: SendTwoFactorCodeCommandInput) {
+  public sendTwoFactorCode({username}: SendTwoFactorCodeCommandInput) {
     return this._sendTwoFactorCode.mutate({
       input: {
-        email
+        username
       }
     }, {
       errorPolicy: 'all',
     });
   }
 
-  public verifyTwoFactorCode({email, twoFactorCode}: VerifyTwoFactorCodeCommandInput) {
+  public verifyTwoFactorCode({username, twoFactorCode}: VerifyTwoFactorCodeCommandInput) {
     return this._verifyTwoFactorCode.mutate({
       input: {
-        email,
+        username,
         twoFactorCode
       }
     }, {

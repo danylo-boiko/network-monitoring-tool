@@ -45,17 +45,15 @@ export class LoginComponent implements OnInit {
       .login(this.loginForm.getRawValue())
       .subscribe({
         next: (response: MutationResult<LoginMutation>) => {
-          if (!response.loading) {
-            this._router.navigateByUrl('/verify-email', {
-              state: {
-                email: "",
-                sendTwoFactorCode: true
-              }
-            });
-          }
+          console.log(response);
         },
         error: (err: ApolloError) => {
-          console.log(err.networkError);
+          this._router.navigateByUrl('/verify-email', {
+            state: {
+              username: this.loginForm.value.username,
+              needToSendTwoFactorCode: true
+            }
+          });
         }
       });
   }

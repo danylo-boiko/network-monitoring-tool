@@ -191,7 +191,7 @@ export type RegisterCommandInput = {
 };
 
 export type SendTwoFactorCodeCommandInput = {
-  email: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type TokenDto = {
@@ -210,8 +210,8 @@ export type UserDto = {
 };
 
 export type VerifyTwoFactorCodeCommandInput = {
-  email: Scalars['String'];
   twoFactorCode: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type LoginMutationVariables = Exact<{

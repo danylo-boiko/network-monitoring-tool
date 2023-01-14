@@ -26,15 +26,15 @@ public class VerifyTwoFactorCodeCommandHandler : IRequestHandler<VerifyTwoFactor
 
     public async Task<ExecutionResult<bool>> Handle(VerifyTwoFactorCodeCommand request, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Username, cancellationToken);
         if (user == null)
         {
-            return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Email), "User with this email not found"));
+            return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Username), "User with this username not found"));
         }
 
         if (user.EmailConfirmed)
         {
-            return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Email), "Your email is already confirmed"));
+            return new ExecutionResult<bool>(new ErrorInfo(nameof(user.EmailConfirmed), "Your email is already confirmed"));
         }
 
         var isCodeValid = await _twoFactorCodeProvider.ValidateAsync("registration", request.TwoFactorCode, _userManager, user);

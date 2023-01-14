@@ -5,5 +5,5 @@ namespace Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
 
 public record SendTwoFactorCodeCommand : IRequest<ExecutionResult<bool>>
 {
-    public string Email { get; set; }
+    public string Username { get; set; }
 }
