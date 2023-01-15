@@ -27,6 +27,8 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .WithMessage("Password shouldn't be empty")
             .MinimumLength(8)
             .WithMessage("Password should has at least 8 characters")
+            .MaximumLength(128)
+            .WithMessage("Password should has less than 128 characters")
             .Matches(@"^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9\s!@#$%^&*()_+=-`~\\\]\[{}|';:/.,?><]+)$")
             .WithMessage("Password must contains at least one letter and one number");
 
