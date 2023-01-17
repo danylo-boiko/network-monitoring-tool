@@ -14,6 +14,6 @@ public class VerifyTwoFactorCodeCommandValidator : AbstractValidator<VerifyTwoFa
             .NotEmpty()
             .WithMessage("Two factor code shouldn't be empty")
             .Matches("^[0-9]{6}$")
-            .WithMessage("Two factor code should contains 6 numbers");
+            .WithMessage("Two factor code should contains only 6 digits");
     }
 }

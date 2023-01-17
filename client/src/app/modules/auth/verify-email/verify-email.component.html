@@ -4,11 +4,19 @@
 
     <mat-form-field hideRequiredMarker appearance="outline">
       <mat-label>Two factor code</mat-label>
-      <input matInput [formControl]="verifyEmailForm.controls.twoFactorCode"/>
+      <input matInput formControlName="twoFactorCode"/>
+      <mat-error>
+        <span *ngIf="!isFieldValid('twoFactorCode', 'required')">Two factor code shouldn't be empty</span>
+        <span *ngIf="!isFieldValid('twoFactorCode', 'pattern')">Two factor code should contains only 6 digits</span>
+        <span *ngIf="!isFieldValid('twoFactorCode', 'serverValidation')">{{ getServerValidationErrorMessage('twoFactorCode') }}</span>
+      </mat-error>
     </mat-form-field>
 
     <div class="form-bottom">
-      <a (click)="sendTwoFactorCode()">Send me a new code</a>
+      <a matTooltip="You can send a new code once per minute"
+         [matTooltipDisabled]="!sendTwoFactorCodeButtonDisabled"
+         [class.disabled]="sendTwoFactorCodeButtonDisabled ? true: null"
+         (click)="sendTwoFactorCode()">Send me a new code</a>
       <button mat-flat-button color="primary">Verify</button>
     </div>
   </form>

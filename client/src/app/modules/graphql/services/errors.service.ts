@@ -6,9 +6,6 @@ import { HttpErrorResponse } from "@angular/common/http";
   providedIn: 'root'
 })
 export class ErrorsService {
-  constructor() {
-  }
-
   public getValidationErrors(err: ApolloError): Map<string, Array<string>> {
     const validationErrors = new Map<string, Array<string>>();
 
@@ -21,16 +18,21 @@ export class ErrorsService {
 
     for (const idx in errors) {
       const error = errors[idx];
-      const property = error?.extensions?.property?.toLowerCase();
+      const property = error?.extensions?.property;
 
       if (property) {
-        if (!validationErrors.has(property)) {
-          validationErrors.set(property, new Array<string>());
+        const key = this.lowerizeFirstLetter(property);
+        if (!validationErrors.has(key)) {
+          validationErrors.set(key, new Array<string>());
         }
-        validationErrors.get(property)!.push(error.message);
+        validationErrors.get(key)!.push(error.message);
       }
     }
 
     return validationErrors;
+  }
+
+  private lowerizeFirstLetter(str: string): string {
+    return str.charAt(0).toLowerCase() + str.slice(1);
   }
 }

@@ -1,5 +1,6 @@
 using LS.Helpers.Hosting.API;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 using Nmt.Domain.Events;
 using Nmt.Domain.Models;
@@ -20,6 +21,12 @@ public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterComman
 
     public async Task<ExecutionResult<Guid>> Handle(CreateIpFilterCommand request, CancellationToken cancellationToken)
     {
+        var isIpFilterDuplicated = await _dbContext.IpFilters.AnyAsync(i => i.UserId == request.UserId && i.Ip == (uint)request.Ip, cancellationToken);
+        if (isIpFilterDuplicated)
+        {
+            return new ExecutionResult<Guid>(new ErrorInfo(nameof(request.Ip), "Filter for this IP already exists"));
+        }
+
         var ipFilter = new IpFilter
         {
             UserId = request.UserId,

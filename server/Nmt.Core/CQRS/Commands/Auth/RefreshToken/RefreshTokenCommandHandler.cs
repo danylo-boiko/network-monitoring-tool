@@ -7,21 +7,21 @@ namespace Nmt.Core.CQRS.Commands.Auth.RefreshToken;
 
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, ExecutionResult<TokenDto>>
 {
-    private readonly ITokenService _tokenService;
+    private readonly ITokensService _tokensService;
 
-    public RefreshTokenCommandHandler(ITokenService tokenService)
+    public RefreshTokenCommandHandler(ITokensService tokensService)
     {
-        _tokenService = tokenService;
+        _tokensService = tokensService;
     }
 
     public async Task<ExecutionResult<TokenDto>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var accessToken = await _tokenService.RefreshAccessTokenAsync(request.AccessToken, request.RefreshToken, cancellationToken);
+        var accessToken = await _tokensService.RefreshAccessTokenAsync(request.AccessToken, request.RefreshToken, cancellationToken);
 
         return new ExecutionResult<TokenDto>(new TokenDto
         {
             AccessToken = accessToken,
-            RefreshToken = _tokenService.CreateRefreshToken(accessToken)
+            RefreshToken = _tokensService.CreateRefreshToken(accessToken)
         });
     }
 }

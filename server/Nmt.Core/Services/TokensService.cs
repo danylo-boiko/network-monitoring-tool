@@ -12,12 +12,12 @@ using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.Services;
 
-public class TokenService : ITokenService
+public class TokensService : ITokensService
 {
     private readonly PostgresDbContext _dbContext;
     private readonly JwtConfig _jwtConfig;
 
-    public TokenService(PostgresDbContext dbContext, JwtConfig jwtConfig)
+    public TokensService(PostgresDbContext dbContext, JwtConfig jwtConfig)
     {
         _dbContext = dbContext;
         _jwtConfig = jwtConfig;
@@ -117,7 +117,7 @@ public class TokenService : ITokenService
     private string ComputeSecurityHash(Guid userId, string accessToken)
     {
         using var sha256 = SHA256.Create();
-        
+
         var bytes = Encoding.UTF8.GetBytes($"{userId}{accessToken}{_jwtConfig.Secret}");
         var computedHash = sha256.ComputeHash(bytes);
 

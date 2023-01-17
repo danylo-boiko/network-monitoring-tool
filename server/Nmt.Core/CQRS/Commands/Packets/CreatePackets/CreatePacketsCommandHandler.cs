@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver.Linq;
 using Nmt.Domain.Enums;
 using Nmt.Infrastructure.Cache.MemoryCache.Interfaces;
 using Nmt.Infrastructure.Data.Mongo;
@@ -29,8 +28,6 @@ public class CreatePacketsCommandHandler : IRequestHandler<CreatePacketsCommand>
     {
         await _dbContext.Packets.InsertManyAsync(request.Packets, cancellationToken: cancellationToken);
 
-        var packetsAggregateCacheKey = PacketsAggregate.GetCacheKey(request.DeviceId);
-
         var passedPackets = request.Packets
             .Where(p => p.Status == PacketStatus.Passed)
             .ToList();
@@ -46,7 +43,9 @@ public class CreatePacketsCommandHandler : IRequestHandler<CreatePacketsCommand>
             AverageCountOfPacketsPerIp = (float)passedPackets.Count / (float)countOfUniqueIps
         };
 
+        var packetsAggregateCacheKey = PacketsAggregate.GetCacheKey(request.DeviceId);
         var cachedPacketsAggregate = _memoryCache.Get<PacketsAggregate>(packetsAggregateCacheKey);
+
         if (cachedPacketsAggregate != null && packetsAggregate.HasAnomaly(cachedPacketsAggregate, ComparisonMultiplier))
         {
             _logger.LogInformation($"Detected anomaly for device with id {request.DeviceId}");

@@ -5,4 +5,5 @@ export interface RegisterForm {
   email: FormControl<string>;
   password: FormControl<string>;
   confirmPassword: FormControl<string>;
+  showPassword: FormControl<boolean>;
 }

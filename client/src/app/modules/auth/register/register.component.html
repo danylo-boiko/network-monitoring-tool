@@ -1,26 +1,51 @@
 <div class="container" *ngIf="registerForm">
   <form class="form-container" [formGroup]="registerForm" (ngSubmit)="register()">
-    <h1 class="form-title">Get Started</h1>
+    <h1 class="form-title">Get started</h1>
 
     <mat-form-field hideRequiredMarker appearance="outline">
       <mat-label>Username</mat-label>
-      <input matInput [formControl]="registerForm.controls.username"/>
+      <input matInput formControlName="username"/>
+      <mat-error>
+        <span *ngIf="!isFieldValid('username', 'required')">Username shouldn't be empty</span>
+        <span *ngIf="!isFieldValid('username', 'minlength')">Username should has at least 3 characters</span>
+        <span *ngIf="!isFieldValid('username', 'maxlength')">Username should has less than 32 characters</span>
+        <span *ngIf="!isFieldValid('username', 'pattern')">Username should has latin letters, numbers and underscores</span>
+        <span *ngIf="!isFieldValid('username', 'serverValidation')">{{ getServerValidationErrorMessage('username') }}</span>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field hideRequiredMarker appearance="outline">
       <mat-label>Email</mat-label>
-      <input matInput [formControl]="registerForm.controls.email"/>
+      <input matInput formControlName="email"/>
+      <mat-error>
+        <span *ngIf="!isFieldValid('email', 'required')">Email shouldn't be empty</span>
+        <span *ngIf="!isFieldValid('email', 'email')">Email has invalid format</span>
+        <span *ngIf="!isFieldValid('email', 'serverValidation')">{{ getServerValidationErrorMessage('email') }}</span>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field hideRequiredMarker appearance="outline">
       <mat-label>Password</mat-label>
-      <input matInput type="password" [formControl]="registerForm.controls.password"/>
+      <input matInput [type]="registerForm.controls.showPassword.value ? 'text' : 'password'" formControlName="password"/>
+      <mat-error>
+        <span *ngIf="!isFieldValid('password', 'required')">Password shouldn't be empty</span>
+        <span *ngIf="!isFieldValid('password', 'minlength')">Password should has at least 8 characters</span>
+        <span *ngIf="!isFieldValid('password', 'maxlength')">Password should has less than 128 characters</span>
+        <span *ngIf="!isFieldValid('password', 'pattern')">Password must contains at least one letter and one digit</span>
+        <span *ngIf="!isFieldValid('password', 'serverValidation')">{{ getServerValidationErrorMessage('password') }}</span>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field hideRequiredMarker appearance="outline">
       <mat-label>Confirm password</mat-label>
-      <input matInput type="password" [formControl]="registerForm.controls.confirmPassword"/>
+      <input matInput [type]="registerForm.get('showPassword')!.value ? 'text' : 'password'" formControlName="confirmPassword"/>
+      <mat-error>
+        <span *ngIf="!isFieldValid('confirmPassword', 'matching')">Confirm password don't match with password</span>
+        <span *ngIf="!isFieldValid('confirmPassword', 'serverValidation')">{{ getServerValidationErrorMessage('confirmPassword') }}</span>
+      </mat-error>
     </mat-form-field>
+
+    <mat-checkbox formControlName="showPassword">Show password</mat-checkbox>
 
     <div class="form-bottom">
       <a routerLink="/login">Already have an account ?</a>

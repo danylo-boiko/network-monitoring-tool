@@ -9,6 +9,7 @@ import { MatButtonModule } from "@angular/material/button";
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -29,6 +30,7 @@ const routes: Routes = [
     MatInputModule,
     MatCheckboxModule,
     MatButtonModule,
+    MatTooltipModule,
     RouterModule.forChild(routes)
   ],
   exports: [
