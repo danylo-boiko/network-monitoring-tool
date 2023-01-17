@@ -6,18 +6,14 @@ public class VerifyTwoFactorCodeCommandValidator : AbstractValidator<VerifyTwoFa
 {
     public VerifyTwoFactorCodeCommandValidator()
     {
-        RuleFor(c => c.Email)
+        RuleFor(c => c.Username)
             .NotEmpty()
-            .WithMessage("Email shouldn't be empty")
-            .EmailAddress()
-            .WithMessage("Email has invalid format");
+            .WithMessage("Username shouldn't be empty");
 
         RuleFor(c => c.TwoFactorCode)
             .NotEmpty()
             .WithMessage("Two factor code shouldn't be empty")
-            .Length(6, 6)
-            .WithMessage("Two factor code should has 6 numbers")
-            .Matches("^[0-9]+$")
-            .WithMessage("Two factor code should contains only numbers");
+            .Matches("^[0-9]{6}$")
+            .WithMessage("Two factor code should contains only 6 digits");
     }
 }

@@ -15,20 +15,20 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
 {
     private readonly PostgresDbContext _dbContext;
     private readonly UserManager<User> _userManager;
-    private readonly ITokenService _tokenService;
+    private readonly ITokensService _tokensService;
     private readonly IMediator _mediator;
     private readonly ILogger<LoginCommandHandler> _logger;
 
     public LoginCommandHandler(
         PostgresDbContext dbContext,
         UserManager<User> userManager,
-        ITokenService tokenService,
+        ITokensService tokensService,
         IMediator mediator,
         ILogger<LoginCommandHandler> logger)
     {
         _dbContext = dbContext;
         _userManager = userManager;
-        _tokenService = tokenService;
+        _tokensService = tokensService;
         _mediator = mediator;
         _logger = logger;
     }
@@ -60,12 +60,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            var accessToken = await _tokenService.CreateAccessTokenAsync(user.Id, deviceId, cancellationToken);
+            var accessToken = await _tokensService.CreateAccessTokenAsync(user.Id, deviceId, cancellationToken);
 
             return new ExecutionResult<TokenDto>(new TokenDto
             {
                 AccessToken = accessToken,
-                RefreshToken = _tokenService.CreateRefreshToken(accessToken)
+                RefreshToken = _tokensService.CreateRefreshToken(accessToken)
             });
         }
         catch (Exception e)

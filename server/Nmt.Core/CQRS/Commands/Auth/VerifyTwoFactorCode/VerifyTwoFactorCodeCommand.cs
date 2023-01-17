@@ -5,6 +5,6 @@ namespace Nmt.Core.CQRS.Commands.Auth.VerifyTwoFactorCode;
 
 public record VerifyTwoFactorCodeCommand : IRequest<ExecutionResult<bool>>
 {
-    public string Email { get; set; }
+    public string Username { get; set; }
     public string TwoFactorCode { get; set; }
 }

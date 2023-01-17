@@ -30,15 +30,15 @@ public class SendTwoFactorCodeCommandHandler : IRequestHandler<SendTwoFactorCode
 
     public async Task<ExecutionResult<bool>> Handle(SendTwoFactorCodeCommand request, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Username, cancellationToken);
         if (user == null)
         {
-            return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Email), "User with this email not found"));
+            return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Username), "User with this username not found"));
         }
 
         if (user.EmailConfirmed)
         {
-            return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Email), "Your email is already confirmed"));
+            return new ExecutionResult<bool>(new ErrorInfo(nameof(user.EmailConfirmed), "Your email is already confirmed"));
         }
 
         var code = await _twoFactorCodeProvider.GenerateAsync("registration", _userManager, user);

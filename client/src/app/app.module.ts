@@ -10,6 +10,7 @@ import { SharedModule } from "./modules/shared/shared.module";
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
 import { AuthInterceptor } from "./interceptors/auth.interceptor";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
+import { ToastNotificationsModule } from "ngx-toast-notifications";
 
 const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' }
@@ -24,6 +25,7 @@ const routes: Routes = [
     GraphQLModule,
     SharedModule,
     DashboardModule,
+    ToastNotificationsModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,

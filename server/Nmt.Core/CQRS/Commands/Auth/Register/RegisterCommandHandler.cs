@@ -69,7 +69,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
 
             return await _mediator.Send(new SendTwoFactorCodeCommand
             {
-                Email = user.Email
+                Username = user.UserName
             }, cancellationToken);
         }
         catch (Exception e)
