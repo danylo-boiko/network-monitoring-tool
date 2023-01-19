@@ -12,7 +12,8 @@
 
 enum IpFilterAction {
     PassWithoutCollecting = 1,
-    Drop = 2
+    Drop = 2,
+    DropWithoutCollecting = 3
 };
 
 enum PacketStatus {
@@ -52,36 +53,45 @@ struct bpf_map_def SEC("maps") ip_filters_map = {
 
 SEC("xdp")
 int bpf_xdp_handler(struct xdp_md *ctx) {
-    int XDP_ACTION = XDP_PASS;
-
     void *data     = (void *)(long)ctx->data;
     void *data_end = (void *)(long)ctx->data_end;
 
     // Parse the ethernet header.
     struct ethhdr *eth = data;
     if ((void *)(eth + 1) > data_end) {
-        return XDP_ACTION;
+        return XDP_PASS;
     }
 
+    // If the protocol is not IPv4.
     if (ntohs(eth->h_proto) != ETH_P_IP) {
-        // The protocol is not IPv4.
-        return XDP_ACTION;
+        return XDP_PASS;
     }
 
     // Parse the IP header.
     struct iphdr *iph = data + sizeof(struct ethhdr);
     if ((void *)(iph + 1) > data_end) {
-        return XDP_ACTION;
+        return XDP_PASS;
     }
+
+    int XDP_ACTION = XDP_PASS;
 
     // Check ip filters.
     uint ip = (uint)(iph->saddr);
     enum IpFilterAction *ip_filter_action = bpf_map_lookup_elem(&ip_filters_map, &ip);
     if (ip_filter_action) {
-        if (*ip_filter_action == PassWithoutCollecting) {
-            return XDP_ACTION;
-        } else if (*ip_filter_action == Drop) {
-            XDP_ACTION = XDP_DROP;
+        switch (*ip_filter_action) {
+            case PassWithoutCollecting:
+                return XDP_PASS;
+                break;
+            case DropWithoutCollecting:
+                return XDP_DROP;
+                break;
+            case Drop:
+                XDP_ACTION = XDP_DROP;
+                break;
+            default:
+                bpf_printk("Unexpected ip filter action %i", *ip_filter_action);
+                break;
         }
     }
 

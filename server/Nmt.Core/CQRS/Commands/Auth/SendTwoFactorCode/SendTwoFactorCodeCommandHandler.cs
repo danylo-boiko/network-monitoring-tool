@@ -11,18 +11,18 @@ namespace Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
 
 public class SendTwoFactorCodeCommandHandler : IRequestHandler<SendTwoFactorCodeCommand, ExecutionResult<bool>>
 {
-    private readonly IEmailService _emailService;
+    private readonly IEmailsService _emailsService;
     private readonly UserManager<User> _userManager;
     private readonly TwoFactorCodeProvider _twoFactorCodeProvider;
     private readonly PostgresDbContext _dbContext;
 
     public SendTwoFactorCodeCommandHandler(
-        IEmailService emailService, 
+        IEmailsService emailsService, 
         UserManager<User> userManager, 
         TwoFactorCodeProvider twoFactorCodeProvider,
         PostgresDbContext dbContext)
     {
-        _emailService = emailService;
+        _emailsService = emailsService;
         _userManager = userManager;
         _twoFactorCodeProvider = twoFactorCodeProvider;
         _dbContext = dbContext;
@@ -43,7 +43,7 @@ public class SendTwoFactorCodeCommandHandler : IRequestHandler<SendTwoFactorCode
 
         var code = await _twoFactorCodeProvider.GenerateAsync("registration", _userManager, user);
 
-        await _emailService.SendEmailAsync(user.Email!, "NMT - Two factor code", $"Your two factor code: {code}", cancellationToken);
+        await _emailsService.SendEmailAsync(user.Email!, "NMT - Two factor code", $"Your two factor code: {code}", cancellationToken);
 
         return new ExecutionResult<bool>(true);
     }
