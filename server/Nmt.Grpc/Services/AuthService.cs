@@ -1,4 +1,5 @@
 using Grpc.Core;
+using LS.Helpers.Hosting.API;
 using MediatR;
 using Nmt.Core.CQRS.Commands.Auth.Login;
 using Nmt.Core.CQRS.Commands.Auth.RefreshToken;
@@ -26,16 +27,7 @@ public class AuthService : Auth.AuthBase
             MachineSpecificStamp = request.MachineSpecificStamp
         }, context.CancellationToken);
 
-        if (!tokenResult.Success)
-        {
-            throw tokenResult.ToGrpcException();
-        }
-
-        return new AuthResponse
-        {
-            AccessToken = tokenResult.Value.AccessToken,
-            RefreshToken = tokenResult.Value.RefreshToken
-        };
+        return TokenResultToAuthResponse(tokenResult);
     }
 
     public override async Task<AuthResponse> RefreshToken(RefreshTokenRequest request, ServerCallContext context)
@@ -46,6 +38,11 @@ public class AuthService : Auth.AuthBase
             RefreshToken = request.RefreshToken
         }, context.CancellationToken);
 
+        return TokenResultToAuthResponse(tokenResult);
+    }
+
+    private AuthResponse TokenResultToAuthResponse(ExecutionResult<TokenDto> tokenResult)
+    {
         if (!tokenResult.Success)
         {
             throw tokenResult.ToGrpcException();

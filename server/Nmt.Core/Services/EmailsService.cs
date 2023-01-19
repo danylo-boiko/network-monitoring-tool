@@ -5,12 +5,12 @@ using Nmt.Domain.Configs;
 
 namespace Nmt.Core.Services;
 
-public class EmailService : IEmailService
+public class EmailsService : IEmailsService
 {
     private readonly GoogleSmtpConfig _googleSmtpConfig;
     private readonly MailAddress _fromAddress;
 
-    public EmailService(GoogleSmtpConfig googleSmtpConfig)
+    public EmailsService(GoogleSmtpConfig googleSmtpConfig)
     {
         _googleSmtpConfig = googleSmtpConfig;
         _fromAddress = new MailAddress(googleSmtpConfig.Email, googleSmtpConfig.Name);

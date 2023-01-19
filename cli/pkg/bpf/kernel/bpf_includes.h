@@ -3,8 +3,8 @@
 
 #define debug_trace false
 
-#define queue_max_entries 128
-#define map_max_entries 64
+#define queue_max_entries 1024
+#define map_max_entries 128
 
 typedef unsigned int uint;
 
