@@ -1,5 +1,6 @@
 using Nmt.Core.CQRS.Commands.IpFilters.CreateIpFilter;
 using Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
+using Nmt.Core.CQRS.Commands.IpFilters.UpdateIpFilter;
 using Nmt.Domain.Enums;
 using Nmt.GraphQL.Attributes;
 using Nmt.GraphQL.Consts;
@@ -12,6 +13,12 @@ public class IpFilters
 {
     [PermissionsAuthorize(Permission.IpFiltersCreate)]
     public async Task<Guid> CreateIpFilter([Service] IExecutionResultService executionResultService, CreateIpFilterCommand input)
+    {
+        return await executionResultService.HandleExecutionResultRequestAsync(input);
+    }
+
+    [PermissionsAuthorize(Permission.IpFiltersUpdate)]
+    public async Task<bool> UpdateIpFilter([Service] IExecutionResultService executionResultService, UpdateIpFilterCommand input)
     {
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }

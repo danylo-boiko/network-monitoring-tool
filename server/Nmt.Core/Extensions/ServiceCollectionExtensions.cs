@@ -1,6 +1,7 @@
 using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Nmt.Core.Auth;
+using Nmt.Core.BusEventHandlers;
 using Nmt.Core.Cache.Behaviors;
 using Nmt.Core.Cache.Interfaces;
 using Nmt.Core.TokenProviders;
@@ -99,5 +101,33 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(googleSmtpConfig);
 
         return services;
+    }
+    
+    public static IServiceCollection AddRabbitMQ(this IServiceCollection serviceCollection, IConfiguration configuration, bool includeConsumers = true)
+    {
+        var rabbitMqConnectionString = configuration.GetConnectionString("RabbitMQ");
+
+        serviceCollection.AddMassTransit(config => 
+        {
+            if (includeConsumers)
+            {
+                config.AddConsumer<BlockIpAddressesEventHandler>();
+            }
+
+            config.UsingRabbitMq((ctx, cfg) => 
+            {
+                cfg.Host(rabbitMqConnectionString);
+
+                if (includeConsumers)
+                {
+                    cfg.ReceiveEndpoint(EventBusQueues.BlockIpAddressesQueue, endpoint =>
+                    {
+                        endpoint.ConfigureConsumer<BlockIpAddressesEventHandler>(ctx);
+                    });
+                }
+            });
+        });
+
+        return serviceCollection;
     }
 }

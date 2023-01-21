@@ -16,6 +16,7 @@ services
     .AddFluentValidation()
     .AddServices()
     .AddSmtpConfigs(configuration)
+    .AddRabbitMQ(configuration, false)
     .AddCors(configuration)
     .AddGraphQL();
 

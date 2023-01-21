@@ -28,6 +28,7 @@ public class PacketsService : Packets.PacketsBase
 
         await _mediator.Send(new CreatePacketsCommand
         {
+            DeviceId = deviceId,
             Packets = request.Packets.Select(pm => new Packet
             {
                 DeviceId = deviceId,
