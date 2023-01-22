@@ -32,7 +32,7 @@ func NewCmdRoot() *cobra.Command {
 	}
 
 	cmd.AddCommand(NewCmdAuth(factory))
-	cmd.AddCommand(newCmdStart(factory))
+	cmd.AddCommand(NewCmdStart(factory))
 
 	return cmd
 }

@@ -9,24 +9,29 @@ import (
 )
 
 type Factory struct {
-	GrpcClient  *grpc.GrpcClient
-	Credentials *util.Credentials
+	GrpcClient *grpc.GrpcClient
 
-	Config    func() (*util.Config, error)
-	MachineId func() (string, error)
+	Credentials func() (*util.Credentials, error)
+	Config      func() (*util.Config, error)
+	MachineId   func() (string, error)
 }
 
 func NewFactory() *Factory {
 	f := &Factory{
 		GrpcClient:  grpc.NewGrpcClient(),
-		Credentials: newCredentials(),
-
-		Config: configFunc(),
+		Credentials: credentialsFunc(),
+		Config:      configFunc(),
 	}
 
 	f.MachineId = machineIdFunc(f)
 
 	return f
+}
+
+func credentialsFunc() func() (*util.Credentials, error) {
+	return func() (*util.Credentials, error) {
+		return util.ReadCredentials()
+	}
 }
 
 func configFunc() func() (*util.Config, error) {
@@ -44,14 +49,4 @@ func machineIdFunc(f *Factory) func() (string, error) {
 	return func() (string, error) {
 		return machineid.ProtectedID(cfg.AppId)
 	}
-}
-
-func newCredentials() *util.Credentials {
-	creds, err := util.ReadCredentials()
-	if err != nil {
-		log.Fatalln(err)
-		return nil
-	}
-
-	return creds
 }

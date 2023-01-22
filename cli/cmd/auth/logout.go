@@ -8,7 +8,7 @@ import (
 )
 
 type LogoutOptions struct {
-	Credentials *util.Credentials
+	Credentials func() (*util.Credentials, error)
 }
 
 func NewCmdLogout(f *internal.Factory) *cobra.Command {
@@ -29,5 +29,9 @@ func NewCmdLogout(f *internal.Factory) *cobra.Command {
 }
 
 func logoutRun(opts *LogoutOptions) error {
-	return opts.Credentials.Reset()
+	creds, err := opts.Credentials()
+	if err != nil {
+		return err
+	}
+	return creds.Reset()
 }
