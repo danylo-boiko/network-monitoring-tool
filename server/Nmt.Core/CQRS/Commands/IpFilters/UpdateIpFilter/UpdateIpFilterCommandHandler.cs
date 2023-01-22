@@ -5,20 +5,20 @@ using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 using Nmt.Domain.Events;
 using Nmt.Infrastructure.Data.Postgres;
 
-namespace Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
+namespace Nmt.Core.CQRS.Commands.IpFilters.UpdateIpFilter;
 
-public class DeleteIpFilterCommandHandler : IRequestHandler<DeleteIpFilterCommand, ExecutionResult<bool>>
+public class UpdateIpFilterCommandHandler : IRequestHandler<UpdateIpFilterCommand, ExecutionResult<bool>>
 {
     private readonly PostgresDbContext _dbContext;
     private readonly IMediator _mediator;
 
-    public DeleteIpFilterCommandHandler(PostgresDbContext dbContext, IMediator mediator)
+    public UpdateIpFilterCommandHandler(PostgresDbContext dbContext, IMediator mediator)
     {
         _dbContext = dbContext;
         _mediator = mediator;
     }
-
-    public async Task<ExecutionResult<bool>> Handle(DeleteIpFilterCommand request, CancellationToken cancellationToken)
+    
+    public async Task<ExecutionResult<bool>> Handle(UpdateIpFilterCommand request, CancellationToken cancellationToken)
     {
         var ipFilter = await _dbContext.IpFilters.FirstOrDefaultAsync(i => i.Id == request.IpFilterId, cancellationToken);
         if (ipFilter == null)
@@ -26,7 +26,8 @@ public class DeleteIpFilterCommandHandler : IRequestHandler<DeleteIpFilterComman
             return new ExecutionResult<bool>(new ErrorInfo(nameof(request.IpFilterId), $"IP filter with id '{request.IpFilterId}' not found"));
         }
 
-        _dbContext.IpFilters.Remove(ipFilter);
+        ipFilter.FilterAction = request.FilterAction;
+        ipFilter.Comment = request.Comment;
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 

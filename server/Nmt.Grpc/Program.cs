@@ -15,6 +15,7 @@ services
     .AddAuthentication(configuration)
     .AddServices()
     .AddSmtpConfigs(configuration)
+    .AddRabbitMQ(configuration)
     .AddGrpc();
 
 var app = builder.Build();
