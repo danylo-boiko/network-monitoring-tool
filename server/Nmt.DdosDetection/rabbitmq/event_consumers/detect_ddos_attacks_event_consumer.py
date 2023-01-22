@@ -1,12 +1,12 @@
 import json
 from configparser import ConfigParser
 from pika import BasicProperties
+from dateutil import parser
 from mongo.readonly_client import MongoReadonlyClient
 from rabbitmq.events.detect_ddos_attacks_event import DetectDdosAttacksEvent
 from rabbitmq.events.block_ip_addresses_event import BlockIpAddressesEvent
 from rabbitmq.enums.event_exchanger import EventExchanger
 from rabbitmq.enums.event_queue import EventQueue
-from dateutil import parser
 
 
 class DetectDdosAttacksEventConsumer:
@@ -24,7 +24,7 @@ class DetectDdosAttacksEventConsumer:
                 '$gte': parser.parse(detect_ddos_attacks_event.date_from),
                 '$lte': parser.parse(detect_ddos_attacks_event.date_to)
             },
-            'Status': 1  # Passed status
+            'Status': 1  # 'Passed' status
         }, {
             '_id': 0,
             'Ip': 1,
@@ -36,12 +36,12 @@ class DetectDdosAttacksEventConsumer:
         print(list(passed_packets))
 
         # TODO get from ML
-        ips_to_blocks = []
+        ips_to_block = []
 
-        if len(ips_to_blocks) == 0:
+        if len(ips_to_block) == 0:
             return
 
-        block_ip_addresses_event = BlockIpAddressesEvent(detect_ddos_attacks_event.device_id, ips_to_blocks)
+        block_ip_addresses_event = BlockIpAddressesEvent(detect_ddos_attacks_event.device_id, ips_to_block)
         channel.basic_publish(exchange=EventExchanger.BLOCK_IP_ADDRESSES,
                               routing_key=EventQueue.BLOCK_IP_ADDRESSES,
                               properties=BasicProperties(message_id=block_ip_addresses_event.id),

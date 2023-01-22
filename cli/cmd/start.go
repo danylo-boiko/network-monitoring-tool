@@ -17,15 +17,15 @@ import (
 )
 
 type StartOptions struct {
-	GrpcClient  *grpc.GrpcClient
-	Credentials *util.Credentials
-	Iface       *net.Interface
-	PrintStats  bool
+	GrpcClient *grpc.GrpcClient
+	Iface      *net.Interface
+	PrintStats bool
 
-	Config func() (*util.Config, error)
+	Credentials func() (*util.Credentials, error)
+	Config      func() (*util.Config, error)
 }
 
-func newCmdStart(f *internal.Factory) *cobra.Command {
+func NewCmdStart(f *internal.Factory) *cobra.Command {
 	var opts = &StartOptions{
 		GrpcClient:  f.GrpcClient,
 		Credentials: f.Credentials,
@@ -64,6 +64,11 @@ func startRun(opts *StartOptions) error {
 		return err
 	}
 
+	creds, err := opts.Credentials()
+	if err != nil {
+		return nil
+	}
+
 	loader := bpf.NewBpfLoader(opts.Iface)
 	if err := loader.Load(); err != nil {
 		return err
@@ -72,7 +77,7 @@ func startRun(opts *StartOptions) error {
 
 	log.Printf("Attached XDP program to iface %q (index %d)", loader.Interface.Name, loader.Interface.Index)
 
-	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress, opts.Credentials)
+	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress, creds)
 	if err != nil {
 		return err
 	}

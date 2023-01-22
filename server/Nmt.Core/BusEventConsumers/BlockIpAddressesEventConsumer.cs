@@ -23,13 +23,10 @@ public class BlockIpAddressesEventConsumer : IConsumer<BlockIpAddressesEvent>
 
     public async Task Consume(ConsumeContext<BlockIpAddressesEvent> context)
     {
-        var userIdQuery =
-            from device in _dbContext.Devices
-            join user in _dbContext.Users on device.UserId equals user.Id
-            where device.Id == context.Message.DeviceId
-            select user.Id;
-
-        var userId = await userIdQuery.FirstAsync(context.CancellationToken);
+        var userId = await _dbContext.Devices
+            .Where(d => d.Id == context.Message.DeviceId)
+            .Select(d => d.UserId)
+            .FirstAsync(context.CancellationToken);
 
         var dropIpFilters = context.Message.Ips.Select(ip => new IpFilter
         {
@@ -41,6 +38,8 @@ public class BlockIpAddressesEventConsumer : IConsumer<BlockIpAddressesEvent>
         });
 
         await _dbContext.IpFilters.AddRangeAsync(dropIpFilters, context.CancellationToken);
+
+        await _dbContext.SaveChangesAsync(context.CancellationToken);
 
         await _mediator.Publish(new CacheInvalidated
         {

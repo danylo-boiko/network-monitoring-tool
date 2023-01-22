@@ -16,11 +16,11 @@ import (
 )
 
 type LoginOptions struct {
-	GrpcClient  *grpc.GrpcClient
-	Credentials *util.Credentials
+	GrpcClient *grpc.GrpcClient
 
-	Config    func() (*util.Config, error)
-	MachineId func() (string, error)
+	Credentials func() (*util.Credentials, error)
+	Config      func() (*util.Config, error)
+	MachineId   func() (string, error)
 }
 
 func NewCmdLogin(f *internal.Factory) *cobra.Command {
@@ -51,7 +51,12 @@ func loginRun(opts *LoginOptions) error {
 		return err
 	}
 
-	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress, opts.Credentials)
+	creds, err := opts.Credentials()
+	if err != nil {
+		return err
+	}
+
+	err = opts.GrpcClient.Connect(cfg.GrpcServerAddress, creds)
 	if err != nil {
 		return err
 	}
@@ -87,7 +92,7 @@ func loginRun(opts *LoginOptions) error {
 		return err
 	}
 
-	if err := opts.Credentials.Update(response.AccessToken, response.RefreshToken); err != nil {
+	if err := creds.Update(response.AccessToken, response.RefreshToken); err != nil {
 		return err
 	}
 
