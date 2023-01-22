@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Nmt.Core.Auth;
-using Nmt.Core.BusEventHandlers;
+using Nmt.Core.BusEventConsumers;
 using Nmt.Core.Cache.Behaviors;
 using Nmt.Core.Cache.Interfaces;
 using Nmt.Core.TokenProviders;
@@ -111,7 +111,7 @@ public static class ServiceCollectionExtensions
         {
             if (includeConsumers)
             {
-                config.AddConsumer<BlockIpAddressesEventHandler>();
+                config.AddConsumer<BlockIpAddressesEventConsumer>();
             }
 
             config.UsingRabbitMq((ctx, cfg) => 
@@ -122,7 +122,7 @@ public static class ServiceCollectionExtensions
                 {
                     cfg.ReceiveEndpoint(EventBusQueues.BlockIpAddressesQueue, endpoint =>
                     {
-                        endpoint.ConfigureConsumer<BlockIpAddressesEventHandler>(ctx);
+                        endpoint.ConfigureConsumer<BlockIpAddressesEventConsumer>(ctx);
                     });
                 }
             });

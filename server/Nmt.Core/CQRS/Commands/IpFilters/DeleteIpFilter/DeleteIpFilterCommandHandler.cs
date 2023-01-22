@@ -2,7 +2,6 @@ using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
-using Nmt.Domain.Consts;
 using Nmt.Domain.Events;
 using Nmt.Infrastructure.Data.Postgres;
 
@@ -35,7 +34,7 @@ public class DeleteIpFilterCommandHandler : IRequestHandler<DeleteIpFilterComman
         {
             Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(ipFilter.UserId)
         }, cancellationToken);
-        
+
         return new ExecutionResult<bool>(true);
     }
 }

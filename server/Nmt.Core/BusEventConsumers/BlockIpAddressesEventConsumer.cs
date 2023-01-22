@@ -8,14 +8,14 @@ using Nmt.Domain.Events;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
-namespace Nmt.Core.BusEventHandlers;
+namespace Nmt.Core.BusEventConsumers;
 
-public class BlockIpAddressesEventHandler : IConsumer<BlockIpAddressesEvent>
+public class BlockIpAddressesEventConsumer : IConsumer<BlockIpAddressesEvent>
 {
     private readonly PostgresDbContext _dbContext;
     private readonly IMediator _mediator;
 
-    public BlockIpAddressesEventHandler(PostgresDbContext dbContext, IMediator mediator)
+    public BlockIpAddressesEventConsumer(PostgresDbContext dbContext, IMediator mediator)
     {
         _dbContext = dbContext;
         _mediator = mediator;

@@ -1,5 +1,6 @@
+using MassTransit;
 using MediatR;
-using Microsoft.Extensions.Logging;
+using Nmt.Domain.BusEvents;
 using Nmt.Domain.Enums;
 using Nmt.Infrastructure.Cache.MemoryCache.Interfaces;
 using Nmt.Infrastructure.Data.Mongo;
@@ -10,18 +11,18 @@ public class CreatePacketsCommandHandler : IRequestHandler<CreatePacketsCommand>
 {
     private readonly MongoDbContext _dbContext;
     private readonly IMemoryCache _memoryCache;
-    private readonly ILogger<CreatePacketsCommandHandler> _logger;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    private const int ComparisonMultiplier = 10;
+    private const int ComparisonMultiplier = 7;
 
     public CreatePacketsCommandHandler(
         MongoDbContext dbContext, 
         IMemoryCache memoryCache, 
-        ILogger<CreatePacketsCommandHandler> logger)
+        IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
         _memoryCache = memoryCache;
-        _logger = logger;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Unit> Handle(CreatePacketsCommand request, CancellationToken cancellationToken)
@@ -48,7 +49,12 @@ public class CreatePacketsCommandHandler : IRequestHandler<CreatePacketsCommand>
 
         if (cachedPacketsAggregate != null && packetsAggregate.HasAnomaly(cachedPacketsAggregate, ComparisonMultiplier))
         {
-            _logger.LogInformation($"Detected anomaly for device with id {request.DeviceId}");
+            await _publishEndpoint.Publish(new DetectDdosAttacksEvent
+            {
+                DeviceId = request.DeviceId,
+                DateFrom = passedPackets.Min(p => p.CreatedAt),
+                DateTo = passedPackets.Max(p => p.CreatedAt)
+            }, cancellationToken);
         }
 
         _memoryCache.Set(packetsAggregateCacheKey, packetsAggregate, TimeSpan.FromMinutes(1));

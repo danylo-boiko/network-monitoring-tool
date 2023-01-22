@@ -7,7 +7,7 @@ public class PacketsAggregate
 
     public bool HasAnomaly(PacketsAggregate previous, int comparisonMultiplier)
     {
-        return CountOfUniqueIps / comparisonMultiplier > previous.CountOfUniqueIps &&
+        return CountOfUniqueIps / comparisonMultiplier > previous.CountOfUniqueIps ||
                AverageCountOfPacketsPerIp / comparisonMultiplier > previous.AverageCountOfPacketsPerIp;
     }
 
