@@ -1,7 +1,10 @@
 import json
+
 from configparser import ConfigParser
 from pika import BasicProperties
 from dateutil import parser
+
+from ml_detection.detection_service import DetectionService
 from mongo.readonly_client import MongoReadonlyClient
 from rabbitmq.events.detect_ddos_attacks_event import DetectDdosAttacksEvent
 from rabbitmq.events.block_ip_addresses_event import BlockIpAddressesEvent
@@ -10,11 +13,12 @@ from rabbitmq.enums.event_queue import EventQueue
 
 
 class DetectDdosAttacksEventConsumer:
-    def __init__(self, config: ConfigParser):
+    def __init__(self, config: ConfigParser, ml_model_name: str):
         self.mongo_readonly_client = MongoReadonlyClient(config)
+        self.detection_service = DetectionService(ml_model_name)
         self.rabbit_mq_host = config.get('RabbitMQ', 'host')
 
-    def consume(self, channel, method, properties, body):
+    def consume(self, channel, method, properties, body) -> None:
         detect_ddos_attacks_event_json = json.loads(body.decode('UTF-8'))['message']
         detect_ddos_attacks_event = DetectDdosAttacksEvent.parse_from_json(detect_ddos_attacks_event_json)
 
@@ -33,10 +37,7 @@ class DetectDdosAttacksEventConsumer:
             'CreatedAt': 1
         })
 
-        print(list(passed_packets))
-
-        # TODO get from ML
-        ips_to_block = []
+        ips_to_block = self.detection_service.detect_ddos_ips(passed_packets)
 
         if len(ips_to_block) == 0:
             return
