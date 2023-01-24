@@ -1,3 +1,4 @@
+using AppAny.HotChocolate.FluentValidation;
 using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 using Nmt.Domain.Enums;
 using Nmt.GraphQL.Attributes;
@@ -10,7 +11,9 @@ namespace Nmt.GraphQL.Queries;
 public class Users
 {
     [PermissionsAuthorize(Permission.UsersRead)]
-    public async Task<UserDto> GetUserById([Service] IExecutionResultService executionResultService, GetUserWithDevicesAndIpFiltersByIdQuery input)
+    public async Task<UserDto> GetUserById(
+        [Service] IExecutionResultService executionResultService, 
+        [UseFluentValidation] GetUserWithDevicesAndIpFiltersByIdQuery input)
     {
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }

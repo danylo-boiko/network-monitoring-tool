@@ -1,3 +1,4 @@
+using AppAny.HotChocolate.FluentValidation;
 using Nmt.Core.CQRS.Queries.Packets.GetPacketsByDeviceId;
 using Nmt.Domain.Enums;
 using Nmt.GraphQL.Attributes;
@@ -10,7 +11,9 @@ namespace Nmt.GraphQL.Queries;
 public class Packets
 {
     [PermissionsAuthorize(Permission.PacketsRead)]
-    public async Task<IList<PacketDto>> GetPacketsByDeviceId([Service] IExecutionResultService executionResultService, GetPacketsByDeviceIdQuery input)
+    public async Task<IList<PacketDto>> GetPacketsByDeviceId(
+        [Service] IExecutionResultService executionResultService, 
+        [UseFluentValidation] GetPacketsByDeviceIdQuery input)
     {
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }

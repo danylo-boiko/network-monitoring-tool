@@ -28,14 +28,28 @@ public class BlockIpAddressesEventConsumer : IConsumer<BlockIpAddressesEvent>
             .Select(d => d.UserId)
             .FirstAsync(context.CancellationToken);
 
-        var dropIpFilters = context.Message.Ips.Select(ip => new IpFilter
+        var alreadyExistsIpFilters = (await _dbContext.IpFilters
+            .Where(i => i.UserId == userId && context.Message.Ips.Contains(i.Ip))
+            .Select(i => i.Ip)
+            .ToListAsync(context.CancellationToken))
+            .ToHashSet();
+
+        var dropIpFilters = context.Message.Ips
+            .Where(ip => !alreadyExistsIpFilters.Contains(ip))
+            .Select(ip => new IpFilter
+            {
+                UserId = userId,
+                Ip = ip,
+                FilterAction = IpFilterAction.Drop,
+                Comment = "Created automatically",
+                CreatedAt = DateTime.UtcNow
+            })
+            .ToList();
+
+        if (dropIpFilters.Count == 0)
         {
-            UserId = userId,
-            Ip = ip,
-            FilterAction = IpFilterAction.Drop,
-            Comment = "Created automatically",
-            CreatedAt = DateTime.UtcNow
-        });
+            return;
+        }
 
         await _dbContext.IpFilters.AddRangeAsync(dropIpFilters, context.CancellationToken);
 

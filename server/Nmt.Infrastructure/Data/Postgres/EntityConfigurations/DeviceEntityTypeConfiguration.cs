@@ -18,6 +18,10 @@ public class DeviceEntityTypeConfiguration : IEntityTypeConfiguration<Device>
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(d => d.MachineSpecificStamp).IsRequired();
+        builder.Property(d => d.Hostname)
+            .IsRequired();
+        
+        builder.Property(d => d.MachineSpecificStamp)
+            .IsRequired();
     }
 }

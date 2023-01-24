@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Nmt.Infrastructure.Data.Postgres.Migrations
 {
     /// <inheritdoc />
-    public partial class DbInitial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -188,8 +188,8 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Ip = table.Column<long>(type: "bigint", nullable: false),
-                    FilterAction = table.Column<int>(type: "integer", nullable: false),
-                    Comment = table.Column<string>(type: "text", nullable: true),
+                    FilterAction = table.Column<byte>(type: "smallint", nullable: false),
+                    Comment = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -208,8 +208,8 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb"), null, "User", "USER" },
-                    { new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0"), null, "Admin", "ADMIN" }
+                    { new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9"), null, "User", "USER" },
+                    { new Guid("3078ee96-5674-432b-9493-f16fab2f6dab"), null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
@@ -217,27 +217,27 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                 columns: new[] { "Id", "ClaimType", "ClaimValue", "Discriminator", "RoleId" },
                 values: new object[,]
                 {
-                    { 22, "Permission", "1", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 23, "Permission", "2", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 24, "Permission", "3", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 25, "Permission", "5", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 26, "Permission", "6", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 27, "Permission", "9", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 28, "Permission", "10", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 29, "Permission", "11", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 30, "Permission", "12", "RoleClaim", new Guid("83ebaced-0134-4d2e-bd0a-b7921a20f2bb") },
-                    { 31, "Permission", "1", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 32, "Permission", "2", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 33, "Permission", "3", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 34, "Permission", "4", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 35, "Permission", "5", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 36, "Permission", "6", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 37, "Permission", "7", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 38, "Permission", "8", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 39, "Permission", "9", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 40, "Permission", "10", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 41, "Permission", "11", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") },
-                    { 42, "Permission", "12", "RoleClaim", new Guid("c21cb8b4-732a-41ed-b83c-0e9df727a2f0") }
+                    { 22, "Permission", "1", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 23, "Permission", "2", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 24, "Permission", "3", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 25, "Permission", "5", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 26, "Permission", "6", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 27, "Permission", "9", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 28, "Permission", "10", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 29, "Permission", "11", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 30, "Permission", "12", "RoleClaim", new Guid("26528216-9c53-4c9f-bd6b-22ec59c6f3c9") },
+                    { 31, "Permission", "1", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 32, "Permission", "2", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 33, "Permission", "3", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 34, "Permission", "4", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 35, "Permission", "5", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 36, "Permission", "6", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 37, "Permission", "7", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 38, "Permission", "8", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 39, "Permission", "9", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 40, "Permission", "10", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 41, "Permission", "11", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") },
+                    { 42, "Permission", "12", "RoleClaim", new Guid("3078ee96-5674-432b-9493-f16fab2f6dab") }
                 });
 
             migrationBuilder.CreateIndex(
@@ -274,12 +274,14 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_Email",
                 table: "AspNetUsers",
-                column: "Email");
+                column: "Email",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_UserName",
                 table: "AspNetUsers",
-                column: "UserName");
+                column: "UserName",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -293,9 +295,10 @@ namespace Nmt.Infrastructure.Data.Postgres.Migrations
                 columns: new[] { "UserId", "MachineSpecificStamp" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_IpFilters_UserId",
+                name: "IX_IpFilters_UserId_Ip",
                 table: "IpFilters",
-                column: "UserId");
+                columns: new[] { "UserId", "Ip" },
+                unique: true);
         }
 
         /// <inheritdoc />
