@@ -76,7 +76,7 @@ int bpf_xdp_handler(struct xdp_md *ctx) {
     int XDP_ACTION = XDP_PASS;
 
     // Check ip filters.
-    uint ip = (uint)(iph->saddr);
+    uint ip = ntohl(iph->saddr);
     enum IpFilterAction *ip_filter_action = bpf_map_lookup_elem(&ip_filters_map, &ip);
     if (ip_filter_action) {
         switch (*ip_filter_action) {
