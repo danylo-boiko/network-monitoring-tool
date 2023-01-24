@@ -56,6 +56,7 @@ export type GetUserWithDevicesAndIpFiltersByIdQueryInput = {
 
 export enum IpFilterAction {
   Drop = 'DROP',
+  DropWithoutCollecting = 'DROP_WITHOUT_COLLECTING',
   PassWithoutCollecting = 'PASS_WITHOUT_COLLECTING'
 }
 
@@ -83,6 +84,7 @@ export type Mutation = {
   refreshToken: TokenDto;
   register: Scalars['Boolean'];
   sendTwoFactorCode: Scalars['Boolean'];
+  updateIpFilter: Scalars['Boolean'];
   verifyTwoFactorCode: Scalars['Boolean'];
 };
 
@@ -114,6 +116,11 @@ export type MutationRegisterArgs = {
 
 export type MutationSendTwoFactorCodeArgs = {
   input: SendTwoFactorCodeCommandInput;
+};
+
+
+export type MutationUpdateIpFilterArgs = {
+  input: UpdateIpFilterCommandInput;
 };
 
 
@@ -200,6 +207,12 @@ export type TokenDto = {
   refreshToken: Scalars['String'];
 };
 
+export type UpdateIpFilterCommandInput = {
+  comment?: InputMaybe<Scalars['String']>;
+  filterAction: IpFilterAction;
+  ipFilterId: Scalars['UUID'];
+};
+
 export type UserDto = {
   __typename?: 'UserDto';
   devices: Array<DeviceDto>;
@@ -255,6 +268,13 @@ export type CreateIpFilterMutationVariables = Exact<{
 
 
 export type CreateIpFilterMutation = { __typename?: 'Mutation', createIpFilter: any };
+
+export type UpdateIpFilterMutationVariables = Exact<{
+  input: UpdateIpFilterCommandInput;
+}>;
+
+
+export type UpdateIpFilterMutation = { __typename?: 'Mutation', updateIpFilter: boolean };
 
 export type DeleteIpFilterMutationVariables = Exact<{
   input: DeleteIpFilterCommandInput;
@@ -374,6 +394,22 @@ export const CreateIpFilterDocument = gql`
   })
   export class CreateIpFilterGQL extends Apollo.Mutation<CreateIpFilterMutation, CreateIpFilterMutationVariables> {
     override document = CreateIpFilterDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UpdateIpFilterDocument = gql`
+    mutation UpdateIpFilter($input: UpdateIpFilterCommandInput!) {
+  updateIpFilter(input: $input)
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UpdateIpFilterGQL extends Apollo.Mutation<UpdateIpFilterMutation, UpdateIpFilterMutationVariables> {
+    override document = UpdateIpFilterDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
