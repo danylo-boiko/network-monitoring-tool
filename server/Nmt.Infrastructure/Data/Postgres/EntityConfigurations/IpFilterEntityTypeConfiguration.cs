@@ -16,10 +16,17 @@ public class IpFilterEntityTypeConfiguration : IEntityTypeConfiguration<IpFilter
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.Property(i => i.Ip).IsRequired();
+        builder.Property(i => i.Ip)
+            .IsRequired();
 
-        builder.Property(i => i.FilterAction).IsRequired();
+        builder.HasIndex(i => new { i.UserId, i.Ip })
+            .IsUnique();
 
-        builder.Property(i => i.Comment).IsRequired(false);
+        builder.Property(i => i.FilterAction)
+            .IsRequired();
+
+        builder.Property(i => i.Comment)
+            .IsRequired(false)
+            .HasMaxLength(256);
     }
 }

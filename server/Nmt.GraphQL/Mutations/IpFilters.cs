@@ -1,3 +1,4 @@
+using AppAny.HotChocolate.FluentValidation;
 using Nmt.Core.CQRS.Commands.IpFilters.CreateIpFilter;
 using Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
 using Nmt.Core.CQRS.Commands.IpFilters.UpdateIpFilter;
@@ -12,19 +13,25 @@ namespace Nmt.GraphQL.Mutations;
 public class IpFilters
 {
     [PermissionsAuthorize(Permission.IpFiltersCreate)]
-    public async Task<Guid> CreateIpFilter([Service] IExecutionResultService executionResultService, CreateIpFilterCommand input)
+    public async Task<Guid> CreateIpFilter(
+        [Service] IExecutionResultService executionResultService, 
+        [UseFluentValidation] CreateIpFilterCommand input)
     {
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 
     [PermissionsAuthorize(Permission.IpFiltersUpdate)]
-    public async Task<bool> UpdateIpFilter([Service] IExecutionResultService executionResultService, UpdateIpFilterCommand input)
+    public async Task<bool> UpdateIpFilter(
+        [Service] IExecutionResultService executionResultService, 
+        [UseFluentValidation] UpdateIpFilterCommand input)
     {
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }
 
     [PermissionsAuthorize(Permission.IpFiltersDelete)]
-    public async Task<bool> DeleteIpFilter([Service] IExecutionResultService executionResultService, DeleteIpFilterCommand input)
+    public async Task<bool> DeleteIpFilter(
+        [Service] IExecutionResultService executionResultService, 
+        [UseFluentValidation] DeleteIpFilterCommand input)
     {
         return await executionResultService.HandleExecutionResultRequestAsync(input);
     }

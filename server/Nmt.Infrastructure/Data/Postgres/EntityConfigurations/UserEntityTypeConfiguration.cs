@@ -8,8 +8,10 @@ public class UserEntityTypeConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasIndex(u => u.UserName);
+        builder.HasIndex(u => u.UserName)
+            .IsUnique();
 
-        builder.HasIndex(u => u.Email);
+        builder.HasIndex(u => u.Email)
+            .IsUnique();
     }
 }
