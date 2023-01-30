@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { AuthService } from "../../graphql/services/auth.service";
-import { JwtTokenService } from "../../shared/services/jwt-token.service";
+import { AuthService } from "../../../graphql/services/auth.service";
+import { JwtTokenService } from "../../../shared/services/jwt-token.service";
 import { VerifyEmailForm } from './verify-email.form';
 import { MutationResult } from "apollo-angular";
-import { SendTwoFactorCodeMutation, VerifyTwoFactorCodeMutation } from "../../graphql/services/graphql.service";
+import { SendTwoFactorCodeMutation, VerifyTwoFactorCodeMutation } from "../../../graphql/services/graphql.service";
 import { ApolloError } from "@apollo/client/core";
 import { Router } from '@angular/router';
-import { isFormFieldValid } from "../../shared/helpers/form-field-validation.helper";
-import { ErrorsService } from "../../graphql/services/errors.service";
+import { isFormFieldValid } from "../../../shared/helpers/form-field-validation.helper";
+import { ErrorsService } from "../../../graphql/services/errors.service";
 import { Toaster } from 'ngx-toast-notifications';
 
 @Component({

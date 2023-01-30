@@ -6,9 +6,9 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatButtonModule } from "@angular/material/button";
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
-import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { LoginComponent } from './pages/login/login.component';
+import { RegisterComponent } from './pages/register/register.component';
+import { VerifyEmailComponent } from './pages/verify-email/verify-email.component';
 import { MatTooltipModule } from "@angular/material/tooltip";
 
 const routes: Routes = [

@@ -13,7 +13,8 @@ import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { ToastNotificationsModule } from "ngx-toast-notifications";
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' }
+  { path: '', redirectTo: '/devices', pathMatch: 'full' },
+  { path: '**', redirectTo: '/devices' }
 ];
 
 @NgModule({
