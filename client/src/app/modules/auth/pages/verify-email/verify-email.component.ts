@@ -52,6 +52,7 @@ export class VerifyEmailComponent implements OnInit {
 
   public verifyEmail(): void {
     if (!this.verifyEmailForm.valid) {
+      this.verifyEmailForm.markAllAsTouched();
       return;
     }
 

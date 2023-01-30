@@ -53,6 +53,7 @@ export class LoginComponent implements OnInit {
 
   public login(): void {
     if (!this.loginForm.valid) {
+      this.loginForm.markAllAsTouched();
       return;
     }
 

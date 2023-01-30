@@ -66,6 +66,7 @@ export class RegisterComponent implements OnInit {
 
   public register(): void {
     if (!this.registerForm.valid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 
