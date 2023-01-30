@@ -13,10 +13,11 @@ export class GuardService implements CanActivate {
   public canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    if (!this._jwtTokenService.isAccessTokenValid()) {
-      this._router.navigateByUrl('/login');
-      return false;
+    if (this._jwtTokenService.isAccessTokenValid() || this._jwtTokenService.isRefreshTokenValid()) {
+      return true
     }
-    return true;
+
+    this._router.navigateByUrl('/login');
+    return false;
   }
 }

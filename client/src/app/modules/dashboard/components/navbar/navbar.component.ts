@@ -12,7 +12,7 @@ export class NavbarComponent {
   }
 
   public isUserValid(): boolean {
-    return this._jwtTokenService.hasAuthTokens();
+    return this._jwtTokenService.isAccessTokenValid() || this._jwtTokenService.isRefreshTokenValid();
   }
 
   public logout(): void {
