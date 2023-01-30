@@ -36,9 +36,7 @@ func NewCmdStart(f *internal.Factory) *cobra.Command {
 		Use:   "start <protocol>",
 		Short: "Start the processing of xpd packets",
 		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			var err error
-
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			opts.Iface, err = net.InterfaceByName(args[0])
 			if err != nil {
 				return err

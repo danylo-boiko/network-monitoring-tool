@@ -1,0 +1,8 @@
+<mat-toolbar color="accent" *ngIf="isUserValid()">
+  <mat-toolbar-row>
+    <a mat-button routerLink="/devices">Devices</a>
+    <a mat-button routerLink="/packets">Packets</a>
+    <span class="flex-expand"></span>
+    <a mat-button (click)="logout()">Logout</a>
+  </mat-toolbar-row>
+</mat-toolbar>
