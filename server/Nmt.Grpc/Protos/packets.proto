@@ -4,6 +4,7 @@ option csharp_namespace = "Nmt.Grpc.Protos";
 option go_package = "pkg/grpc";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 package packets;
 
@@ -16,6 +17,7 @@ message PacketModel {
   uint32 size = 2;
   uint32 protocol = 3;
   uint32 status = 4;
+  google.protobuf.Timestamp created_at = 5;
 }
 
 message AddPacketsRequest {

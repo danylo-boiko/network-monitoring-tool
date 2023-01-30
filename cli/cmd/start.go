@@ -14,6 +14,7 @@ import (
 
 	"github.com/cilium/ebpf"
 	"github.com/spf13/cobra"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type StartOptions struct {
@@ -114,10 +115,11 @@ func startRun(opts *StartOptions) error {
 			}
 
 			packets = append(packets, &grpc.PacketModel{
-				Ip:       packet.Ip,
-				Size:     packet.Size,
-				Protocol: uint32(packet.Protocol),
-				Status:   uint32(packet.Status),
+				Ip:        packet.Ip,
+				Size:      packet.Size,
+				Protocol:  uint32(packet.Protocol),
+				Status:    uint32(packet.Status),
+				CreatedAt: timestamppb.Now(),
 			})
 		}
 
