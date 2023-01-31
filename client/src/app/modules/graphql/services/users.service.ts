@@ -1,19 +1,15 @@
 import { Injectable } from '@angular/core';
-import { GetUserByIdGQL, GetUserWithDevicesAndIpFiltersByIdQueryInput } from "./graphql.service";
+import { GetUserInfoGQL } from "./graphql.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsersService {
-  constructor(private readonly _getUserById: GetUserByIdGQL) {
+  constructor(private readonly _getUserInfo: GetUserInfoGQL) {
   }
 
-  public getUserById({userId}: GetUserWithDevicesAndIpFiltersByIdQueryInput) {
-    return this._getUserById.fetch({
-      input: {
-        userId
-      }
-    }, {
+  public getUserInfo() {
+    return this._getUserInfo.fetch({}, {
       errorPolicy: 'all',
     });
   }

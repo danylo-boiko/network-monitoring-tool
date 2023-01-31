@@ -1,5 +1,8 @@
-query GetUserById($input: GetUserWithDevicesAndIpFiltersByIdQueryInput!) {
-  userById(input: $input) {
+query GetUserInfo {
+  userInfo {
+    id,
+    username,
+    email,
     devices {
       id,
       hostname,
