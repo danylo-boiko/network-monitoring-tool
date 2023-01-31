@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { UsersService } from "../../../graphql/services/users.service";
 import { IpFiltersService } from "../../../graphql/services/ip-filters.service";
 import { PacketsService } from 'src/app/modules/graphql/services/packets.service';
-import { ApolloQueryResult } from '@apollo/client/core';
+import { ApolloError, ApolloQueryResult } from '@apollo/client/core';
+import { DateRangeService } from '../../services/date-range.service';
+import { DateRangeMode } from '../../enums/date-range-mode.enum';
+import { Toaster } from "ngx-toast-notifications";
 import {
   GetPacketsByDeviceIdQuery,
   GetUserInfoQuery,
@@ -18,16 +21,18 @@ import {
 export class DashboardComponent implements OnInit {
   public userInfo!: UserDto;
   public packets!: Array<PacketDto>;
+  public dateRangeMode!: DateRangeMode;
 
   constructor(
     private readonly _usersService: UsersService,
     private readonly _ipFiltersService: IpFiltersService,
-    private readonly _packetsService: PacketsService) {
+    private readonly _packetsService: PacketsService,
+    private readonly _dateRangeService: DateRangeService,
+    private readonly _toaster: Toaster) {
   }
 
   public ngOnInit(): void {
     this.getUserInfo();
-    this.getPackets('34e867a2-bcb5-4cdc-827e-2534c28dd0f9');
   }
 
   private getUserInfo(): void {
@@ -38,7 +43,8 @@ export class DashboardComponent implements OnInit {
           if (!response.loading) {
             this.userInfo = response.data.userInfo;
           }
-        }
+        },
+        error: (err: ApolloError) => this.showLoadingErrorToaster("User info", err.message)
       });
   }
 
@@ -52,7 +58,18 @@ export class DashboardComponent implements OnInit {
           if (!response.loading) {
             this.packets = response.data.packetsByDeviceId;
           }
-        }
+        },
+        error: (err: ApolloError) => this.showLoadingErrorToaster("Packets", err.message)
       });
+  }
+
+  private showLoadingErrorToaster(topic: string, text: string): void {
+    this._toaster.open({
+      caption: `${topic} loading failed...`,
+      text,
+      type: 'danger',
+      position: 'top-right',
+      duration: 5000
+    });
   }
 }
