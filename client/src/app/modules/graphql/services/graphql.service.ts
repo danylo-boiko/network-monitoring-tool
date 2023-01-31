@@ -50,10 +50,6 @@ export type GetPacketsByDeviceIdQueryInput = {
   deviceId: Scalars['UUID'];
 };
 
-export type GetUserWithDevicesAndIpFiltersByIdQueryInput = {
-  userId: Scalars['UUID'];
-};
-
 export enum IpFilterAction {
   Drop = 'DROP',
   DropWithoutCollecting = 'DROP_WITHOUT_COLLECTING',
@@ -172,17 +168,12 @@ export enum ProtocolType {
 export type Query = {
   __typename?: 'Query';
   packetsByDeviceId: Array<PacketDto>;
-  userById: UserDto;
+  userInfo: UserDto;
 };
 
 
 export type QueryPacketsByDeviceIdArgs = {
   input: GetPacketsByDeviceIdQueryInput;
-};
-
-
-export type QueryUserByIdArgs = {
-  input: GetUserWithDevicesAndIpFiltersByIdQueryInput;
 };
 
 export type RefreshTokenCommandInput = {
@@ -290,12 +281,10 @@ export type GetPacketsByDeviceIdQueryVariables = Exact<{
 
 export type GetPacketsByDeviceIdQuery = { __typename?: 'Query', packetsByDeviceId: Array<{ __typename?: 'PacketDto', id: any, ip: any, size: any, protocol: ProtocolType, status: PacketStatus, createdAt: any }> };
 
-export type GetUserByIdQueryVariables = Exact<{
-  input: GetUserWithDevicesAndIpFiltersByIdQueryInput;
-}>;
+export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserByIdQuery = { __typename?: 'Query', userById: { __typename?: 'UserDto', devices: Array<{ __typename?: 'DeviceDto', id: any, hostname: string, machineSpecificStamp: string, createdAt: any }>, ipFilters: Array<{ __typename?: 'IpFilterDto', id: any, ip: any, filterAction: IpFilterAction, comment?: string | null, createdAt: any }> } };
+export type GetUserInfoQuery = { __typename?: 'Query', userInfo: { __typename?: 'UserDto', id: any, username: string, email: string, devices: Array<{ __typename?: 'DeviceDto', id: any, hostname: string, machineSpecificStamp: string, createdAt: any }>, ipFilters: Array<{ __typename?: 'IpFilterDto', id: any, ip: any, filterAction: IpFilterAction, comment?: string | null, createdAt: any }> } };
 
 export const LoginDocument = gql`
     mutation Login($input: LoginCommandInput!) {
@@ -454,9 +443,12 @@ export const GetPacketsByDeviceIdDocument = gql`
       super(apollo);
     }
   }
-export const GetUserByIdDocument = gql`
-    query GetUserById($input: GetUserWithDevicesAndIpFiltersByIdQueryInput!) {
-  userById(input: $input) {
+export const GetUserInfoDocument = gql`
+    query GetUserInfo {
+  userInfo {
+    id
+    username
+    email
     devices {
       id
       hostname
@@ -477,8 +469,8 @@ export const GetUserByIdDocument = gql`
   @Injectable({
     providedIn: 'root'
   })
-  export class GetUserByIdGQL extends Apollo.Query<GetUserByIdQuery, GetUserByIdQueryVariables> {
-    override document = GetUserByIdDocument;
+  export class GetUserInfoGQL extends Apollo.Query<GetUserInfoQuery, GetUserInfoQueryVariables> {
+    override document = GetUserInfoDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
