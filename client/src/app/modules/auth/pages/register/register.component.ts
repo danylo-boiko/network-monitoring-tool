@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from "../../../graphql/services/auth.service";
-import { JwtTokenService } from "../../../shared/services/jwt-token.service";
+import { JwtTokenService } from "../../../../core/services/jwt-token.service";
 import { RegisterForm } from "./register.form";
 import { MutationResult } from "apollo-angular";
 import { RegisterMutation } from "../../../graphql/services/graphql.service";
 import { ApolloError } from "@apollo/client/core";
 import { Router } from "@angular/router";
-import { isFormFieldValid } from "../../../shared/helpers/form-field-validation.helper";
+import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 import { ErrorsService } from "../../../graphql/services/errors.service";
 
 @Component({

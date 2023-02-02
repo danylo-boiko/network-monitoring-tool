@@ -1,1 +1,71 @@
 <app-navbar></app-navbar>
+
+<div class="row dashboard-container">
+  <div class="col-md-7 packets-container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Packets Traffic</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div id="packets-chart"></div>
+
+        <div class="empty-message" [style.display]="!packets || packets.length === 0 ? '' : 'none'">
+          You don't have any transferred packets
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="col-md-5">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>IP Filters</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <table mat-table *ngIf="userInfo && userInfo.ipFilters" [dataSource]="userInfo.ipFilters">
+          <ng-container matColumnDef="ip">
+            <th mat-header-cell *matHeaderCellDef>IP</th>
+            <td mat-cell *matCellDef="let ipFilter;">{{ ipFilter.ip }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="filterAction">
+            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <td mat-cell *matCellDef="let ipFilter;">{{ ipFilter.filterAction }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="comment">
+            <th mat-header-cell *matHeaderCellDef>Comment</th>
+            <td mat-cell *matCellDef="let ipFilter;">{{ ipFilter.comment }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>
+              <button mat-icon-button (click)="createIpFilter()">
+                <mat-icon aria-label="Example icon-button with a heart icon">add</mat-icon>
+              </button>
+            </th>
+
+            <td mat-cell *matCellDef="let ipFilter">
+              <button mat-icon-button color="accent" (click)="updateIpFilter(ipFilter)">
+                <mat-icon aria-label="Edit">edit</mat-icon>
+              </button>
+
+              <button mat-icon-button color="warn" (click)="deleteIpFilter(ipFilter)">
+                <mat-icon aria-label="Delete">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="ipFiltersTableColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: ipFiltersTableColumns;"></tr>
+        </table>
+
+        <div class="empty-message" [style.display]="!userInfo || userInfo.ipFilters.length == 0 ? '' : 'none'">
+          You don't have any IP filters
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

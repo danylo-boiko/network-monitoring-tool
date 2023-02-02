@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { JwtTokenService } from "../services/jwt-token.service";
+import { AuthService } from "../../modules/graphql/services/auth.service";
+import { MutationResult } from "apollo-angular";
+import { RefreshTokenMutation } from "../../modules/graphql/services/graphql.service";
 import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
   HttpInterceptor
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { JwtTokenService } from "../modules/shared/services/jwt-token.service";
-import { AuthService } from "../modules/graphql/services/auth.service";
-import { MutationResult } from "apollo-angular";
-import { RefreshTokenMutation } from "../modules/graphql/services/graphql.service";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -33,7 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
           }
         },
         error: () => this._jwtTokenService.removeAuthTokens()
-      })
+      });
     } else {
       this._jwtTokenService.removeAuthTokens();
     }

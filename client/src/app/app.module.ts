@@ -5,9 +5,8 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GraphQLModule } from './modules/graphql/graphql.module';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { SharedModule } from "./modules/shared/shared.module";
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
-import { AuthInterceptor } from "./interceptors/auth.interceptor";
+import { AuthInterceptor } from "./core/interceptors/auth.interceptor";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { ToastNotificationsModule } from "ngx-toast-notifications";
 import { AppRoutingModule } from "./app-routing.module";
@@ -19,7 +18,6 @@ import { AppRoutingModule } from "./app-routing.module";
   imports: [
     AuthModule,
     GraphQLModule,
-    SharedModule,
     DashboardModule,
     ToastNotificationsModule,
     AppRoutingModule,

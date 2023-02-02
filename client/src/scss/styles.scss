@@ -1,8 +1,16 @@
 html, body {
+  position: relative;
   height: 100%;
+  overflow: auto;
 }
 
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
 }
