@@ -10,6 +10,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { CreateIpFilterComponent } from '../../dialogs/create-ip-filter/create-ip-filter.component';
 import { UpdateIpFilterComponent } from '../../dialogs/update-ip-filter/update-ip-filter.component';
 import { DeleteIpFilterComponent } from "../../dialogs/delete-ip-filter/delete-ip-filter.component";
+import { intToIpString } from "../../../../core/utils/ip.util";
 import {
   GetPacketsByDeviceIdQuery,
   GetUserInfoQuery,
@@ -42,6 +43,10 @@ export class DashboardComponent implements OnInit {
   public ngOnInit(): void {
     this.ipFiltersTableColumns = ['ip', 'filterAction', 'comment', 'actions'];
     this.getUserInfo();
+  }
+
+  public convertIntToIpString(ip: number): string {
+    return intToIpString(ip);
   }
 
   public createIpFilter(): void {

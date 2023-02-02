@@ -18,6 +18,6 @@ public class UpdateIpFilterCommandValidator : AbstractValidator<UpdateIpFilterCo
 
         RuleFor(c => c.Comment)
             .MaximumLength(256)
-            .WithMessage("Password should has less than 256 characters");
+            .WithMessage("Comment should has less than 256 characters");
     }   
 }

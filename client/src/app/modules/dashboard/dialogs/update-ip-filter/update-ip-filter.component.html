@@ -1,1 +1,28 @@
-<p>update-ip-filter works!</p>
+<div class="dialog-container">
+  <form mat-dialog-content [formGroup]="updateIpFilterForm">
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Action</mat-label>
+      <mat-select formControlName="filterAction">
+        <mat-option *ngFor="let filterAction of allowedFilterActions" [value]="filterAction">
+          {{ filterAction }}
+        </mat-option>
+      </mat-select>
+      <mat-error>
+        <span *ngIf="!isFieldValid('filterAction', 'required')">Filter action shouldn't be empty</span>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Comment</mat-label>
+      <input matInput formControlName="comment"/>
+      <mat-error>
+        <span *ngIf="!isFieldValid('comment', 'maxlength')">Comment should has less than 256 characters</span>
+      </mat-error>
+    </mat-form-field>
+
+    <div mat-dialog-actions align="center">
+      <button mat-flat-button color="primary" (click)="updateIpFilter()">Update</button>
+      <button mat-flat-button color="warn" (click)="cancel()">Cancel</button>
+    </div>
+  </form>
+</div>

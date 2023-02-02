@@ -14,9 +14,12 @@ import { MatPaginatorModule } from "@angular/material/paginator";
 import { NavbarComponent } from "./components/navbar/navbar.component";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { DeleteIpFilterComponent } from './dialogs/delete-ip-filter/delete-ip-filter.component';
-import { MatDialogModule } from "@angular/material/dialog";
 import { CreateIpFilterComponent } from './dialogs/create-ip-filter/create-ip-filter.component';
 import { UpdateIpFilterComponent } from './dialogs/update-ip-filter/update-ip-filter.component';
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatSelectModule } from "@angular/material/select";
 
 @NgModule({
   declarations: [
@@ -33,6 +36,7 @@ import { UpdateIpFilterComponent } from './dialogs/update-ip-filter/update-ip-fi
     MatButtonModule,
     MatCardModule,
     BrowserModule,
+    MatDialogModule,
     FormsModule,
     ReactiveFormsModule,
     NgApexchartsModule,
@@ -40,7 +44,9 @@ import { UpdateIpFilterComponent } from './dialogs/update-ip-filter/update-ip-fi
     MatIconModule,
     MatPaginatorModule,
     MatToolbarModule,
-    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
   ]
 })
 export class DashboardModule {

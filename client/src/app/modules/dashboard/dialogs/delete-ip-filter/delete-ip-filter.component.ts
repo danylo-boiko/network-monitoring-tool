@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { IpFilterDto } from "../../../graphql/services/graphql.service";
+import { intToIpString } from "../../../../core/utils/ip.util";
 
 @Component({
   selector: 'app-delete-ip-filter',
@@ -14,9 +15,15 @@ export class DeleteIpFilterComponent {
   }
 
   public deleteIpFilter(): void {
+    console.log(`Delete ${this.data.ipFilter.id}`);
+    this._dialogRef.close(true);
   }
 
   public cancel(): void {
     this._dialogRef.close();
+  }
+
+  public convertIntToIpString(ip: number): string {
+    return intToIpString(ip);
   }
 }
