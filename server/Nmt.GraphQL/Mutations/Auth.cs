@@ -1,4 +1,3 @@
-using AppAny.HotChocolate.FluentValidation;
 using Nmt.Core.CQRS.Commands.Auth.Login;
 using Nmt.Core.CQRS.Commands.Auth.RefreshToken;
 using Nmt.Core.CQRS.Commands.Auth.Register;
@@ -12,38 +11,28 @@ namespace Nmt.GraphQL.Mutations;
 [ExtendObjectType(ObjectTypes.Mutation)]
 public class Auth
 {
-    public async Task<TokenDto> Login(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] LoginCommand input)
+    public async Task<TokenDto> Login([Service] IExecutionResultService service, LoginCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await service.HandleExecutionResultRequestAsync(input);
     }
 
-    public async Task<bool> Register(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] RegisterCommand input)
+    public async Task<bool> Register([Service] IExecutionResultService service, RegisterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await service.HandleExecutionResultRequestAsync(input);
     }
 
-    public async Task<TokenDto> RefreshToken(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] RefreshTokenCommand input)
+    public async Task<TokenDto> RefreshToken([Service] IExecutionResultService service, RefreshTokenCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await service.HandleExecutionResultRequestAsync(input);
     }
 
-    public async Task<bool> SendTwoFactorCode(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] SendTwoFactorCodeCommand input)
+    public async Task<bool> SendTwoFactorCode([Service] IExecutionResultService service, SendTwoFactorCodeCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await service.HandleExecutionResultRequestAsync(input);
     }
 
-    public async Task<bool> VerifyTwoFactorCode(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] VerifyTwoFactorCodeCommand input)
+    public async Task<bool> VerifyTwoFactorCode([Service] IExecutionResultService service, VerifyTwoFactorCodeCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await service.HandleExecutionResultRequestAsync(input);
     }
 }

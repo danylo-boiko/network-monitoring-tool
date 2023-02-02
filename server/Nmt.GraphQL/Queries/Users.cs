@@ -13,9 +13,7 @@ namespace Nmt.GraphQL.Queries;
 public class Users
 {
     [PermissionsAuthorize(Permission.UsersRead)]
-    public async Task<UserDto> GetUserInfo(
-        [Service] IExecutionResultService executionResultService, 
-        ClaimsPrincipal claims)
+    public async Task<UserDto> GetUserInfo([Service] IExecutionResultService executionResultService, ClaimsPrincipal claims)
     {
         var query = new GetUserWithDevicesAndIpFiltersByIdQuery
         {

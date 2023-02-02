@@ -20,11 +20,11 @@ func LoadConfig() (*Config, error) {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("failed to read configuration: %w", err)
+		return nil, fmt.Errorf("failed to configuration file: %w", err)
 	}
 
 	if err := viper.Unmarshal(&config); err != nil {
-		return nil, fmt.Errorf("failed to read configuration: %w", err)
+		return nil, fmt.Errorf("failed to read configuration from file: %w", err)
 	}
 
 	return &config, nil

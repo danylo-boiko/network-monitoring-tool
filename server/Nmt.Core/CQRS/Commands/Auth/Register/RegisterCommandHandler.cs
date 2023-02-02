@@ -15,18 +15,15 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
     private readonly PostgresDbContext _dbContext;
     private readonly UserManager<User> _userManager;
     private readonly IMediator _mediator;
-    private readonly ILogger<RegisterCommandHandler> _logger;
 
     public RegisterCommandHandler(
         PostgresDbContext dbContext, 
         UserManager<User> userManager, 
-        IMediator mediator, 
-        ILogger<RegisterCommandHandler> logger)
+        IMediator mediator)
     {
         _dbContext = dbContext;
         _userManager = userManager;
         _mediator = mediator;
-        _logger = logger;
     }
 
     public async Task<ExecutionResult<bool>> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -74,7 +71,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
         }
         catch (Exception e)
         {
-            _logger.LogError(e.Message);
             return new ExecutionResult<bool>(new ErrorInfo(e.Message));
         }
     }

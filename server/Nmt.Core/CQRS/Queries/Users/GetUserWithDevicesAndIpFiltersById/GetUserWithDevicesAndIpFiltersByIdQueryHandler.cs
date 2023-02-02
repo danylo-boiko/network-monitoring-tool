@@ -1,7 +1,6 @@
 using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Nmt.Domain.Consts;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;

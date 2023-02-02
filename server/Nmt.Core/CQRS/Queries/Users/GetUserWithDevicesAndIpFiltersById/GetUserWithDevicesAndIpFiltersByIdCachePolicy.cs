@@ -1,5 +1,5 @@
 using LS.Helpers.Hosting.API;
-using Nmt.Core.Cache.Interfaces;
+using Nmt.Domain.Common;
 
 namespace Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 

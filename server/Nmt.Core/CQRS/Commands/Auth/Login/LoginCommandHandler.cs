@@ -17,20 +17,17 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
     private readonly UserManager<User> _userManager;
     private readonly ITokensService _tokensService;
     private readonly IMediator _mediator;
-    private readonly ILogger<LoginCommandHandler> _logger;
 
     public LoginCommandHandler(
         PostgresDbContext dbContext,
         UserManager<User> userManager,
         ITokensService tokensService,
-        IMediator mediator,
-        ILogger<LoginCommandHandler> logger)
+        IMediator mediator)
     {
         _dbContext = dbContext;
         _userManager = userManager;
         _tokensService = tokensService;
         _mediator = mediator;
-        _logger = logger;
     }
 
     public async Task<ExecutionResult<TokenDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -70,7 +67,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
         }
         catch (Exception e)
         {
-            _logger.LogError(e.Message);
             return new ExecutionResult<TokenDto>(new ErrorInfo(e.Message));
         }
     }

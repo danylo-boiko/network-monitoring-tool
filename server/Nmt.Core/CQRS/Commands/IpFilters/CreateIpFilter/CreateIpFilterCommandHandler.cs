@@ -29,7 +29,7 @@ public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterComman
 
         var ipFilter = new IpFilter
         {
-            UserId = request.UserId,
+            UserId = request.UserId!.Value,
             Ip = (uint)request.Ip,
             FilterAction = request.FilterAction,
             Comment = request.Comment,

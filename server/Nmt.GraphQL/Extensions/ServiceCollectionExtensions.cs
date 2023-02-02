@@ -1,9 +1,7 @@
-using AppAny.HotChocolate.FluentValidation;
 using HotChocolate.Execution.Configuration;
 using Nmt.GraphQL.Consts;
 using Nmt.GraphQL.Mutations;
 using Nmt.GraphQL.Queries;
-using ExecutionResultExtensions = Nmt.Core.Extensions.ExecutionResultExtensions;
 
 namespace Nmt.GraphQL.Extensions;
 
@@ -34,12 +32,7 @@ public static class ServiceCollectionExtensions
             .AddAuthorization()
             .AddErrorFilter<ErrorFilter>()
             .AddQueries()
-            .AddMutations()
-            .AddFluentValidation(vb => vb.UseErrorMapper((builder, context) =>
-            {
-                builder.SetMessage(context.ValidationFailure.ErrorMessage);
-                builder.SetExtension(ExecutionResultExtensions.GraphQLPropertyName, context.ValidationFailure.PropertyName);
-            }));
+            .AddMutations();
 
         return services;
     }

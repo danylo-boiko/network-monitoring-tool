@@ -1,7 +1,9 @@
-using AppAny.HotChocolate.FluentValidation;
+using System.Security.Claims;
 using Nmt.Core.CQRS.Commands.IpFilters.CreateIpFilter;
 using Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
 using Nmt.Core.CQRS.Commands.IpFilters.UpdateIpFilter;
+using Nmt.Core.Extensions;
+using Nmt.Domain.Consts;
 using Nmt.Domain.Enums;
 using Nmt.GraphQL.Attributes;
 using Nmt.GraphQL.Consts;
@@ -13,26 +15,21 @@ namespace Nmt.GraphQL.Mutations;
 public class IpFilters
 {
     [PermissionsAuthorize(Permission.IpFiltersCreate)]
-    public async Task<Guid> CreateIpFilter(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] CreateIpFilterCommand input)
+    public async Task<Guid> CreateIpFilter([Service] IExecutionResultService service, CreateIpFilterCommand input, ClaimsPrincipal claims)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        input.UserId = claims.FindFirstGuid(AuthClaims.UserId);
+        return await service.HandleExecutionResultRequestAsync(input);
     }
 
     [PermissionsAuthorize(Permission.IpFiltersUpdate)]
-    public async Task<bool> UpdateIpFilter(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] UpdateIpFilterCommand input)
+    public async Task<bool> UpdateIpFilter([Service] IExecutionResultService service, UpdateIpFilterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await service.HandleExecutionResultRequestAsync(input);
     }
 
     [PermissionsAuthorize(Permission.IpFiltersDelete)]
-    public async Task<bool> DeleteIpFilter(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] DeleteIpFilterCommand input)
+    public async Task<bool> DeleteIpFilter([Service] IExecutionResultService service, DeleteIpFilterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await service.HandleExecutionResultRequestAsync(input);
     }
 }

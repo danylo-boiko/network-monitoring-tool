@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Nmt.Core.Cache.Interfaces;
+namespace Nmt.Domain.Common;
 
 public interface ICachePolicy<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
