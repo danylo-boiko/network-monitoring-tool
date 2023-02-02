@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { AuthService } from "../../../graphql/services/auth.service";
-import { JwtTokenService } from "../../../shared/services/jwt-token.service";
+import { JwtTokenService } from "../../../../core/services/jwt-token.service";
 import { RegisterForm } from "./register.form";
 import { MutationResult } from "apollo-angular";
 import { RegisterMutation } from "../../../graphql/services/graphql.service";
 import { ApolloError } from "@apollo/client/core";
 import { Router } from "@angular/router";
-import { isFormFieldValid } from "../../../shared/helpers/form-field-validation.helper";
+import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 import { ErrorsService } from "../../../graphql/services/errors.service";
+import { matchingControlsValidator } from "../../../../core/validators/form-builder.validator";
 
 @Component({
   selector: 'app-register',
@@ -60,7 +61,7 @@ export class RegisterComponent implements OnInit {
         nonNullable: true
       })
     }, {
-      validator: this.matchingControlValidator('password', 'confirmPassword')
+      validator: matchingControlsValidator('password', 'confirmPassword')
     });
   }
 
@@ -105,23 +106,6 @@ export class RegisterComponent implements OnInit {
 
   public getServerValidationErrorMessage(controlName: string): string {
     return this.registerForm.get(controlName)!.getError('serverValidation');
-  }
-
-  public matchingControlValidator(controlName: string, matchingControlName: string) {
-    return (formGroup: FormGroup<RegisterForm>) => {
-      const control = formGroup.get(controlName)!;
-      const matchingControl = formGroup.get(matchingControlName)!;
-
-      if (matchingControl.errors && !matchingControl.getError('matching')) {
-        return;
-      }
-
-      if (control.value !== matchingControl.value) {
-        matchingControl.setErrors({ matching: true });
-      } else {
-        matchingControl.setErrors(null);
-      }
-    };
   }
 
   public isFieldValid(controlName: string, ruleName: string): boolean {

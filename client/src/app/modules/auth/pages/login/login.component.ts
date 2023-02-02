@@ -4,11 +4,11 @@ import { ApolloError } from '@apollo/client/core';
 import { MutationResult } from 'apollo-angular';
 import { AuthService } from "../../../graphql/services/auth.service";
 import { LoginMutation } from '../../../graphql/services/graphql.service';
-import { JwtTokenService } from '../../../shared/services/jwt-token.service';
+import { JwtTokenService } from '../../../../core/services/jwt-token.service';
 import { LoginForm } from './login.form';
 import { Router } from "@angular/router";
 import { ErrorsService } from "../../../graphql/services/errors.service";
-import { isFormFieldValid } from "../../../shared/helpers/form-field-validation.helper";
+import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 
 @Component({
   selector: 'app-login',

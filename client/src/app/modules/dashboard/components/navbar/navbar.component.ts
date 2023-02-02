@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { JwtTokenService } from "../../../shared/services/jwt-token.service";
+import { JwtTokenService } from "../../../../core/services/jwt-token.service";
 import { Router } from "@angular/router";
 
 @Component({
