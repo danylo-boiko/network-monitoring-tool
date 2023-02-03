@@ -1,9 +1,8 @@
-using LS.Helpers.Hosting.API;
 using MediatR;
 
 namespace Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 
-public record GetUserWithDevicesAndIpFiltersByIdQuery : IRequest<ExecutionResult<UserDto>>
+public record GetUserWithDevicesAndIpFiltersByIdQuery : IRequest<UserDto>
 {
     public Guid UserId { get; set; }
 

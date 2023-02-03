@@ -1,9 +1,7 @@
 using Grpc.Core;
-using LS.Helpers.Hosting.API;
 using MediatR;
 using Nmt.Core.CQRS.Commands.Auth.Login;
 using Nmt.Core.CQRS.Commands.Auth.RefreshToken;
-using Nmt.Core.Extensions;
 using Nmt.Grpc.Protos;
 
 namespace Nmt.Grpc.Services;
@@ -19,7 +17,7 @@ public class AuthService : Auth.AuthBase
 
     public override async Task<AuthResponse> Login(LoginRequest request, ServerCallContext context)
     {
-        var tokenResult = await _mediator.Send(new LoginCommand
+        var tokens= await _mediator.Send(new LoginCommand
         {
             Username = request.Username,
             Password = request.Password,
@@ -27,31 +25,25 @@ public class AuthService : Auth.AuthBase
             MachineSpecificStamp = request.MachineSpecificStamp
         }, context.CancellationToken);
 
-        return TokenResultToAuthResponse(tokenResult);
+        return new AuthResponse
+        {
+            AccessToken = tokens.AccessToken,
+            RefreshToken = tokens.RefreshToken
+        };
     }
 
     public override async Task<AuthResponse> RefreshToken(RefreshTokenRequest request, ServerCallContext context)
     {
-        var tokenResult = await _mediator.Send(new RefreshTokenCommand
+        var tokens = await _mediator.Send(new RefreshTokenCommand
         {
             AccessToken = request.AccessToken,
             RefreshToken = request.RefreshToken
         }, context.CancellationToken);
 
-        return TokenResultToAuthResponse(tokenResult);
-    }
-
-    private AuthResponse TokenResultToAuthResponse(ExecutionResult<TokenDto> tokenResult)
-    {
-        if (!tokenResult.Success)
-        {
-            throw tokenResult.ToGrpcException();
-        }
-
         return new AuthResponse
         {
-            AccessToken = tokenResult.Value.AccessToken,
-            RefreshToken = tokenResult.Value.RefreshToken
-        };
+            AccessToken = tokens.AccessToken,
+            RefreshToken = tokens.RefreshToken
+        };    
     }
 }

@@ -1,11 +1,13 @@
-using AppAny.HotChocolate.FluentValidation;
+using System.Security.Claims;
+using MediatR;
 using Nmt.Core.CQRS.Commands.IpFilters.CreateIpFilter;
 using Nmt.Core.CQRS.Commands.IpFilters.DeleteIpFilter;
 using Nmt.Core.CQRS.Commands.IpFilters.UpdateIpFilter;
+using Nmt.Core.Extensions;
+using Nmt.Domain.Consts;
 using Nmt.Domain.Enums;
 using Nmt.GraphQL.Attributes;
 using Nmt.GraphQL.Consts;
-using Nmt.GraphQL.Services.Interfaces;
 
 namespace Nmt.GraphQL.Mutations;
 
@@ -13,26 +15,22 @@ namespace Nmt.GraphQL.Mutations;
 public class IpFilters
 {
     [PermissionsAuthorize(Permission.IpFiltersCreate)]
-    public async Task<Guid> CreateIpFilter(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] CreateIpFilterCommand input)
+    public async Task<Guid> CreateIpFilter([Service] IMediator mediator, CreateIpFilterCommand input, ClaimsPrincipal claims)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        input.UserId = claims.FindFirstGuid(AuthClaims.UserId);
+
+        return await mediator.Send(input);
     }
 
     [PermissionsAuthorize(Permission.IpFiltersUpdate)]
-    public async Task<bool> UpdateIpFilter(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] UpdateIpFilterCommand input)
+    public async Task<bool> UpdateIpFilter([Service] IMediator mediator, UpdateIpFilterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await mediator.Send(input);
     }
 
     [PermissionsAuthorize(Permission.IpFiltersDelete)]
-    public async Task<bool> DeleteIpFilter(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] DeleteIpFilterCommand input)
+    public async Task<bool> DeleteIpFilter([Service] IMediator mediator, DeleteIpFilterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await mediator.Send(input);
     }
 }

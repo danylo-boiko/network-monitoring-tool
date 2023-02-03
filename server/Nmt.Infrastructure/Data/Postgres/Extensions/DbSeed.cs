@@ -51,18 +51,20 @@ public static class DbSeed
 
         foreach (var permission in (Permission[])Enum.GetValues(typeof(Permission)))
         {
-            if (excludeFilter == null || !excludeFilter.Contains(permission))
+            if (excludeFilter != null && excludeFilter.Contains(permission))
             {
-                permissions.Add(new RoleClaim
-                {
-                    Id = _nextRoleClaimId,
-                    RoleId = roleId,
-                    ClaimType = nameof(Permission),
-                    ClaimValue = permission.GetHashCode().ToString()
-                });
-
-                _nextRoleClaimId += 1;
+                continue;
             }
+
+            permissions.Add(new RoleClaim
+            {
+                Id = _nextRoleClaimId,
+                RoleId = roleId,
+                ClaimType = nameof(Permission),
+                ClaimValue = permission.GetHashCode().ToString()
+            });
+
+            _nextRoleClaimId += 1;
         }
 
         return permissions;

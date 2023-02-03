@@ -9,9 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Nmt.Core.Auth;
+using Nmt.Core.Behaviors;
 using Nmt.Core.BusEventConsumers;
-using Nmt.Core.Cache.Behaviors;
-using Nmt.Core.Cache.Interfaces;
 using Nmt.Core.TokenProviders;
 using Nmt.Domain.Common;
 using Nmt.Domain.Configs;
@@ -74,6 +73,8 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddFluentValidation(this IServiceCollection services)
     {
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
         services
             .AddFluentValidationAutoValidation()
             .AddFluentValidationClientsideAdapters()

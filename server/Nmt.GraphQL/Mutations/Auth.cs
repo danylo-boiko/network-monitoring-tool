@@ -1,49 +1,38 @@
-using AppAny.HotChocolate.FluentValidation;
+using MediatR;
 using Nmt.Core.CQRS.Commands.Auth.Login;
 using Nmt.Core.CQRS.Commands.Auth.RefreshToken;
 using Nmt.Core.CQRS.Commands.Auth.Register;
 using Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
 using Nmt.Core.CQRS.Commands.Auth.VerifyTwoFactorCode;
 using Nmt.GraphQL.Consts;
-using Nmt.GraphQL.Services.Interfaces;
 
 namespace Nmt.GraphQL.Mutations;
 
 [ExtendObjectType(ObjectTypes.Mutation)]
 public class Auth
 {
-    public async Task<TokenDto> Login(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] LoginCommand input)
+    public async Task<TokenDto> Login([Service] IMediator mediator, LoginCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await mediator.Send(input);
     }
 
-    public async Task<bool> Register(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] RegisterCommand input)
+    public async Task<bool> Register([Service] IMediator mediator, RegisterCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await mediator.Send(input);
     }
 
-    public async Task<TokenDto> RefreshToken(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] RefreshTokenCommand input)
+    public async Task<TokenDto> RefreshToken([Service] IMediator mediator, RefreshTokenCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await mediator.Send(input);
     }
 
-    public async Task<bool> SendTwoFactorCode(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] SendTwoFactorCodeCommand input)
+    public async Task<bool> SendTwoFactorCode([Service] IMediator mediator, SendTwoFactorCodeCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await mediator.Send(input);
     }
 
-    public async Task<bool> VerifyTwoFactorCode(
-        [Service] IExecutionResultService executionResultService, 
-        [UseFluentValidation] VerifyTwoFactorCodeCommand input)
+    public async Task<bool> VerifyTwoFactorCode([Service] IMediator mediator, VerifyTwoFactorCodeCommand input)
     {
-        return await executionResultService.HandleExecutionResultRequestAsync(input);
+        return await mediator.Send(input);
     }
 }
