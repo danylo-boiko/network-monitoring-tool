@@ -1,17 +1,17 @@
-using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 using Nmt.Core.Services.Interfaces;
+using Nmt.Domain.Consts;
 using Nmt.Domain.Events;
+using Nmt.Domain.Exceptions;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.Auth.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult<TokenDto>>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, TokenDto>
 {
     private readonly PostgresDbContext _dbContext;
     private readonly UserManager<User> _userManager;
@@ -30,7 +30,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
         _mediator = mediator;
     }
 
-    public async Task<ExecutionResult<TokenDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<TokenDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
         try
@@ -38,18 +38,29 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == request.Username, cancellationToken);
             if (user == null)
             {
-                return new ExecutionResult<TokenDto>(new ErrorInfo(nameof(request.Username), "User with this username not found"));
+                throw new DomainException("User with this username not found")
+                {
+                    Code = ExceptionCodes.NotFound,
+                    Property = nameof(request.Username)
+                };
             }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!isPasswordValid)
             {
-                return new ExecutionResult<TokenDto>(new ErrorInfo(nameof(request.Password), "Incorrect password"));
+                throw new DomainException("Incorrect password")
+                {
+                    Code = ExceptionCodes.WrongData,
+                    Property = nameof(request.Password)
+                };
             }
 
             if (!user.EmailConfirmed)
             {
-                return new ExecutionResult<TokenDto>(new ErrorInfo(nameof(user.EmailConfirmed), "Email is not confirmed"));
+                throw new DomainException("Email is not confirmed")
+                {
+                    Code = ExceptionCodes.EmailConfirmation
+                };
             }
 
             var deviceId = await GetOrCreateDevice(user.Id, request.Hostname, request.MachineSpecificStamp, cancellationToken);
@@ -59,15 +70,16 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, ExecutionResult
 
             var accessToken = await _tokensService.CreateAccessTokenAsync(user.Id, deviceId, cancellationToken);
 
-            return new ExecutionResult<TokenDto>(new TokenDto
+            return new TokenDto
             {
                 AccessToken = accessToken,
                 RefreshToken = _tokensService.CreateRefreshToken(accessToken)
-            });
+            };
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return new ExecutionResult<TokenDto>(new ErrorInfo(e.Message));
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
         }
     }
 

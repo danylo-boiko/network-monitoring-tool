@@ -1,16 +1,15 @@
-using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
 using Nmt.Domain.Consts;
+using Nmt.Domain.Exceptions;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.Auth.Register;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ExecutionResult<bool>>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, bool>
 {
     private readonly PostgresDbContext _dbContext;
     private readonly UserManager<User> _userManager;
@@ -26,7 +25,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
         _mediator = mediator;
     }
 
-    public async Task<ExecutionResult<bool>> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
         try
@@ -34,13 +33,21 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
             var isUsernameDuplicated = await _dbContext.Users.AnyAsync(u => u.UserName == request.Username, cancellationToken);
             if (isUsernameDuplicated)
             {
-                return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Username), "User with this username already exists"));
+                throw new DomainException("User with this username already exists")
+                {
+                    Code = ExceptionCodes.AlreadyExists,
+                    Property = nameof(request.Username)
+                };
             }
 
             var isEmailDuplicated = await _dbContext.Users.AnyAsync(u => u.Email == request.Email, cancellationToken);
             if (isEmailDuplicated)
             {
-                return new ExecutionResult<bool>(new ErrorInfo(nameof(request.Email), "User with this email already exists"));
+                throw new DomainException("User with this email already exists")
+                {
+                    Code = ExceptionCodes.AlreadyExists,
+                    Property = nameof(request.Email)
+                };
             }
 
             var user = new User
@@ -52,11 +59,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
             var userCreationResult = await _userManager.CreateAsync(user, request.Password);
             if (!userCreationResult.Succeeded)
             {
-                var errors = userCreationResult.Errors
-                    .Select(e => new ErrorInfo(e.Description))
-                    .ToList();
-
-                return new ExecutionResult<bool>(errors);
+                throw new Exception(string.Join(", ", userCreationResult.Errors.Select(e => e.Description)));
             }
 
             await _userManager.AddToRoleAsync(user, UserRoles.User);
@@ -69,9 +72,10 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Execution
                 Username = user.UserName
             }, cancellationToken);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            return new ExecutionResult<bool>(new ErrorInfo(e.Message));
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
         }
     }
 }

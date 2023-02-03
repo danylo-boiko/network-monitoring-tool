@@ -1,14 +1,15 @@
-using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
+using Nmt.Domain.Consts;
 using Nmt.Domain.Events;
+using Nmt.Domain.Exceptions;
 using Nmt.Domain.Models;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Commands.IpFilters.CreateIpFilter;
 
-public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterCommand, ExecutionResult<Guid>>
+public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterCommand, Guid>
 {
     private readonly PostgresDbContext _dbContext;
     private readonly IMediator _mediator;
@@ -19,12 +20,16 @@ public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterComman
         _mediator = mediator;
     }
 
-    public async Task<ExecutionResult<Guid>> Handle(CreateIpFilterCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(CreateIpFilterCommand request, CancellationToken cancellationToken)
     {
         var isIpFilterDuplicated = await _dbContext.IpFilters.AnyAsync(i => i.UserId == request.UserId && i.Ip == (uint)request.Ip, cancellationToken);
         if (isIpFilterDuplicated)
         {
-            return new ExecutionResult<Guid>(new ErrorInfo(nameof(request.Ip), "Filter for this IP already exists"));
+            throw new DomainException("Filter for this IP already exists")
+            {
+                Code = ExceptionCodes.AlreadyExists,
+                Property = nameof(request.Ip)
+            };
         }
 
         var ipFilter = new IpFilter
@@ -45,6 +50,6 @@ public class CreateIpFilterCommandHandler : IRequestHandler<CreateIpFilterComman
             Key = GetUserWithDevicesAndIpFiltersByIdQuery.GetCacheKey(ipFilter.UserId)
         }, cancellationToken);
 
-        return new ExecutionResult<Guid>(ipFilter.Id);
+        return ipFilter.Id;
     }
 }

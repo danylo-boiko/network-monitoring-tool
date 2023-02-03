@@ -1,4 +1,3 @@
-using LS.Helpers.Hosting.API;
 using MediatR;
 using MongoDB.Driver;
 using Nmt.Domain.Models;
@@ -6,7 +5,7 @@ using Nmt.Infrastructure.Data.Mongo;
 
 namespace Nmt.Core.CQRS.Queries.Packets.GetPacketsByDeviceId;
 
-public class GetPacketsByDeviceIdQueryHandler : IRequestHandler<GetPacketsByDeviceIdQuery, ExecutionResult<IList<PacketDto>>>
+public class GetPacketsByDeviceIdQueryHandler : IRequestHandler<GetPacketsByDeviceIdQuery, IList<PacketDto>>
 {
     private readonly MongoDbContext _dbContext;
 
@@ -15,7 +14,7 @@ public class GetPacketsByDeviceIdQueryHandler : IRequestHandler<GetPacketsByDevi
         _dbContext = dbContext;
     }
 
-    public async Task<ExecutionResult<IList<PacketDto>>> Handle(GetPacketsByDeviceIdQuery request, CancellationToken cancellationToken)
+    public async Task<IList<PacketDto>> Handle(GetPacketsByDeviceIdQuery request, CancellationToken cancellationToken)
     {
         var filterBuilder = Builders<Packet>.Filter;
         var filter = filterBuilder.Eq(p => p.DeviceId, request.DeviceId);
@@ -30,7 +29,7 @@ public class GetPacketsByDeviceIdQueryHandler : IRequestHandler<GetPacketsByDevi
             filter &= filterBuilder.Lte(p => p.CreatedAt, request.DateTo.Value);
         }
 
-        var packets = await _dbContext.Packets
+        return await _dbContext.Packets
             .Find(filter)
             .Project(p => new PacketDto
             {
@@ -42,7 +41,5 @@ public class GetPacketsByDeviceIdQueryHandler : IRequestHandler<GetPacketsByDevi
                 CreatedAt = p.CreatedAt
             })
             .ToListAsync(cancellationToken);
-
-        return new ExecutionResult<IList<PacketDto>>(packets);
     }
 }

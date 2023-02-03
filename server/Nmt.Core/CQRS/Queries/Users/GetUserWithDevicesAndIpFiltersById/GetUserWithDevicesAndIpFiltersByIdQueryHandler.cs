@@ -1,11 +1,13 @@
 using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Nmt.Domain.Consts;
+using Nmt.Domain.Exceptions;
 using Nmt.Infrastructure.Data.Postgres;
 
 namespace Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
 
-public class GetUserWithDevicesAndIpFiltersByIdQueryHandler : IRequestHandler<GetUserWithDevicesAndIpFiltersByIdQuery, ExecutionResult<UserDto>>
+public class GetUserWithDevicesAndIpFiltersByIdQueryHandler : IRequestHandler<GetUserWithDevicesAndIpFiltersByIdQuery, UserDto>
 {
     private readonly PostgresDbContext _dbContext;
 
@@ -14,7 +16,7 @@ public class GetUserWithDevicesAndIpFiltersByIdQueryHandler : IRequestHandler<Ge
         _dbContext = dbContext;
     }
 
-    public async Task<ExecutionResult<UserDto>> Handle(GetUserWithDevicesAndIpFiltersByIdQuery request, CancellationToken cancellationToken)
+    public async Task<UserDto> Handle(GetUserWithDevicesAndIpFiltersByIdQuery request, CancellationToken cancellationToken)
     {
         var userQuery =
             from user in _dbContext.Users
@@ -45,9 +47,13 @@ public class GetUserWithDevicesAndIpFiltersByIdQueryHandler : IRequestHandler<Ge
 
         if (userDto == null)
         {
-            return new ExecutionResult<UserDto>(new ErrorInfo(nameof(request.UserId), $"User with id '{request.UserId}' not found"));
+            throw new DomainException( $"User with id '{request.UserId}' not found")
+            {
+                Code = ExceptionCodes.NotFound,
+                Property = nameof(request.UserId)
+            };
         }
 
-        return new ExecutionResult<UserDto>(userDto);
+        return userDto;
     }
 } 

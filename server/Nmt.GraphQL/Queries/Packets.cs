@@ -1,8 +1,8 @@
+using MediatR;
 using Nmt.Core.CQRS.Queries.Packets.GetPacketsByDeviceId;
 using Nmt.Domain.Enums;
 using Nmt.GraphQL.Attributes;
 using Nmt.GraphQL.Consts;
-using Nmt.GraphQL.Services.Interfaces;
 
 namespace Nmt.GraphQL.Queries;
 
@@ -10,8 +10,8 @@ namespace Nmt.GraphQL.Queries;
 public class Packets
 {
     [PermissionsAuthorize(Permission.PacketsRead)]
-    public async Task<IList<PacketDto>> GetPacketsByDeviceId([Service] IExecutionResultService service, GetPacketsByDeviceIdQuery input)
+    public async Task<IList<PacketDto>> GetPacketsByDeviceId([Service] IMediator mediator, GetPacketsByDeviceIdQuery input)
     {
-        return await service.HandleExecutionResultRequestAsync(input);
+        return await mediator.Send(input);
     }
 }

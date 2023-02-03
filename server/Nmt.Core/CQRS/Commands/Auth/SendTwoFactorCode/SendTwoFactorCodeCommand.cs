@@ -1,9 +1,8 @@
-using LS.Helpers.Hosting.API;
 using MediatR;
 
 namespace Nmt.Core.CQRS.Commands.Auth.SendTwoFactorCode;
 
-public record SendTwoFactorCodeCommand : IRequest<ExecutionResult<bool>>
+public record SendTwoFactorCodeCommand : IRequest<bool>
 {
     public string Username { get; set; }
 }

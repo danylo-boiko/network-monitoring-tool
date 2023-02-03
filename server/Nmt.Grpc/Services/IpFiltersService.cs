@@ -23,12 +23,12 @@ public class IpFiltersService : IpFilters.IpFiltersBase
     {
         var userId = context.GetAuthClaimValue(AuthClaims.UserId);
 
-        var ipFiltersResult = await _mediator.Send(new GetIpFiltersByUserIdQuery
+        var ipFilters = await _mediator.Send(new GetIpFiltersByUserIdQuery
         {
             UserId = userId
         }, context.CancellationToken);
 
-        var ipFilters = ipFiltersResult.Value.Select(i => new IpFilterModel
+        var ipFilterModels = ipFilters.Select(i => new IpFilterModel
         {
             Ip = i.Ip,
             FilterAction = (int)i.FilterAction
@@ -36,7 +36,7 @@ public class IpFiltersService : IpFilters.IpFiltersBase
 
         return new IpFiltersResponse
         {
-            IpFilters = { ipFilters }
+            IpFilters = { ipFilterModels }
         };
     }
 }
