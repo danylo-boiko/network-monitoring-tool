@@ -1,4 +1,3 @@
-using LS.Helpers.Hosting.API;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Nmt.Core.CQRS.Queries.Users.GetUserWithDevicesAndIpFiltersById;
