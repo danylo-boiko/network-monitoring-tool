@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 using Nmt.Domain.Common;
 using Nmt.Infrastructure.Cache.Redis.Interfaces;
 
@@ -11,9 +10,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     private readonly IEnumerable<ICachePolicy<TRequest, TResponse>> _cachePolicies;
     private readonly IDistributedRedisCache _redisCache;
 
-    public CachingBehavior(
-        IEnumerable<ICachePolicy<TRequest, TResponse>> cachePolicies, 
-        IDistributedRedisCache redisCache)
+    public CachingBehavior(IEnumerable<ICachePolicy<TRequest, TResponse>> cachePolicies, IDistributedRedisCache redisCache)
     {
         _cachePolicies = cachePolicies;
         _redisCache = redisCache;

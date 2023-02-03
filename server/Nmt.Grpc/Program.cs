@@ -1,6 +1,7 @@
 using MediatR;
 using Nmt.Core;
 using Nmt.Core.Extensions;
+using Nmt.Grpc.Interceptors;
 using Nmt.Grpc.Services;
 using Nmt.Infrastructure;
 
@@ -13,10 +14,14 @@ services
     .AddRedisCache()
     .AddMediatR(typeof(MediatREntryPoint).Assembly)
     .AddAuthentication(configuration)
+    .AddFluentValidation()
     .AddServices()
     .AddSmtpConfigs(configuration)
     .AddRabbitMQ(configuration)
-    .AddGrpc();
+    .AddGrpc(opts =>
+    {
+        opts.Interceptors.Add<ExceptionInterceptor>();
+    });
 
 var app = builder.Build();
 
