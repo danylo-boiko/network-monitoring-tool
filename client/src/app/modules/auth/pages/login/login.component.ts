@@ -9,7 +9,9 @@ import { LoginForm } from './login.form';
 import { Router } from "@angular/router";
 import { ErrorsService } from "../../../graphql/services/errors.service";
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -59,10 +61,11 @@ export class LoginComponent implements OnInit {
 
     this._authService
       .login(this.loginForm.getRawValue())
+      .pipe(untilDestroyed(this))
       .subscribe({
-        next: (response: MutationResult<LoginMutation>) => {
-          if (!response.loading) {
-            const tokens = response.data?.login!;
+        next: ({data, loading}: MutationResult<LoginMutation>) => {
+          if (!loading) {
+            const tokens = data?.login!;
             this._jwtTokenService.setAuthTokens(tokens.accessToken, tokens.refreshToken);
             this._router.navigateByUrl('/');
           }

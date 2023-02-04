@@ -29,7 +29,7 @@ export type CreateIpFilterCommandInput = {
   comment?: InputMaybe<Scalars['String']>;
   filterAction: IpFilterAction;
   ip: Scalars['Long'];
-  userId: Scalars['UUID'];
+  userId?: InputMaybe<Scalars['UUID']>;
 };
 
 export type DeleteIpFilterCommandInput = {
