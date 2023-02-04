@@ -40,6 +40,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
               request = this.addAuthToken(request);
             }
+
             return next.handle(request);
           }),
           catchError(error => {

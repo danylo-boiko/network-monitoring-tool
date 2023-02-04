@@ -4,13 +4,14 @@ import { AuthService } from "../../../graphql/services/auth.service";
 import { JwtTokenService } from "../../../../core/services/jwt-token.service";
 import { VerifyEmailForm } from './verify-email.form';
 import { MutationResult } from "apollo-angular";
-import { SendTwoFactorCodeMutation, VerifyTwoFactorCodeMutation } from "../../../graphql/services/graphql.service";
 import { ApolloError } from "@apollo/client/core";
 import { Router } from '@angular/router';
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 import { ErrorsService } from "../../../graphql/services/errors.service";
 import { Toaster } from 'ngx-toast-notifications';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { filter, map } from "rxjs";
+import { SendTwoFactorCodeMutation, VerifyTwoFactorCodeMutation } from "../../../graphql/services/graphql.service";
 
 @UntilDestroy()
 @Component({
@@ -30,13 +31,21 @@ export class VerifyEmailComponent implements OnInit {
     private readonly _toaster: Toaster,
     private readonly _router: Router) {
     const state = this._router.getCurrentNavigation()?.extras.state;
+
     if (!state || !state['username']) {
       this._router.navigateByUrl('/login');
     }
 
     this.username = state!['username'];
+
     if (state!['needToSendTwoFactorCode']) {
       this.sendTwoFactorCode(false);
+    } else {
+      this.sendTwoFactorCodeButtonDisabled = true;
+
+      setTimeout(() => {
+        this.sendTwoFactorCodeButtonDisabled = false;
+      }, 60000);
     }
   }
 
@@ -63,29 +72,20 @@ export class VerifyEmailComponent implements OnInit {
         username: this.username,
         twoFactorCode: this.verifyEmailForm.value.twoFactorCode!
       })
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        filter(response => !response.loading),
+        map(response => (<MutationResult<VerifyTwoFactorCodeMutation>>response).data!.verifyTwoFactorCode)
+      )
       .subscribe({
-        next: ({data, loading}: MutationResult<VerifyTwoFactorCodeMutation>) => {
-          if (!loading && data?.verifyTwoFactorCode) {
+        next: (successful: boolean) => {
+          if (successful) {
             this._router.navigateByUrl('/login');
           }
         },
-        error: (err: ApolloError) => {
-          const validationErrors = this._errorsService.getValidationErrors(err);
-
-          if (validationErrors.size == 0) {
-            throw err;
-          }
-
-          for (const [property, errors] of validationErrors.entries()) {
-            const control = this.verifyEmailForm.get(property);
-            if (!control) {
-              throw err;
-            }
-            control.setErrors({
-              serverValidation: errors[0]
-            });
-          }
+        error: (error: ApolloError) => {
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
+          this._errorsService.applyGraphQLErrorsToForm(this.verifyEmailForm, graphQLErrors);
         }
       });
   }
@@ -105,15 +105,19 @@ export class VerifyEmailComponent implements OnInit {
       .sendTwoFactorCode({
         username: this.username,
       })
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        filter(response => !response.loading),
+        map(response => (<MutationResult<SendTwoFactorCodeMutation>>response).data!.sendTwoFactorCode)
+      )
       .subscribe({
-        next: ({data, loading}: MutationResult<SendTwoFactorCodeMutation>) => {
-          if (!loading && data?.sendTwoFactorCode && showToaster) {
+        next: (successful: boolean) => {
+          if (successful && showToaster) {
             this._toaster.open({
               text: 'Two factor code sent successfully',
               type: 'success',
               position: 'top-right',
-              duration: 4000
+              duration: 5000
             });
           }
         }

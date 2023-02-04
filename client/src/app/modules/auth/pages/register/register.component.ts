@@ -11,6 +11,7 @@ import { isFormFieldValid } from "../../../../core/utils/form-field-validation.u
 import { ErrorsService } from "../../../graphql/services/errors.service";
 import { matchingControlsValidator } from "../../../../core/validators/form-builder.validator";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { filter, map } from "rxjs";
 
 @UntilDestroy()
 @Component({
@@ -75,10 +76,14 @@ export class RegisterComponent implements OnInit {
 
     this._authService
       .register(this.registerForm.getRawValue())
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        filter(response => !response.loading),
+        map(response => (<MutationResult<RegisterMutation>>response).data!.register)
+      )
       .subscribe({
-        next: ({data, loading}: MutationResult<RegisterMutation>) => {
-          if (!loading && data?.register) {
+        next: (successful: boolean) => {
+          if (successful) {
             this._router.navigateByUrl('/verify-email', {
               state: {
                 username: this.registerForm.value.username,
@@ -87,22 +92,9 @@ export class RegisterComponent implements OnInit {
             });
           }
         },
-        error: (err: ApolloError) => {
-          const validationErrors = this._errorsService.getValidationErrors(err);
-
-          if (validationErrors.size == 0) {
-            throw err;
-          }
-
-          for (const [property, errors] of validationErrors.entries()) {
-            const control = this.registerForm.get(property);
-            if (!control) {
-              throw err;
-            }
-            control.setErrors({
-              serverValidation: errors[0]
-            });
-          }
+        error: (error: ApolloError) => {
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
+          this._errorsService.applyGraphQLErrorsToForm(this.registerForm, graphQLErrors);
         }
       });
   }
