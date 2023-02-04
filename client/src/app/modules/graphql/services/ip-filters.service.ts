@@ -18,10 +18,9 @@ export class IpFiltersService {
     private readonly _deleteIpFilter: DeleteIpFilterGQL) {
   }
 
-  public createIpFilter({userId, ip, filterAction, comment = null}: CreateIpFilterCommandInput) {
+  public createIpFilter({ip, filterAction, comment = null}: CreateIpFilterCommandInput) {
     return this._createIpFilter.mutate({
       input: {
-        userId,
         ip,
         filterAction,
         comment

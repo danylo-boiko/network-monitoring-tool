@@ -10,7 +10,9 @@ import { Router } from "@angular/router";
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 import { ErrorsService } from "../../../graphql/services/errors.service";
 import { matchingControlsValidator } from "../../../../core/validators/form-builder.validator";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -73,9 +75,10 @@ export class RegisterComponent implements OnInit {
 
     this._authService
       .register(this.registerForm.getRawValue())
+      .pipe(untilDestroyed(this))
       .subscribe({
-        next: (response: MutationResult<RegisterMutation>) => {
-          if (!response.loading && response.data?.register) {
+        next: ({data, loading}: MutationResult<RegisterMutation>) => {
+          if (!loading && data?.register) {
             this._router.navigateByUrl('/verify-email', {
               state: {
                 username: this.registerForm.value.username,

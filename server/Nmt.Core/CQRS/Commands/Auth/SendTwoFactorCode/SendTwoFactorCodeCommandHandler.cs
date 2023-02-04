@@ -45,7 +45,7 @@ public class SendTwoFactorCodeCommandHandler : IRequestHandler<SendTwoFactorCode
         {
             throw new DomainException("Your email is already confirmed")
             {
-                Code = ExceptionCodes.EmailConfirmation,
+                Code = ExceptionCodes.EmailConfirmation
             };
         }
 

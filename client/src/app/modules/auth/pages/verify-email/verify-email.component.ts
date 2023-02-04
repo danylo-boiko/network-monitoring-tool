@@ -10,7 +10,9 @@ import { Router } from '@angular/router';
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 import { ErrorsService } from "../../../graphql/services/errors.service";
 import { Toaster } from 'ngx-toast-notifications';
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: 'app-verify-email',
   templateUrl: './verify-email.component.html',
@@ -61,9 +63,10 @@ export class VerifyEmailComponent implements OnInit {
         username: this.username,
         twoFactorCode: this.verifyEmailForm.value.twoFactorCode!
       })
+      .pipe(untilDestroyed(this))
       .subscribe({
-        next: (response: MutationResult<VerifyTwoFactorCodeMutation>) => {
-          if (!response.loading && response.data?.verifyTwoFactorCode) {
+        next: ({data, loading}: MutationResult<VerifyTwoFactorCodeMutation>) => {
+          if (!loading && data?.verifyTwoFactorCode) {
             this._router.navigateByUrl('/login');
           }
         },
@@ -102,9 +105,10 @@ export class VerifyEmailComponent implements OnInit {
       .sendTwoFactorCode({
         username: this.username,
       })
+      .pipe(untilDestroyed(this))
       .subscribe({
-        next: (response: MutationResult<SendTwoFactorCodeMutation>) => {
-          if (!response.loading && showToaster) {
+        next: ({data, loading}: MutationResult<SendTwoFactorCodeMutation>) => {
+          if (!loading && data?.sendTwoFactorCode && showToaster) {
             this._toaster.open({
               text: 'Two factor code sent successfully',
               type: 'success',
