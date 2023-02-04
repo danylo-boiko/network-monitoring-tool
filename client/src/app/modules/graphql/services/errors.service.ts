@@ -54,7 +54,7 @@ export class ErrorsService {
 
       const control = form.get(property.toString());
       if (!control) {
-        throw `Control for property ${property.toString()} doesn't exist`;
+        throw `Control for property ${property.toString()} doesn't exists`;
       }
 
       control.setErrors({

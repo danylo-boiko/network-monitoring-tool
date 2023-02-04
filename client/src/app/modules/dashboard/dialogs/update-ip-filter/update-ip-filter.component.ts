@@ -5,7 +5,13 @@ import { intToIpString } from "../../../../core/utils/ip.util";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { UpdateIpFilterForm } from './update-ip-filter.form';
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { IpFiltersService } from "../../../graphql/services/ip-filters.service";
+import { ErrorsService } from "../../../graphql/services/errors.service";
+import { filter } from "rxjs";
+import { ApolloError } from "@apollo/client/core";
 
+@UntilDestroy()
 @Component({
   selector: 'app-update-ip-filter',
   templateUrl: './update-ip-filter.component.html',
@@ -16,8 +22,10 @@ export class UpdateIpFilterComponent implements OnInit {
   public allowedFilterActions = Object.values(IpFilterAction);
 
   constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { ipFilter: IpFilterDto },
     private readonly _dialogRef: MatDialogRef<UpdateIpFilterComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { ipFilter: IpFilterDto }) {
+    private readonly _ipFiltersService: IpFiltersService,
+    private readonly _errorsService: ErrorsService) {
   }
 
   public ngOnInit(): void {
@@ -46,12 +54,36 @@ export class UpdateIpFilterComponent implements OnInit {
     const formValues = this.updateIpFilterForm.getRawValue();
 
     const ipFilter = {
-      filterId: this.data.ipFilter.id,
+      ipFilterId: this.data.ipFilter.id,
       filterAction: formValues.filterAction,
       comment: formValues.comment
     }
 
-    console.log(ipFilter);
+    this._ipFiltersService
+      .updateIpFilter(ipFilter)
+      .pipe(
+        untilDestroyed(this),
+        filter(response => !response.loading)
+      )
+      .subscribe({
+        next: () => {
+          this._dialogRef.close({
+            modified: true,
+            data: {
+              id: ipFilter.ipFilterId,
+              ip: this.data.ipFilter.ip,
+              filterAction: ipFilter.filterAction,
+              comment: ipFilter.comment
+            }
+          });
+        },
+        error: (error: ApolloError) => {
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
+          this._errorsService.applyGraphQLErrorsToForm(this.updateIpFilterForm, graphQLErrors);
+        }
+      });
+
+
     this._dialogRef.close(true);
   }
 
@@ -61,6 +93,10 @@ export class UpdateIpFilterComponent implements OnInit {
 
   public convertIntToIpString(ip: number): string {
     return intToIpString(ip);
+  }
+
+  public getServerValidationErrorMessage(controlName: string): string {
+    return this.updateIpFilterForm.get(controlName)!.getError('serverValidation');
   }
 
   public isFieldValid(controlName: string, ruleName: string): boolean {
