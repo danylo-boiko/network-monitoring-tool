@@ -3,13 +3,14 @@ import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ApolloError } from '@apollo/client/core';
 import { MutationResult } from 'apollo-angular';
 import { AuthService } from "../../../graphql/services/auth.service";
-import { LoginMutation } from '../../../graphql/services/graphql.service';
+import { LoginMutation, TokenDto } from '../../../graphql/services/graphql.service';
 import { JwtTokenService } from '../../../../core/services/jwt-token.service';
 import { LoginForm } from './login.form';
 import { Router } from "@angular/router";
 import { ErrorsService } from "../../../graphql/services/errors.service";
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { filter, map } from 'rxjs';
 
 @UntilDestroy()
 @Component({
@@ -61,40 +62,31 @@ export class LoginComponent implements OnInit {
 
     this._authService
       .login(this.loginForm.getRawValue())
-      .pipe(untilDestroyed(this))
+      .pipe(
+        untilDestroyed(this),
+        filter(response => !response.loading),
+        map(response => (<MutationResult<LoginMutation>>response).data!.login)
+      )
       .subscribe({
-        next: ({data, loading}: MutationResult<LoginMutation>) => {
-          if (!loading) {
-            const tokens = data?.login!;
-            this._jwtTokenService.setAuthTokens(tokens.accessToken, tokens.refreshToken);
-            this._router.navigateByUrl('/');
-          }
+        next: (tokens: TokenDto) => {
+          this._jwtTokenService.setAuthTokens(tokens.accessToken, tokens.refreshToken);
+          this._router.navigateByUrl('/');
         },
-        error: (err: ApolloError) => {
-          const validationErrors = this._errorsService.getValidationErrors(err);
+        error: (error: ApolloError) => {
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
 
-          if (validationErrors.size == 0) {
-            throw err;
-          }
-
-          if (validationErrors.size == 1 && validationErrors.has('emailConfirmed')) {
+          if (graphQLErrors.length == 1 && graphQLErrors[0].extensions['code'] == 'emailConfirmation') {
             this._router.navigateByUrl('/verify-email', {
               state: {
                 username: this.loginForm.value.username,
                 needToSendTwoFactorCode: true
               }
             });
+
+            return;
           }
 
-          for (const [property, errors] of validationErrors.entries()) {
-            const control = this.loginForm.get(property);
-            if (!control) {
-              throw err;
-            }
-            control.setErrors({
-              serverValidation: errors[0]
-            });
-          }
+          this._errorsService.applyGraphQLErrorsToForm(this.loginForm, graphQLErrors);
         }
       });
   }
