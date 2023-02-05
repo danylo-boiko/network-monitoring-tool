@@ -40,9 +40,7 @@ export class DeleteIpFilterComponent {
             }
           });
         },
-        error: (error: ApolloError) => {
-          this._toasterService.showError(error.message);
-        }
+        error: (error: ApolloError) => this._toasterService.showError(error.message)
       });
   }
 

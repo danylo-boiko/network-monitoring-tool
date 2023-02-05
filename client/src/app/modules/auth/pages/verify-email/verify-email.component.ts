@@ -8,7 +8,6 @@ import { ApolloError } from "@apollo/client/core";
 import { Router } from '@angular/router';
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 import { ErrorsService } from "../../../graphql/services/errors.service";
-import { Toaster } from 'ngx-toast-notifications';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, map } from "rxjs";
 import { SendTwoFactorCodeMutation, VerifyTwoFactorCodeMutation } from "../../../graphql/services/graphql.service";
@@ -114,9 +113,7 @@ export class VerifyEmailComponent implements OnInit {
             this._toasterService.showSuccess('Two factor code sent successfully');
           }
         },
-        error: (error: ApolloError) => {
-          this._toasterService.showError(error.message);
-        }
+        error: (error: ApolloError) => this._toasterService.showError(error.message)
       });
   }
 

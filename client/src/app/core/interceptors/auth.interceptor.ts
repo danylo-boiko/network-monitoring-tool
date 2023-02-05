@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, filter, map, Observable, switchMap, throwError } from 'rxjs';
 import { JwtTokenService } from "../services/jwt-token.service";
 import { AuthService } from "../../modules/graphql/services/auth.service";
 import { MutationResult } from 'apollo-angular';
-import { RefreshTokenMutation } from 'src/app/modules/graphql/services/graphql.service';
+import { RefreshTokenMutation, TokenDto } from 'src/app/modules/graphql/services/graphql.service';
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import {
   HttpRequest,
   HttpHandler,
@@ -11,6 +12,7 @@ import {
   HttpInterceptor
 } from '@angular/common/http';
 
+@UntilDestroy()
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isTokenRefreshing = false;
@@ -31,17 +33,15 @@ export class AuthInterceptor implements HttpInterceptor {
           accessToken: this._jwtTokenService.getAccessToken()!,
           refreshToken: this._jwtTokenService.getRefreshToken()!
         }).pipe(
-          switchMap(({data, loading}: MutationResult<RefreshTokenMutation>) => {
-            if (!loading) {
-              this.isTokenRefreshing = false;
+          untilDestroyed(this),
+          filter(response => !response.loading),
+          map(response => (<MutationResult<RefreshTokenMutation>>response).data!.refreshToken),
+          switchMap((tokens: TokenDto) => {
+            this.isTokenRefreshing = false;
 
-              const tokens = data?.refreshToken!;
-              this._jwtTokenService.setAuthTokens(tokens.accessToken, tokens.refreshToken);
+            this._jwtTokenService.setAuthTokens(tokens.accessToken, tokens.refreshToken);
 
-              request = this.addAuthToken(request);
-            }
-
-            return next.handle(request);
+            return next.handle(this.addAuthToken(request));
           }),
           catchError(error => {
             this.isTokenRefreshing = false;

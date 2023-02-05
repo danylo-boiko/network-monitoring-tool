@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, map } from "rxjs";
 import { ApolloError, ApolloQueryResult } from "@apollo/client/core";
@@ -22,9 +22,10 @@ import {
 })
 export class PacketsChartComponent implements OnInit, OnDestroy {
   @Input() devices!: DeviceDto[];
+  @ViewChild('packetsChart') packetsChart!: ElementRef;
 
-  public packetsChart!: ApexCharts;
   public deviceSelected: boolean = false;
+  private renderedPacketsChart!: ApexCharts;
 
   constructor(
     private readonly _packetsService: PacketsService,
@@ -38,24 +39,24 @@ export class PacketsChartComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.packetsChart?.destroy();
+    this.renderedPacketsChart?.destroy();
   }
 
   public updateChartSettings(): void {
     const dialogRef = this._dialog.open(UpdateChartSettingsComponent, {
       data: {
         devices: this.devices
-      }
+      },
+      restoreFocus: false
     });
 
     dialogRef
       .afterClosed()
       .pipe(
+        untilDestroyed(this),
         filter(response => response?.modified)
       )
-      .subscribe(() => {
-        this.refreshPacketsChart();
-      });
+      .subscribe(() => this.refreshPacketsChart());
   }
 
   public refreshPacketsChart(): void {
@@ -75,17 +76,13 @@ export class PacketsChartComponent implements OnInit, OnDestroy {
         next: (packetsChartData: PacketsChartDataDto) => {
           this.deviceSelected = true;
 
-          if (this.packetsChart) {
-            this.packetsChart.destroy();
-          }
-
+          this.renderedPacketsChart?.destroy();
           const chartOptions = this.getChartOptions(packetsChartData, chartSettings.dateRangeMode);
-          this.packetsChart = new ApexCharts(document.querySelector('#packets-chart'), chartOptions);
-          this.packetsChart?.render();
+
+          this.renderedPacketsChart = new ApexCharts(this.packetsChart.nativeElement, chartOptions);
+          this.renderedPacketsChart?.render();
         },
-        error: (error: ApolloError) => {
-          this._toasterService.showError(error.message);
-        }
+        error: (error: ApolloError) => this._toasterService.showError(error.message)
       });
   }
 
