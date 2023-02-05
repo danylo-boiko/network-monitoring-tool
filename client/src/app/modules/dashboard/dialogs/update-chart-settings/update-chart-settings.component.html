@@ -1,0 +1,26 @@
+<div class="dialog-container">
+  <form mat-dialog-content [formGroup]="updateChartSettingsForm">
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Device</mat-label>
+      <mat-select formControlName="deviceId">
+        <mat-option *ngFor="let device of data.devices" [value]="device.id">
+          {{ device.hostname }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field hideRequiredMarker appearance="outline">
+      <mat-label>Range</mat-label>
+      <mat-select formControlName="dateRangeMode">
+        <mat-option *ngFor="let range of allowedDateRangeModes" [value]="range">
+          {{ DateRangeMode[range] }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div mat-dialog-actions align="center">
+      <button mat-flat-button color="primary" (click)="updateChartSettings()">Update</button>
+      <button mat-flat-button color="warn" (click)="cancel()">Cancel</button>
+    </div>
+  </form>
+</div>

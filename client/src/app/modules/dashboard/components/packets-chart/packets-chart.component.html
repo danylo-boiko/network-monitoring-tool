@@ -1,12 +1,15 @@
 <mat-card>
   <mat-card-header>
     <mat-card-title>Packets Traffic</mat-card-title>
+    <button mat-icon-button color="accent" (click)="updateChartSettings()">
+      <mat-icon aria-label="Settings">settings</mat-icon>
+    </button>
   </mat-card-header>
 
   <mat-card-content>
     <div id="packets-chart"></div>
 
-    <div class="empty-message" [style.display]="packets.length == 0 ? '' : 'none'">
+    <div class="empty-message" [style.display]="!packets || packets.length == 0 ? '' : 'none'">
       You don't have any transferred packets
     </div>
   </mat-card-content>

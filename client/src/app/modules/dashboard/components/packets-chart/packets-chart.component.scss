@@ -1,5 +1,12 @@
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .empty-message {
   display: flex;
   justify-content: center;
   padding-top: 14px;
+  padding-bottom: 10px;
 }

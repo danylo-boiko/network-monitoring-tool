@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { IpFilterDto } from 'src/app/modules/graphql/services/graphql.service';
 import { CreateIpFilterComponent } from "../../dialogs/create-ip-filter/create-ip-filter.component";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
@@ -17,7 +17,7 @@ import { IpFiltersDataSource } from "./ip-filters-data-source";
   templateUrl: './ip-filters-table.component.html',
   styleUrls: ['./ip-filters-table.component.scss']
 })
-export class IpFiltersTableComponent {
+export class IpFiltersTableComponent implements OnInit {
   @Input() ipFilters!: IpFilterDto[];
   @ViewChild(MatPaginator, {static: true}) paginator!: MatPaginator;
 

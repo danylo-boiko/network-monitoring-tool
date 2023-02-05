@@ -3,7 +3,7 @@ import { UsersService } from "../../../graphql/services/users.service";
 import { ApolloError, ApolloQueryResult } from '@apollo/client/core';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, map } from "rxjs";
-import { DeviceDto, GetUserInfoQuery, IpFilterDto, UserDto } from "../../../graphql/services/graphql.service";
+import { GetUserInfoQuery, UserDto } from "../../../graphql/services/graphql.service";
 import { ToasterService } from "../../../../core/services/toaster.service";
 
 @UntilDestroy()
