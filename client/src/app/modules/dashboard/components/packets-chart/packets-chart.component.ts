@@ -7,6 +7,7 @@ import { ApolloError, ApolloQueryResult } from "@apollo/client/core";
 import { PacketsService } from "../../../graphql/services/packets.service";
 import { DateRangeService } from "../../services/date-range.service";
 import { Toaster } from "ngx-toast-notifications";
+import { ToasterService } from "../../../../core/services/toaster.service";
 
 @UntilDestroy()
 @Component({
@@ -15,16 +16,16 @@ import { Toaster } from "ngx-toast-notifications";
   styleUrls: ['./packets-chart.component.scss']
 })
 export class PacketsChartComponent {
-  @Input() devices: DeviceDto[] | undefined;
+  @Input() devices!: DeviceDto[];
 
-  public packets!: PacketDto[];
-  public dateRangeMode!: DateRangeMode;
+  public packets: PacketDto[] = [];
+  public dateRangeMode: DateRangeMode = DateRangeMode.Day;
 
   constructor(
     private readonly _packetsService: PacketsService,
     private readonly _dateRangeService: DateRangeService,
-    private readonly _ngZone: NgZone,
-    private readonly _toaster: Toaster) {
+    private readonly _toasterService: ToasterService,
+    private readonly _ngZone: NgZone) {
   }
 
   private getPackets(deviceId: string): void {
@@ -41,14 +42,8 @@ export class PacketsChartComponent {
         next: (packets: Array<PacketDto>) => {
           this.packets = packets;
         },
-        error: (err: ApolloError) => {
-          this._toaster.open({
-            caption: 'Packets loading failed...',
-            text: err.message,
-            type: 'danger',
-            position: 'top-right',
-            duration: 5000
-          });
+        error: (error: ApolloError) => {
+          this._toasterService.showError(error.message);
         }
       });
   }

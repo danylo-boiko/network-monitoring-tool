@@ -22,6 +22,7 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatSelectModule } from "@angular/material/select";
 import { IpFiltersTableComponent } from './components/ip-filters-table/ip-filters-table.component';
 import { PacketsChartComponent } from './components/packets-chart/packets-chart.component';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { PacketsChartComponent } from './components/packets-chart/packets-chart.
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatProgressSpinnerModule
   ]
 })
 export class DashboardModule {

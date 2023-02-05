@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { CreateIpFilterForm } from './create-ip-filter.form';
-import { CreateIpFilterMutation, IpFilterAction } from "../../../graphql/services/graphql.service";
+import { CreateIpFilterMutation, IpFilterAction, IpFilterDto } from "../../../graphql/services/graphql.service";
 import { ipStringToInt } from "../../../../core/utils/ip.util";
 import { ipValidator } from "../../../../core/validators/ip.validator";
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
@@ -12,6 +12,7 @@ import { filter, map } from "rxjs";
 import { MutationResult } from "apollo-angular";
 import { ApolloError } from "@apollo/client/core";
 import { ErrorsService } from "../../../graphql/services/errors.service";
+import { ToasterService } from "../../../../core/services/toaster.service";
 
 @UntilDestroy()
 @Component({
@@ -26,6 +27,7 @@ export class CreateIpFilterComponent implements OnInit {
   constructor(
     private readonly _dialogRef: MatDialogRef<CreateIpFilterComponent>,
     private readonly _ipFiltersService: IpFiltersService,
+    private readonly _toasterService: ToasterService,
     private readonly _errorsService: ErrorsService) {
   }
 
@@ -84,8 +86,13 @@ export class CreateIpFilterComponent implements OnInit {
           });
         },
         error: (error: ApolloError) => {
-          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
-          this._errorsService.applyGraphQLErrorsToForm(this.createIpFilterForm, graphQLErrors);
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error);
+
+          if (graphQLErrors.length == 0) {
+            this._toasterService.showError(error.message);
+          } else {
+            this._errorsService.applyGraphQLErrorsToForm(this.createIpFilterForm, graphQLErrors);
+          }
         }
       });
   }

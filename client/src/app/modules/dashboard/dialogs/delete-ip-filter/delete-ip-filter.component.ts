@@ -5,6 +5,8 @@ import { intToIpString } from "../../../../core/utils/ip.util";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { IpFiltersService } from "../../../graphql/services/ip-filters.service";
 import { filter } from "rxjs";
+import { ToasterService } from "../../../../core/services/toaster.service";
+import { ApolloError } from "@apollo/client/core";
 
 @UntilDestroy()
 @Component({
@@ -16,7 +18,8 @@ export class DeleteIpFilterComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { ipFilter: IpFilterDto },
     private readonly _dialogRef: MatDialogRef<DeleteIpFilterComponent>,
-    private readonly _ipFiltersService: IpFiltersService) {
+    private readonly _ipFiltersService: IpFiltersService,
+    private readonly _toasterService: ToasterService) {
   }
 
   public deleteIpFilter(): void {
@@ -36,6 +39,9 @@ export class DeleteIpFilterComponent {
               id: this.data.ipFilter.id,
             }
           });
+        },
+        error: (error: ApolloError) => {
+          this._toasterService.showError(error.message);
         }
       });
   }

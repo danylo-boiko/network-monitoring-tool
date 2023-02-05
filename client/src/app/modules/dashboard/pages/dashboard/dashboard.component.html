@@ -1,11 +1,15 @@
 <app-navbar></app-navbar>
 
 <div class="row dashboard-container">
+  <div class="center">
+    <mat-spinner color="accent" *ngIf="!dashboardLoaded"></mat-spinner>
+  </div>
+
   <div class="col-md-6 packets-container">
-    <app-packets-chart [devices]="devices"></app-packets-chart>
+    <app-packets-chart *ngIf="dashboardLoaded" [devices]="user.devices"></app-packets-chart>
   </div>
 
   <div class="col-md-6">
-    <app-ip-filters-table [ipFilters]="ipFilters"></app-ip-filters-table>
+    <app-ip-filters-table *ngIf="dashboardLoaded" [ipFilters]="user.ipFilters"></app-ip-filters-table>
   </div>
 </div>

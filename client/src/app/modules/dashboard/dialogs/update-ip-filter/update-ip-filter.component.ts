@@ -10,6 +10,7 @@ import { IpFiltersService } from "../../../graphql/services/ip-filters.service";
 import { ErrorsService } from "../../../graphql/services/errors.service";
 import { filter } from "rxjs";
 import { ApolloError } from "@apollo/client/core";
+import { ToasterService } from "../../../../core/services/toaster.service";
 
 @UntilDestroy()
 @Component({
@@ -25,7 +26,8 @@ export class UpdateIpFilterComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { ipFilter: IpFilterDto },
     private readonly _dialogRef: MatDialogRef<UpdateIpFilterComponent>,
     private readonly _ipFiltersService: IpFiltersService,
-    private readonly _errorsService: ErrorsService) {
+    private readonly _errorsService: ErrorsService,
+    private readonly _toasterService: ToasterService) {
   }
 
   public ngOnInit(): void {
@@ -53,14 +55,12 @@ export class UpdateIpFilterComponent implements OnInit {
 
     const formValues = this.updateIpFilterForm.getRawValue();
 
-    const ipFilter = {
-      ipFilterId: this.data.ipFilter.id,
-      filterAction: formValues.filterAction,
-      comment: formValues.comment
-    }
-
     this._ipFiltersService
-      .updateIpFilter(ipFilter)
+      .updateIpFilter({
+        ipFilterId: this.data.ipFilter.id,
+        filterAction: formValues.filterAction,
+        comment: formValues.comment
+      })
       .pipe(
         untilDestroyed(this),
         filter(response => !response.loading)
@@ -70,21 +70,23 @@ export class UpdateIpFilterComponent implements OnInit {
           this._dialogRef.close({
             modified: true,
             data: {
-              id: ipFilter.ipFilterId,
+              id: this.data.ipFilter.id,
               ip: this.data.ipFilter.ip,
-              filterAction: ipFilter.filterAction,
-              comment: ipFilter.comment
+              filterAction: formValues.filterAction,
+              comment: formValues.comment
             }
           });
         },
         error: (error: ApolloError) => {
-          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
-          this._errorsService.applyGraphQLErrorsToForm(this.updateIpFilterForm, graphQLErrors);
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error);
+
+          if (graphQLErrors.length == 0) {
+            this._toasterService.showError(error.message);
+          } else {
+            this._errorsService.applyGraphQLErrorsToForm(this.updateIpFilterForm, graphQLErrors);
+          }
         }
       });
-
-
-    this._dialogRef.close(true);
   }
 
   public cancel(): void {
