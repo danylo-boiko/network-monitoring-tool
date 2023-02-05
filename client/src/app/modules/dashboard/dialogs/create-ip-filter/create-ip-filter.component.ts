@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from "@angular/material/dialog";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { CreateIpFilterForm } from './create-ip-filter.form';
-import { CreateIpFilterMutation, IpFilterAction, IpFilterDto } from "../../../graphql/services/graphql.service";
+import { CreateIpFilterMutation, IpFilterAction } from "../../../graphql/services/graphql.service";
 import { ipStringToInt } from "../../../../core/utils/ip.util";
 import { ipValidator } from "../../../../core/validators/ip.validator";
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";

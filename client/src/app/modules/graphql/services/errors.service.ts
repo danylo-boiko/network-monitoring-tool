@@ -55,10 +55,7 @@ export class ErrorsService {
     }
   }
 
-  private lowerizeFirstLetter(str?: string): string | null {
-    if (!str) {
-      return null;
-    }
-    return str.charAt(0).toLowerCase() + str.slice(1);
+  private lowerizeFirstLetter(str: string | null): string | null {
+    return !str ? str : str.charAt(0).toLowerCase() + str.slice(1);
   }
 }

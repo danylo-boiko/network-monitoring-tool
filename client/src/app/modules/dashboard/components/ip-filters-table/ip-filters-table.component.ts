@@ -36,7 +36,9 @@ export class IpFiltersTableComponent implements OnInit {
   }
 
   public createIpFilter(): void {
-    const dialogRef = this._dialog.open(CreateIpFilterComponent);
+    const dialogRef = this._dialog.open(CreateIpFilterComponent, {
+      restoreFocus: false
+    });
 
     dialogRef
       .afterClosed()

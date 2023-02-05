@@ -16,9 +16,7 @@ export class DashboardComponent implements OnInit {
   public dashboardLoaded = false;
   public user!: UserDto;
 
-  constructor(
-    private readonly _usersService: UsersService,
-    private readonly _toasterService: ToasterService) {
+  constructor(private readonly _usersService: UsersService, private readonly _toasterService: ToasterService) {
   }
 
   public ngOnInit(): void {
@@ -38,9 +36,7 @@ export class DashboardComponent implements OnInit {
           this.user = user;
           this.dashboardLoaded = true;
         },
-        error: (error: ApolloError) => {
-          this._toasterService.showError(error.message)
-        }
+        error: (error: ApolloError) => this._toasterService.showError(error.message)
       });
   }
 }
