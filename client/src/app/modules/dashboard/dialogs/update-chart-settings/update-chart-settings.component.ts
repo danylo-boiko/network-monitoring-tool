@@ -1,10 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
-import { DeviceDto } from "../../../graphql/services/graphql.service";
+import { DateRangeMode, DeviceDto } from "../../../graphql/services/graphql.service";
 import { ChartSettingsService } from "../../services/chart-settings.service";
 import { FormControl, FormGroup } from "@angular/forms";
 import { UpdateChartSettingsForm } from "./update-chart-settings.form";
-import { DateRangeMode } from "../../enums/date-range-mode.enum";
 import { ChartSettings } from '../../models/chart-settings.model';
 
 @Component({
@@ -14,8 +13,7 @@ import { ChartSettings } from '../../models/chart-settings.model';
 })
 export class UpdateChartSettingsComponent implements OnInit {
   public updateChartSettingsForm!: FormGroup<UpdateChartSettingsForm>;
-  public allowedDateRangeModes = Object.values(DateRangeMode).filter(value => typeof value == 'number') as number[];
-  public DateRangeMode = DateRangeMode;
+  public allowedDateRangeModes = Object.values(DateRangeMode);
   private chartSettings!: ChartSettings | null;
 
   constructor(

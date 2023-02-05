@@ -30,8 +30,6 @@ export class AuthService {
         username,
         password
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 
@@ -43,8 +41,6 @@ export class AuthService {
         password,
         confirmPassword
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 
@@ -54,8 +50,6 @@ export class AuthService {
         accessToken,
         refreshToken
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 
@@ -64,8 +58,6 @@ export class AuthService {
       input: {
         username
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 
@@ -75,8 +67,6 @@ export class AuthService {
         username,
         twoFactorCode
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 }

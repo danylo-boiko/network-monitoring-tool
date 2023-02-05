@@ -1,4 +1,4 @@
-import { DateRangeMode } from "../enums/date-range-mode.enum";
+import { DateRangeMode } from "../../graphql/services/graphql.service";
 
 export class ChartSettings {
   public deviceId: string;

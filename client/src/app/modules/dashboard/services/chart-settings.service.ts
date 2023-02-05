@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { DateRangeMode } from '../../graphql/services/graphql.service';
 import { ChartSettings } from '../models/chart-settings.model';
-import { DateRangeMode } from "../enums/date-range-mode.enum";
 
 @Injectable({
   providedIn: 'root'

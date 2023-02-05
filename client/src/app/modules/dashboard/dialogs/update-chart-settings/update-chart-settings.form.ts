@@ -1,5 +1,5 @@
 import { FormControl } from "@angular/forms";
-import { DateRangeMode } from "../../enums/date-range-mode.enum";
+import { DateRangeMode } from "src/app/modules/graphql/services/graphql.service";
 
 export interface UpdateChartSettingsForm {
   deviceId: FormControl<string>;

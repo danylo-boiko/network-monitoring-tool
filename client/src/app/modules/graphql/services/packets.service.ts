@@ -1,22 +1,19 @@
 import { Injectable } from '@angular/core';
-import { GetPacketsByDeviceIdGQL, GetPacketsByDeviceIdQueryInput } from "./graphql.service";
+import { GetPacketsChartDataByDeviceIdGQL, GetPacketsChartDataByDeviceIdQueryInput } from './graphql.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PacketsService {
-  constructor(private readonly _getPacketsByDeviceId: GetPacketsByDeviceIdGQL) {
+  constructor(private readonly _getPacketsChartDataByDeviceId: GetPacketsChartDataByDeviceIdGQL) {
   }
 
-  public getPacketsByDeviceId({deviceId, dateFrom = null, dateTo = null}: GetPacketsByDeviceIdQueryInput) {
-    return this._getPacketsByDeviceId.fetch({
+  public getPacketsChartDataByDeviceId({deviceId, dateRangeMode}: GetPacketsChartDataByDeviceIdQueryInput) {
+    return this._getPacketsChartDataByDeviceId.fetch({
       input: {
         deviceId,
-        dateFrom,
-        dateTo
+        dateRangeMode
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 }

@@ -13,7 +13,7 @@
       <mat-label>Range</mat-label>
       <mat-select formControlName="dateRangeMode">
         <mat-option *ngFor="let range of allowedDateRangeModes" [value]="range">
-          {{ DateRangeMode[range] }}
+          {{ range }}
         </mat-option>
       </mat-select>
     </mat-form-field>

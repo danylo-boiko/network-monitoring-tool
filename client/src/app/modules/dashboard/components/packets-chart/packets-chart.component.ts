@@ -1,6 +1,4 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { DeviceDto, GetPacketsByDeviceIdQuery, PacketDto } from "../../../graphql/services/graphql.service";
-import { DateRangeMode } from "../../enums/date-range-mode.enum";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, map } from "rxjs";
 import { ApolloError, ApolloQueryResult } from "@apollo/client/core";
@@ -9,6 +7,12 @@ import { ToasterService } from "../../../../core/services/toaster.service";
 import { MatDialog } from "@angular/material/dialog";
 import { UpdateChartSettingsComponent } from '../../dialogs/update-chart-settings/update-chart-settings.component';
 import { ChartSettingsService } from "../../services/chart-settings.service";
+import {
+  DateRangeMode,
+  DeviceDto,
+  GetPacketsChartDataByDeviceIdQuery,
+  PacketsChartDataDto
+} from "../../../graphql/services/graphql.service";
 
 @UntilDestroy()
 @Component({
@@ -19,9 +23,8 @@ import { ChartSettingsService } from "../../services/chart-settings.service";
 export class PacketsChartComponent implements OnInit, OnDestroy {
   @Input() devices!: DeviceDto[];
 
-  public packets!: PacketDto[];
   public packetsChart!: ApexCharts;
-  public dateRangeMode = DateRangeMode.Day;
+  public deviceSelected: boolean = false;
 
   constructor(
     private readonly _packetsService: PacketsService,
@@ -31,10 +34,7 @@ export class PacketsChartComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    const chartSettings = this._chartSettingsService.getChartSettings();
-    if (chartSettings && this.devices.findIndex(d => d.id == chartSettings?.deviceId) != -1) {
-      this.getPackets(chartSettings!.deviceId);
-    }
+    this.refreshPacketsChart();
   }
 
   public ngOnDestroy(): void {
@@ -54,27 +54,34 @@ export class PacketsChartComponent implements OnInit, OnDestroy {
         filter(response => response?.modified)
       )
       .subscribe(() => {
-        const chartSettings = this._chartSettingsService.getChartSettings();
-        if (chartSettings) {
-          this.getPackets(chartSettings!.deviceId);
-        }
+        this.refreshPacketsChart();
       });
   }
 
-  private getPackets(deviceId: string): void {
+  public refreshPacketsChart(): void {
+    const chartSettings = this._chartSettingsService.getChartSettings();
+    if (!chartSettings || this.devices.findIndex(d => d.id == chartSettings?.deviceId) == -1) {
+      return;
+    }
+
     this._packetsService
-      .getPacketsByDeviceId({
-        deviceId
-      })
+      .getPacketsChartDataByDeviceId(chartSettings)
       .pipe(
         untilDestroyed(this),
         filter(response => !response.loading),
-        map(response => (<ApolloQueryResult<GetPacketsByDeviceIdQuery>>response).data!.packetsByDeviceId)
+        map(response => (<ApolloQueryResult<GetPacketsChartDataByDeviceIdQuery>>response).data!.packetsChartDataByDeviceId)
       )
       .subscribe({
-        next: (packets: Array<PacketDto>) => {
-          this.packets = packets;
-          this.refreshChart();
+        next: (packetsChartData: PacketsChartDataDto) => {
+          this.deviceSelected = true;
+
+          if (this.packetsChart) {
+            this.packetsChart.destroy();
+          }
+
+          const chartOptions = this.getChartOptions(packetsChartData, chartSettings.dateRangeMode);
+          this.packetsChart = new ApexCharts(document.querySelector('#packets-chart'), chartOptions);
+          this.packetsChart?.render();
         },
         error: (error: ApolloError) => {
           this._toasterService.showError(error.message);
@@ -82,16 +89,12 @@ export class PacketsChartComponent implements OnInit, OnDestroy {
       });
   }
 
-  private refreshChart(): void {
-    if (this.packetsChart) {
-      this.packetsChart.destroy();
-    }
+  private getChartOptions(packetsChartData: PacketsChartDataDto, dateRangeMode: DateRangeMode) {
+    const series = packetsChartData.series.map((el) => ({
+      name: el.key,
+      data: el.value
+    }));
 
-    this.packetsChart = new ApexCharts(document.querySelector('#packets-chart'), this.getChartOptions());
-    this.packetsChart?.render();
-  }
-
-  private getChartOptions() {
     return {
       chart: {
         height: 380,
@@ -104,27 +107,17 @@ export class PacketsChartComponent implements OnInit, OnDestroy {
       stroke: {
         curve: 'smooth'
       },
-      series: [
-        {
-          name: 'Passed',
-          data: [31, 40, 28]
-        },
-        {
-          name: 'Dropped',
-          data: [11, 32, 45]
-        },
-      ],
+      series: series,
       xaxis: {
         type: 'datetime',
-        categories: [
-          '2019-11-24T00:00:00',
-          '2019-11-24T01:30:00',
-          '2019-11-24T02:30:00'
-        ],
+        categories: packetsChartData.categories,
+        labels: {
+          datetimeUTC: false
+        }
       },
       tooltip: {
         x: {
-          format: 'dd/MM/yy HH:mm'
+          format: dateRangeMode == DateRangeMode.Day ? 'dd/MM/yy HH:mm' : 'dd/MM/yy'
         }
       },
       legend: {

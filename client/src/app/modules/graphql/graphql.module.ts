@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
-import { ApolloClientOptions, from, InMemoryCache } from '@apollo/client/core';
+import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 import { environment } from '../../../environments/environment';
 
@@ -10,7 +10,21 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
       uri: environment.api,
       includeExtensions: true
     }),
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'ignore'
+      },
+      query: {
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'all'
+      },
+      mutate: {
+        fetchPolicy: 'no-cache',
+        errorPolicy: 'all'
+      },
+    }
   };
 }
 

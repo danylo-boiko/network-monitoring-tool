@@ -25,8 +25,6 @@ export class IpFiltersService {
         filterAction,
         comment
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 
@@ -37,8 +35,6 @@ export class IpFiltersService {
         filterAction,
         comment
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 
@@ -47,8 +43,6 @@ export class IpFiltersService {
       input: {
         ipFilterId
       }
-    }, {
-      errorPolicy: 'all',
     });
   }
 }
