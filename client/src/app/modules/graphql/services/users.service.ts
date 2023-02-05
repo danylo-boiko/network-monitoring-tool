@@ -9,8 +9,6 @@ export class UsersService {
   }
 
   public getUserInfo() {
-    return this._getUserInfo.fetch({}, {
-      errorPolicy: 'all',
-    });
+    return this._getUserInfo.fetch();
   }
 }

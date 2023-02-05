@@ -39,7 +39,7 @@ public class GetUserWithDevicesAndIpFiltersByIdQueryHandler : IRequestHandler<Ge
                     FilterAction = i.FilterAction,
                     Comment = i.Comment,
                     CreatedAt = i.CreatedAt
-                }).ToList()
+                }).OrderByDescending(i => i.CreatedAt).ToList()
             };
 
         var userDto = await userQuery.FirstOrDefaultAsync(cancellationToken);

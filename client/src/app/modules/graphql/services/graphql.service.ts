@@ -32,6 +32,11 @@ export type CreateIpFilterCommandInput = {
   userId?: InputMaybe<Scalars['UUID']>;
 };
 
+export enum DateRangeMode {
+  Day = 'DAY',
+  Week = 'WEEK'
+}
+
 export type DeleteIpFilterCommandInput = {
   ipFilterId: Scalars['UUID'];
 };
@@ -44,9 +49,8 @@ export type DeviceDto = {
   machineSpecificStamp: Scalars['String'];
 };
 
-export type GetPacketsByDeviceIdQueryInput = {
-  dateFrom?: InputMaybe<Scalars['DateTime']>;
-  dateTo?: InputMaybe<Scalars['DateTime']>;
+export type GetPacketsChartDataByDeviceIdQueryInput = {
+  dateRangeMode: DateRangeMode;
   deviceId: Scalars['UUID'];
 };
 
@@ -63,6 +67,12 @@ export type IpFilterDto = {
   filterAction: IpFilterAction;
   id: Scalars['UUID'];
   ip: Scalars['Long'];
+};
+
+export type KeyValuePairOfStringAndIListOfInt32 = {
+  __typename?: 'KeyValuePairOfStringAndIListOfInt32';
+  key: Scalars['String'];
+  value: Array<Scalars['Int']>;
 };
 
 export type LoginCommandInput = {
@@ -124,56 +134,21 @@ export type MutationVerifyTwoFactorCodeArgs = {
   input: VerifyTwoFactorCodeCommandInput;
 };
 
-export type PacketDto = {
-  __typename?: 'PacketDto';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['UUID'];
-  ip: Scalars['Long'];
-  protocol: ProtocolType;
-  size: Scalars['Long'];
-  status: PacketStatus;
+export type PacketsChartDataDto = {
+  __typename?: 'PacketsChartDataDto';
+  categories: Array<Scalars['String']>;
+  series: Array<KeyValuePairOfStringAndIListOfInt32>;
 };
-
-export enum PacketStatus {
-  Dropped = 'DROPPED',
-  Passed = 'PASSED'
-}
-
-export enum ProtocolType {
-  Ggp = 'GGP',
-  Icmp = 'ICMP',
-  IcmpV6 = 'ICMP_V6',
-  Idp = 'IDP',
-  Igmp = 'IGMP',
-  Ipx = 'IPX',
-  IpSecAuthenticationHeader = 'IP_SEC_AUTHENTICATION_HEADER',
-  IpSecEncapsulatingSecurityPayload = 'IP_SEC_ENCAPSULATING_SECURITY_PAYLOAD',
-  IPv4 = 'I_PV4',
-  IPv6 = 'I_PV6',
-  IPv6DestinationOptions = 'I_PV6_DESTINATION_OPTIONS',
-  IPv6FragmentHeader = 'I_PV6_FRAGMENT_HEADER',
-  IPv6HopByHopOptions = 'I_PV6_HOP_BY_HOP_OPTIONS',
-  IPv6NoNextHeader = 'I_PV6_NO_NEXT_HEADER',
-  IPv6RoutingHeader = 'I_PV6_ROUTING_HEADER',
-  Nd = 'ND',
-  Pup = 'PUP',
-  Raw = 'RAW',
-  Spx = 'SPX',
-  SpxIi = 'SPX_II',
-  Tcp = 'TCP',
-  Udp = 'UDP',
-  Unknown = 'UNKNOWN'
-}
 
 export type Query = {
   __typename?: 'Query';
-  packetsByDeviceId: Array<PacketDto>;
+  packetsChartDataByDeviceId: PacketsChartDataDto;
   userInfo: UserDto;
 };
 
 
-export type QueryPacketsByDeviceIdArgs = {
-  input: GetPacketsByDeviceIdQueryInput;
+export type QueryPacketsChartDataByDeviceIdArgs = {
+  input: GetPacketsChartDataByDeviceIdQueryInput;
 };
 
 export type RefreshTokenCommandInput = {
@@ -274,12 +249,12 @@ export type DeleteIpFilterMutationVariables = Exact<{
 
 export type DeleteIpFilterMutation = { __typename?: 'Mutation', deleteIpFilter: boolean };
 
-export type GetPacketsByDeviceIdQueryVariables = Exact<{
-  input: GetPacketsByDeviceIdQueryInput;
+export type GetPacketsChartDataByDeviceIdQueryVariables = Exact<{
+  input: GetPacketsChartDataByDeviceIdQueryInput;
 }>;
 
 
-export type GetPacketsByDeviceIdQuery = { __typename?: 'Query', packetsByDeviceId: Array<{ __typename?: 'PacketDto', id: any, ip: any, size: any, protocol: ProtocolType, status: PacketStatus, createdAt: any }> };
+export type GetPacketsChartDataByDeviceIdQuery = { __typename?: 'Query', packetsChartDataByDeviceId: { __typename?: 'PacketsChartDataDto', categories: Array<string>, series: Array<{ __typename?: 'KeyValuePairOfStringAndIListOfInt32', key: string, value: Array<number> }> } };
 
 export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -420,15 +395,14 @@ export const DeleteIpFilterDocument = gql`
       super(apollo);
     }
   }
-export const GetPacketsByDeviceIdDocument = gql`
-    query GetPacketsByDeviceId($input: GetPacketsByDeviceIdQueryInput!) {
-  packetsByDeviceId(input: $input) {
-    id
-    ip
-    size
-    protocol
-    status
-    createdAt
+export const GetPacketsChartDataByDeviceIdDocument = gql`
+    query GetPacketsChartDataByDeviceId($input: GetPacketsChartDataByDeviceIdQueryInput!) {
+  packetsChartDataByDeviceId(input: $input) {
+    series {
+      key
+      value
+    }
+    categories
   }
 }
     `;
@@ -436,8 +410,8 @@ export const GetPacketsByDeviceIdDocument = gql`
   @Injectable({
     providedIn: 'root'
   })
-  export class GetPacketsByDeviceIdGQL extends Apollo.Query<GetPacketsByDeviceIdQuery, GetPacketsByDeviceIdQueryVariables> {
-    override document = GetPacketsByDeviceIdDocument;
+  export class GetPacketsChartDataByDeviceIdGQL extends Apollo.Query<GetPacketsChartDataByDeviceIdQuery, GetPacketsChartDataByDeviceIdQueryVariables> {
+    override document = GetPacketsChartDataByDeviceIdDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

@@ -12,6 +12,7 @@ import { Toaster } from 'ngx-toast-notifications';
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, map } from "rxjs";
 import { SendTwoFactorCodeMutation, VerifyTwoFactorCodeMutation } from "../../../graphql/services/graphql.service";
+import { ToasterService } from "../../../../core/services/toaster.service";
 
 @UntilDestroy()
 @Component({
@@ -28,7 +29,7 @@ export class VerifyEmailComponent implements OnInit {
     private readonly _authService: AuthService,
     private readonly _jwtTokenService: JwtTokenService,
     private readonly _errorsService: ErrorsService,
-    private readonly _toaster: Toaster,
+    private readonly _toasterService: ToasterService,
     private readonly _router: Router) {
     const state = this._router.getCurrentNavigation()?.extras.state;
 
@@ -41,11 +42,7 @@ export class VerifyEmailComponent implements OnInit {
     if (state!['needToSendTwoFactorCode']) {
       this.sendTwoFactorCode(false);
     } else {
-      this.sendTwoFactorCodeButtonDisabled = true;
-
-      setTimeout(() => {
-        this.sendTwoFactorCodeButtonDisabled = false;
-      }, 60000);
+      this.disableSendTwoFactorCodeButton();
     }
   }
 
@@ -84,8 +81,13 @@ export class VerifyEmailComponent implements OnInit {
           }
         },
         error: (error: ApolloError) => {
-          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
-          this._errorsService.applyGraphQLErrorsToForm(this.verifyEmailForm, graphQLErrors);
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error);
+
+          if (graphQLErrors.length == 0) {
+            this._toasterService.showError(error.message);
+          } else {
+            this._errorsService.applyGraphQLErrorsToForm(this.verifyEmailForm, graphQLErrors);
+          }
         }
       });
   }
@@ -95,11 +97,7 @@ export class VerifyEmailComponent implements OnInit {
       return;
     }
 
-    this.sendTwoFactorCodeButtonDisabled = true;
-
-    setTimeout(() => {
-      this.sendTwoFactorCodeButtonDisabled = false;
-    }, 60000);
+    this.disableSendTwoFactorCodeButton();
 
     this._authService
       .sendTwoFactorCode({
@@ -113,13 +111,11 @@ export class VerifyEmailComponent implements OnInit {
       .subscribe({
         next: (successful: boolean) => {
           if (successful && showToaster) {
-            this._toaster.open({
-              text: 'Two factor code sent successfully',
-              type: 'success',
-              position: 'top-right',
-              duration: 5000
-            });
+            this._toasterService.showSuccess('Two factor code sent successfully');
           }
+        },
+        error: (error: ApolloError) => {
+          this._toasterService.showError(error.message);
         }
       });
   }
@@ -130,5 +126,13 @@ export class VerifyEmailComponent implements OnInit {
 
   public isFieldValid(controlName: string, ruleName: string): boolean {
     return isFormFieldValid(this.verifyEmailForm, controlName, ruleName);
+  }
+
+  private disableSendTwoFactorCodeButton(): void {
+    this.sendTwoFactorCodeButtonDisabled = true;
+
+    setTimeout(() => {
+      this.sendTwoFactorCodeButtonDisabled = false;
+    }, 60000);
   }
 }

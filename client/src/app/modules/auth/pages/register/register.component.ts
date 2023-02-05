@@ -12,6 +12,7 @@ import { ErrorsService } from "../../../graphql/services/errors.service";
 import { matchingControlsValidator } from "../../../../core/validators/form-builder.validator";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter, map } from "rxjs";
+import { ToasterService } from "../../../../core/services/toaster.service";
 
 @UntilDestroy()
 @Component({
@@ -26,6 +27,7 @@ export class RegisterComponent implements OnInit {
     private readonly _authService: AuthService,
     private readonly _jwtTokenService: JwtTokenService,
     private readonly _errorsService: ErrorsService,
+    private readonly _toasterService: ToasterService,
     private readonly _formBuilder: FormBuilder,
     private readonly _router: Router) {
   }
@@ -93,8 +95,13 @@ export class RegisterComponent implements OnInit {
           }
         },
         error: (error: ApolloError) => {
-          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
-          this._errorsService.applyGraphQLErrorsToForm(this.registerForm, graphQLErrors);
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error);
+
+          if (graphQLErrors.length == 0) {
+            this._toasterService.showError(error.message);
+          } else {
+            this._errorsService.applyGraphQLErrorsToForm(this.registerForm, graphQLErrors);
+          }
         }
       });
   }

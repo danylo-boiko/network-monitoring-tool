@@ -3,16 +3,16 @@ import { ApolloError } from "@apollo/client/core";
 import { HttpErrorResponse } from "@angular/common/http";
 import { GraphQLError } from "graphql";
 import { FormGroup } from "@angular/forms";
-import { Toaster } from "ngx-toast-notifications";
+import { ToasterService } from "../../../core/services/toaster.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorsService {
-  constructor(private readonly _toaster: Toaster) {
+  constructor(private readonly _toasterService: ToasterService) {
   }
 
-  public getGraphQLErrors(error: ApolloError, showToastIfEmpty: boolean = false): Array<GraphQLError> {
+  public getGraphQLErrors(error: ApolloError): Array<GraphQLError> {
     const graphQLErrors = new Array<GraphQLError>();
 
     const errorResponse = error?.networkError as HttpErrorResponse;
@@ -33,15 +33,6 @@ export class ErrorsService {
       }));
     }
 
-    if (graphQLErrors.length == 0 && showToastIfEmpty) {
-      this._toaster.open({
-        text: error.message,
-        type: 'danger',
-        position: 'top-right',
-        duration: 5000
-      });
-    }
-
     return graphQLErrors;
   }
 
@@ -54,7 +45,8 @@ export class ErrorsService {
 
       const control = form.get(property.toString());
       if (!control) {
-        throw `Control for property ${property.toString()} doesn't exist`;
+        this._toasterService.showError(error.message);
+        throw `Control for property ${property.toString()} doesn't exists`;
       }
 
       control.setErrors({

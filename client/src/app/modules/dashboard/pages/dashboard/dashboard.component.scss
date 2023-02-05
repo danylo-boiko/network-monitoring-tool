@@ -8,8 +8,9 @@
   padding-bottom: 20px;
 }
 
-.empty-message {
-  display: flex;
-  justify-content: center;
-  padding-top: 14px;
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }

@@ -11,6 +11,7 @@ import { ErrorsService } from "../../../graphql/services/errors.service";
 import { isFormFieldValid } from "../../../../core/utils/form-field-validation.util";
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { filter, map } from 'rxjs';
+import { ToasterService } from 'src/app/core/services/toaster.service';
 
 @UntilDestroy()
 @Component({
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit {
     private readonly _authService: AuthService,
     private readonly _jwtTokenService: JwtTokenService,
     private readonly _errorsService: ErrorsService,
+    private readonly _toasterService: ToasterService,
     private readonly _router: Router) {
   }
 
@@ -73,7 +75,7 @@ export class LoginComponent implements OnInit {
           this._router.navigateByUrl('/');
         },
         error: (error: ApolloError) => {
-          const graphQLErrors = this._errorsService.getGraphQLErrors(error, true);
+          const graphQLErrors = this._errorsService.getGraphQLErrors(error);
 
           if (graphQLErrors.length == 1 && graphQLErrors[0].extensions['code'] == 'emailConfirmation') {
             this._router.navigateByUrl('/verify-email', {
@@ -86,7 +88,11 @@ export class LoginComponent implements OnInit {
             return;
           }
 
-          this._errorsService.applyGraphQLErrorsToForm(this.loginForm, graphQLErrors);
+          if (graphQLErrors.length == 0) {
+            this._toasterService.showError(error.message);
+          } else {
+            this._errorsService.applyGraphQLErrorsToForm(this.loginForm, graphQLErrors);
+          }
         }
       });
   }

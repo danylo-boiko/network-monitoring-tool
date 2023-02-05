@@ -7,6 +7,7 @@
       <mat-error>
         <span *ngIf="!isFieldValid('ip', 'required')">IP shouldn't be empty</span>
         <span *ngIf="!isFieldValid('ip', 'invalidIpFormat')">IP should has valid format</span>
+        <span *ngIf="!isFieldValid('ip', 'serverValidation')">{{ getServerValidationErrorMessage('ip') }}</span>
       </mat-error>
     </mat-form-field>
 
@@ -19,6 +20,7 @@
       </mat-select>
       <mat-error>
         <span *ngIf="!isFieldValid('filterAction', 'required')">Filter action shouldn't be empty</span>
+        <span *ngIf="!isFieldValid('filterAction', 'serverValidation')">{{ getServerValidationErrorMessage('filterAction') }}</span>
       </mat-error>
     </mat-form-field>
 
@@ -27,6 +29,7 @@
       <input matInput formControlName="comment"/>
       <mat-error>
         <span *ngIf="!isFieldValid('comment', 'maxlength')">Comment should has less than 256 characters</span>
+        <span *ngIf="!isFieldValid('comment', 'serverValidation')">{{ getServerValidationErrorMessage('comment') }}</span>
       </mat-error>
     </mat-form-field>
 

@@ -20,6 +20,11 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatSelectModule } from "@angular/material/select";
+import { IpFiltersTableComponent } from './components/ip-filters-table/ip-filters-table.component';
+import { PacketsChartComponent } from './components/packets-chart/packets-chart.component';
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatRadioModule } from "@angular/material/radio";
+import { UpdateChartSettingsComponent } from './dialogs/update-chart-settings/update-chart-settings.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +32,10 @@ import { MatSelectModule } from "@angular/material/select";
     DashboardComponent,
     DeleteIpFilterComponent,
     CreateIpFilterComponent,
-    UpdateIpFilterComponent
+    UpdateIpFilterComponent,
+    IpFiltersTableComponent,
+    PacketsChartComponent,
+    UpdateChartSettingsComponent
   ],
   imports: [
     CommonModule,
@@ -47,6 +55,8 @@ import { MatSelectModule } from "@angular/material/select";
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatProgressSpinnerModule,
+    MatRadioModule
   ]
 })
 export class DashboardModule {
