@@ -43,8 +43,8 @@ public class GetPacketsChartDataByDeviceIdQueryHandler : IRequestHandler<GetPack
             }
 
             dateIteratorFrom = request.DateRangeMode == DateRangeMode.Day
-                ? dateIteratorTo.AddHours(1)
-                : dateIteratorTo.AddDays(1);
+                ? dateIteratorFrom.AddHours(1)
+                : dateIteratorFrom.AddDays(1);
         }
 
         return chartData;
